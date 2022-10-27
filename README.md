@@ -79,6 +79,9 @@ export const ExampleComponent: React.FC<ExampleComponentProps> = ({ title, conte
 }
 ```
 
+###### Usual Redux Slice
+[Link To Slice Example](/fe/src/features/exampleFeature/slice.ts)
+
 ## Basic Git stuff
 
 ### All commands you need to know:
