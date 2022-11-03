@@ -6,10 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity(name = "role")
-@Table(name = "role")
+@Table(name = "role",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "role_name_unique", columnNames = "name")
+        })
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -36,5 +40,14 @@ public class Role {
             columnDefinition = "TEXT"
     )
     private String name;
+
+    @OneToMany(
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(
+            name = "roleId",
+            referencedColumnName = "id"
+    )
+    private List<User> users;
 
 }
