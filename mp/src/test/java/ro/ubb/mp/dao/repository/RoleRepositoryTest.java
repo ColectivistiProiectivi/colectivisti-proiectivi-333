@@ -25,7 +25,7 @@ class RoleRepositoryTest {
                 .build();
         roleRepository.save(r1);
         Role r3 = Role.builder()
-                .name("bothJPA")
+                .name("both")
                 .build();
         roleRepository.save(r1);
         roleRepository.save(r2);
