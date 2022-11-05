@@ -36,18 +36,17 @@ public class Role {
 
     @Column(
             name = "name",
-            nullable = false,
-            columnDefinition = "TEXT"
+            nullable = false
     )
     private String name;
 
-    @OneToMany(
-            cascade = CascadeType.ALL
-    )
-    @JoinColumn(
-            name = "roleId",
-            referencedColumnName = "id"
-    )
-    private List<User> users;
+//    @OneToMany(
+//            cascade = CascadeType.ALL
+//    )
+//    @JoinColumn(
+//            name = "roleId",
+//            referencedColumnName = "id"
+//    )
+//    private List<User> users;
 
 }

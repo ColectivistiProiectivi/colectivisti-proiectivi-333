@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Data
 @Entity(name = "users")
@@ -54,13 +56,9 @@ public class User {
             columnDefinition = "TEXT"
     )
     private String password;
-
-    @Column(
-            name = "profile_pic",
-            nullable = false,
-            columnDefinition = "TEXT"
-    )
-    private String profile_pic;
-
+    private String profilePicture;
     private String interestAreas;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Collection<Role> roles = new ArrayList<>();
 }

@@ -14,19 +14,8 @@ public class IndexController {
 
     private static final String GREET_MESSAGE = "Application is running";
 
-    private final UserService userService;
-
-    public IndexController(UserService userService) {
-        this.userService = userService;
-    }
-
     @GetMapping
     public String getGreetMessage() {
         return GREET_MESSAGE;
-    }
-
-    @GetMapping("/users")
-    public List<User> getAllUsers() {
-        return getUserService().getAll();
     }
 }
