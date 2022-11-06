@@ -8,12 +8,12 @@
 		<version>2.7.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example</groupId>
-	<artifactId>demo</artifactId>
+	<groupId>ro.ubb</groupId>
+	<artifactId>mp</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>demo</name>
-	<description>Demo project for Spring Boot</description>
+	<name>mp</name>
+	<description>Application for mentoring students</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

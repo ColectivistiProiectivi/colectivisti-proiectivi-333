@@ -2,7 +2,6 @@ package ro.ubb.mp.dao.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import ro.ubb.mp.dao.model.Role;
 
@@ -14,7 +13,7 @@ class RoleRepositoryTest {
     private RoleRepository roleRepository;
 
     @Test
-    public void saveRole(){
+    public void saveAndDeleteRole() {
         Role r1 = Role.builder()
                 .name("student")
                 .build();
@@ -30,9 +29,7 @@ class RoleRepositoryTest {
         roleRepository.save(r1);
         roleRepository.save(r2);
         roleRepository.save(r3);
-    }
-    @Test
-    public void deleteRole(){
         roleRepository.deleteAll();
     }
+
 }
