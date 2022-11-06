@@ -29,7 +29,9 @@ class RoleRepositoryTest {
         roleRepository.save(r1);
         roleRepository.save(r2);
         roleRepository.save(r3);
-        roleRepository.deleteAll();
+        roleRepository.delete(r1);
+        roleRepository.delete(r2);
+        roleRepository.delete(r3);
     }
 
 }

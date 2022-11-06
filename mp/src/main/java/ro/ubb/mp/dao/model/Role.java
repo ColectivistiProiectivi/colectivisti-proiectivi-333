@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Data
 @Entity(name = "role")
@@ -39,14 +38,5 @@ public class Role {
             nullable = false
     )
     private String name;
-
-//    @OneToMany(
-//            cascade = CascadeType.ALL
-//    )
-//    @JoinColumn(
-//            name = "roleId",
-//            referencedColumnName = "id"
-//    )
-//    private List<User> users;
 
 }

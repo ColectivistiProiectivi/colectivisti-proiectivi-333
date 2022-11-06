@@ -9,11 +9,22 @@ import java.util.Optional;
 
 public interface UserService {
     List<User> getAll();
+
     Optional<User> getUserById(Long id);
+
     User getUserByEmail(String email);
+
     User saveUser(UserRequestDTO userDTO);
+
     Role saveRole(Role role);
+
+    void deleteRole(Role role);
+
     void addRoleToUser(String email, String role);
+
+    User updateUser(Long id, UserRequestDTO userDTO);
+
     void deleteUserByEmail(String email);
+
     void deleteUserById(Long id);
 }
