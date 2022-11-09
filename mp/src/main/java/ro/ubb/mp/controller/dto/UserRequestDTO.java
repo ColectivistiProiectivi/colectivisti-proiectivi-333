@@ -10,7 +10,7 @@ public class UserRequestDTO {
     private String fullName;
     private String email;
     private String password;
-    private String profilePic;
+    private String profilePicture;
     private String interestAreas;
     private Role role;
 
