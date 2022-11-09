@@ -1,22 +1,22 @@
 import React from 'react'
 import { styled, Typography } from '@mui/material'
 
-import { RegistrationForm } from './RegistrationForm'
+import { LoginForm } from './LoginForm'
 
-import illustrationSrc from './images/register_figure.png'
+import illustrationSrc from './images/login_figure.png'
 
-const RegisterPage: React.FC = () => {
+const LoginPage: React.FC = () => {
   return (
     <Container>
       <LeftSection>
-        <TextContainer>
-          <Title variant="h4">Learn from our</Title>
-          <FancyText variant="h3"> mentors</FancyText>
-        </TextContainer>
-        <Illustration src={illustrationSrc} alt="Register Illustration" />
+        <LoginForm />
       </LeftSection>
       <RightSection>
-        <RegistrationForm />
+        <TextContainer>
+          <Title variant="h4">Happy you</Title>
+          <Title variant="h4">joined us</Title>
+        </TextContainer>
+        <Illustration src={illustrationSrc} alt="Login Illustration" />
       </RightSection>
     </Container>
   )
@@ -39,10 +39,9 @@ const Section = styled('div')`
 `
 
 const LeftSection = styled(Section)`
-  background-color: ${props => props.theme.palette.common.white};
+  background-color: #222233; // TODO: Add color to the theme instead of hardcoding
   border-radius: 16px 0 0 16px;
   gap: 16px;
-  user-select: none;
 `
 
 const TextContainer = styled('div')`
@@ -52,8 +51,9 @@ const TextContainer = styled('div')`
 `
 
 const RightSection = styled(Section)`
-  background-color: #222233; // TODO: Add color to the theme instead of hardcoding
+  background-color: ${props => props.theme.palette.common.white};
   border-radius: 0 16px 16px 0;
+  user-select: none;
 `
 
 const Illustration = styled('img')`
@@ -68,8 +68,4 @@ const Title = styled(Typography)`
   font-family: 'Merriweather', serif;
 `
 
-const FancyText = styled(Typography)`
-  font-family: 'Courgette', cursive;
-`
-
-export default RegisterPage
+export default LoginPage
