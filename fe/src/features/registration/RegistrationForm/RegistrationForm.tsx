@@ -49,8 +49,8 @@ export const RegistrationForm: React.FC = () => {
       <FormContainer component="form" onSubmit={handleSubmit(handleRegistrationSubmit)}>
         <TextFieldGroup>
           <StyledTextField
-            {...register('fullName', { required: 'Fullname is required' })}
-            label="Fullname"
+            {...register('fullName', { required: 'Full Name is required' })}
+            label="Full Name"
             error={!!errors.fullName}
             helperText={errors.fullName?.message}
             size="small"
@@ -83,7 +83,7 @@ export const RegistrationForm: React.FC = () => {
             required: 'Confirm Password is required',
             validate: {
               passwordsNotMatching: confirmPasswordValue =>
-                confirmPasswordValue === getValues('password') || 'Passwords not matching',
+                confirmPasswordValue === getValues('password') || 'Password not matching',
             },
           })}
           label="Confirm Password"
@@ -136,7 +136,7 @@ const FormContainer = styled(Box)`
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 0px 32px;
+  padding: 0 32px;
   margin: 0 24px;
 `
 
