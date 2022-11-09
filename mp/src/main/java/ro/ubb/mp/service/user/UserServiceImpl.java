@@ -4,11 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ro.ubb.mp.controller.dto.UserRequestDTO;
-import ro.ubb.mp.dao.model.Role;
 import ro.ubb.mp.dao.model.User;
-import ro.ubb.mp.dao.repository.RoleRepository;
 import ro.ubb.mp.dao.repository.UserRepository;
-
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +18,6 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
 //    private final BCryptPasswordEncoder encoder;
 
     @Override
@@ -49,29 +45,11 @@ public class UserServiceImpl implements UserService {
                 .email(userDTO.getEmail())
                 //.password(encoder.encode(userDTO.getPassword()))
                 .password(userDTO.getPassword())
-                .profilePicture(userDTO.getProfilePic())
-                .interestAreas(userDTO.getInterestAreas())
+                .profilePicture(userDTO.getProfilePicture())
                 .build();
-        userToBeSaved.getRoles().add(userDTO.getRole());
+
+        userToBeSaved.getInterestAreas().add(userDTO.getInterestAreas());
         return userRepository.save(userToBeSaved);
-    }
-
-    @Override
-    public Role saveRole(Role role) {
-        return roleRepository.save(role);
-    }
-
-    @Override
-    public void deleteRole(Role role) {
-        roleRepository.deleteById(role.getId());
-    }
-
-    @Override
-    public void addRoleToUser(String email, String roleName) {
-        User user = userRepository.findByEmail((email));
-        Role role = roleRepository.findByName(roleName);
-        user.getRoles().add(role);
-
     }
 
     @Override
@@ -82,10 +60,11 @@ public class UserServiceImpl implements UserService {
         validateEmailExists(userDTO.getEmail());
         userToUpdate.setFullName(userDTO.getFullName());
         userToUpdate.setEmail(userDTO.getEmail());
+        //Encode
         userToUpdate.setPassword(userDTO.getPassword());
-        userToUpdate.setInterestAreas(userDTO.getInterestAreas());
-        userToUpdate.setProfilePicture(userDTO.getProfilePic());
-        userToUpdate.getRoles().add(userDTO.getRole());
+        userToUpdate.getInterestAreas().add(userDTO.getInterestAreas());
+        userToUpdate.setProfilePicture(userDTO.getProfilePicture());
+        userToUpdate.setRole(userDTO.getRole());
 
         return userRepository.save(userToUpdate);
     }

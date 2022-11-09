@@ -1,7 +1,6 @@
 package ro.ubb.mp.service.user;
 
 import ro.ubb.mp.controller.dto.UserRequestDTO;
-import ro.ubb.mp.dao.model.Role;
 import ro.ubb.mp.dao.model.User;
 
 import java.util.List;
@@ -15,12 +14,6 @@ public interface UserService {
     User getUserByEmail(String email);
 
     User saveUser(UserRequestDTO userDTO);
-
-    Role saveRole(Role role);
-
-    void deleteRole(Role role);
-
-    void addRoleToUser(String email, String role);
 
     User updateUser(Long id, UserRequestDTO userDTO);
 
