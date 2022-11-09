@@ -83,7 +83,7 @@ export const RegistrationForm: React.FC = () => {
             required: 'Confirm Password is required',
             validate: {
               passwordsNotMatching: confirmPasswordValue =>
-                confirmPasswordValue !== getValues('password') ? 'Passwords not matching' : true,
+                confirmPasswordValue === getValues('password') || 'Passwords not matching',
             },
           })}
           label="Confirm Password"
