@@ -13,7 +13,6 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-//@RequestMapping()
 @RequiredArgsConstructor
 @Getter
 public class UserController {
@@ -24,9 +23,4 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getAll());
     }
 
-    @PostMapping("/user/register")
-    public ResponseEntity<User> register(@RequestBody UserRequestDTO user){
-        URI uri =URI.create((ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/register").toUriString()));
-        return ResponseEntity.created(uri).body(userService.saveUser(user));
-    }
 }
