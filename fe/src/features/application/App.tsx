@@ -1,29 +1,37 @@
-import { ExampleComponent } from '../exampleFeature/ExampleComponent'
+import React from 'react'
+import { CssBaseline, StyledEngineProvider, ThemeProvider } from '@mui/material'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { theme } from './theme'
 
-import reactLogo from '../../assets/react.svg'
+import { LoadingScreen } from './LoadingScreen'
 
-import './App.css'
+const RegisterPage = React.lazy(() => import('../registration/RegisterPage'))
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <div>Work in progress...</div>,
+  },
+  {
+    path: '/register',
+    element: (
+      <LoadingScreen>
+        <RegisterPage />
+      </LoadingScreen>
+    ),
+  },
+])
 
 const App = () => {
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-          <img src="/src/assets/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <ExampleComponent />
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
-    </div>
+    <React.Fragment>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <RouterProvider router={router} />
+          <CssBaseline />
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </React.Fragment>
   )
 }
 
