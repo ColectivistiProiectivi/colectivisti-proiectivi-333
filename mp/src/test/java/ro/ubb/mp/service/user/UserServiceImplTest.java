@@ -36,11 +36,9 @@ class UserServiceImplTest {
                 .build();
 
         userRepository.save(u1);
-
         userRepository.save(u2);
 
         userService.deleteUserById(u1.getId());
-
         userService.deleteUserById(u2.getId());
     }
 

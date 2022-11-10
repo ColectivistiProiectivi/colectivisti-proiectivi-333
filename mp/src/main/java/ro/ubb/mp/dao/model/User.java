@@ -24,20 +24,36 @@ public class User {
     @SequenceGenerator(
             name = "user_sequence",
             sequenceName = "user_sequence",
-            allocationSize = 1)
+            allocationSize = 1
+    )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "user_sequence")
-    @Column(name = "id", updatable = false)
+            generator = "user_sequence"
+    )
+    @Column(
+            name = "id",
+            updatable = false
+    )
     private Long id;
 
-    @Column(name = "fullName", nullable = false, columnDefinition = "TEXT")
+    @Column(
+            name = "fullName",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
     private String fullName;
 
-    @Column(name = "email", nullable = false)
+    @Column(
+            name = "email",
+            nullable = false
+    )
     private String email;
 
-    @Column(name = "password", nullable = false, columnDefinition = "TEXT")
+    @Column(
+            name = "password",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
     private String password;
     private String profilePicture;
 
@@ -45,7 +61,8 @@ public class User {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "interestAreas",
-            joinColumns = @JoinColumn(name = "id"))
+            joinColumns = @JoinColumn(name = "id")
+    )
     private Set<String> interestAreas = new HashSet<String>();
 
     @Enumerated(EnumType.STRING)
