@@ -6,8 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity(name = "users")
@@ -33,9 +33,10 @@ public class User {
     private String password;
     private String profilePicture;
 
-    @ElementCollection
-    @CollectionTable(name ="tracks")
-    private List<String> interestAreas = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "interestAreas", joinColumns = @JoinColumn(name = "id"))
+    private Set<String> interestAreas = new HashSet<String>();
 
     @Enumerated(EnumType.STRING)
     private Role role;

@@ -10,6 +10,7 @@ import ro.ubb.mp.dao.repository.UserRepository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @SpringBootTest
 class UserServiceImplTest {
@@ -46,8 +47,7 @@ class UserServiceImplTest {
                 .email("a@testupdate.com")
                 .password("password")
                 .role(Role.STUDENT)
-               // .interestAreas(Collections.singletonList("mate"))
-                .interestAreas(Collections.singletonList("mate"))
+                .interestAreas(Set.of("mate", "computer"))
                 .build();
         userRepository.save(u1);
 
