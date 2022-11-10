@@ -6,16 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity(name = "users")
 @Table(
         name = "users",
         uniqueConstraints = {
-                @UniqueConstraint(name = "user_email_unique", columnNames = "email")
-        }
+        @UniqueConstraint(name = "email_unique", columnNames = "email")}
 )
 @NoArgsConstructor
 @AllArgsConstructor
@@ -57,8 +56,15 @@ public class User {
     )
     private String password;
     private String profilePicture;
-    private String interestAreas;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    private Collection<Role> roles = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "interestAreas",
+            joinColumns = @JoinColumn(name = "id")
+    )
+    private Set<String> interestAreas = new HashSet<String>();
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }
