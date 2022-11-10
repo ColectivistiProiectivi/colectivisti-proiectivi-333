@@ -11,15 +11,23 @@ import java.util.Set;
 
 @Data
 @Entity(name = "users")
-@Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(name = "email_unique", columnNames = "email")})
+@Table(
+        name = "users",
+        uniqueConstraints = {
+        @UniqueConstraint(name = "email_unique", columnNames = "email")}
+)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class User {
     @Id
-    @SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_sequence")
+    @SequenceGenerator(
+            name = "user_sequence",
+            sequenceName = "user_sequence",
+            allocationSize = 1)
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "user_sequence")
     @Column(name = "id", updatable = false)
     private Long id;
 
@@ -35,7 +43,9 @@ public class User {
 
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "interestAreas", joinColumns = @JoinColumn(name = "id"))
+    @CollectionTable(
+            name = "interestAreas",
+            joinColumns = @JoinColumn(name = "id"))
     private Set<String> interestAreas = new HashSet<String>();
 
     @Enumerated(EnumType.STRING)

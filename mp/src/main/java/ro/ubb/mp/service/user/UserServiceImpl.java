@@ -18,11 +18,9 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-//    private final BCryptPasswordEncoder encoder;
 
     @Override
     public List<User> getAll() {
-        log.info("fetching all users");
 
         return userRepository.findAll();
     }
@@ -39,16 +37,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User saveUser(UserRequestDTO userDTO) {
+
         validateEmailExists(userDTO.getEmail());
+
         final User userToBeSaved = User.builder()
                 .fullName(userDTO.getFullName())
                 .email(userDTO.getEmail())
-                //.password(encoder.encode(userDTO.getPassword()))
                 .password(userDTO.getPassword())
                 .profilePicture(userDTO.getProfilePicture())
                 .build();
 
         userToBeSaved.getInterestAreas().add(userDTO.getInterestAreas());
+
         return userRepository.save(userToBeSaved);
     }
 
@@ -57,16 +57,18 @@ public class UserServiceImpl implements UserService {
         User userToUpdate = userRepository.findById(id).orElseThrow(
                 () -> new IllegalStateException(String.format("User with id %s doesn't exist", id))
         );
+
         validateEmailExists(userDTO.getEmail());
+
         userToUpdate.setFullName(userDTO.getFullName());
         userToUpdate.setEmail(userDTO.getEmail());
-        //Encode
         userToUpdate.setPassword(userDTO.getPassword());
         userToUpdate.getInterestAreas().add(userDTO.getInterestAreas());
         userToUpdate.setProfilePicture(userDTO.getProfilePicture());
         userToUpdate.setRole(userDTO.getRole());
 
         return userRepository.save(userToUpdate);
+
     }
 
     @Override

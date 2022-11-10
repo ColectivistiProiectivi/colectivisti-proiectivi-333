@@ -34,8 +34,10 @@ class UserServiceImplTest {
                 .password("password")
                 .role(Role.STUDENT)
                 .build();
+
         userRepository.save(u1);
         userRepository.save(u2);
+
         userService.deleteUserById(u1.getId());
         userService.deleteUserById(u2.getId());
     }
@@ -49,6 +51,7 @@ class UserServiceImplTest {
                 .role(Role.STUDENT)
                 .interestAreas(Set.of("mate", "computer"))
                 .build();
+
         userRepository.save(u1);
 
         UserRequestDTO userDTO = UserRequestDTO.builder()
@@ -58,7 +61,9 @@ class UserServiceImplTest {
                 .role(Role.STUDENT)
                 .interestAreas("info")
                 .build();
+
         userService.updateUser(u1.getId(), userDTO);
+
         userService.deleteUserById(u1.getId());
     }
 }
