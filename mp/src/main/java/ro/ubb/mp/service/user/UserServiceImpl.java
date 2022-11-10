@@ -68,7 +68,6 @@ public class UserServiceImpl implements UserService {
         userToUpdate.setRole(userDTO.getRole());
 
         return userRepository.save(userToUpdate);
-
     }
 
     @Override
