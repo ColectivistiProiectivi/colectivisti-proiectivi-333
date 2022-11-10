@@ -23,4 +23,13 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getAll());
     }
 
+    @GetMapping("/mentor")
+    public String viewMentorPage() {
+        return "Mentor Page";
+    }
+
+    @GetMapping("/student")
+    public String viewStudentPage() {
+        return "Student Page";
+    }
 }
