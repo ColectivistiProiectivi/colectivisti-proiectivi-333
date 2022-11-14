@@ -1,38 +1,22 @@
 import React from 'react'
-import {
-  styled,
-  Button,
-  Box,
-  Typography,
-  FormControl,
-  FormLabel,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  RadioGroup,
-  Radio,
-} from '@mui/material'
+import { styled, Button, Box, Typography, TextField } from '@mui/material'
 import { Link as MuiLink } from '@mui/material'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
 import { User } from '../../../types/User'
 
-export type RegistrationFormType = Omit<User, 'profilePic' | 'interestAreas'> & {
-  confirmPassword: string
-  terms: boolean
-}
+export type LoginFormType = Pick<User, 'email' | 'password'>
 
-export const RegistrationForm: React.FC = () => {
+export const LoginForm: React.FC = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-    getValues,
-  } = useForm<RegistrationFormType>({ defaultValues: { terms: false } })
+  } = useForm<LoginFormType>()
 
   // Wire to backend endpoint using RTK (create a slice etc.)
   // Note: handleRegistrationSubmit accepts formData as a parameter
-  const handleRegistrationSubmit: SubmitHandler<RegistrationFormType> = () => {
+  const handleLoginSubmit: SubmitHandler<LoginFormType> = () => {
     // console.log('Data sent:', JSON.stringify(data))
   }
 
@@ -40,21 +24,14 @@ export const RegistrationForm: React.FC = () => {
     <Wrapper>
       <Header>
         <Typography variant="h4" color="text.secondary">
-          Sign up
+          Sign in
         </Typography>
         <Typography variant="subtitle2" color="text.secondary">
-          Tell us about yourself
+          Enter your credentials
         </Typography>
       </Header>
-      <FormContainer component="form" onSubmit={handleSubmit(handleRegistrationSubmit)}>
+      <FormContainer component="form" onSubmit={handleSubmit(handleLoginSubmit)}>
         <TextFieldGroup>
-          <StyledTextField
-            {...register('fullName', { required: 'Full Name is required' })}
-            label="Full Name"
-            error={!!errors.fullName}
-            helperText={errors.fullName?.message}
-            size="small"
-          />
           <StyledTextField
             {...register('email', {
               required: 'Email is required',
@@ -67,6 +44,7 @@ export const RegistrationForm: React.FC = () => {
             error={!!errors.email}
             helperText={errors.email?.message}
             size="small"
+            fullWidth
           />
         </TextFieldGroup>
         <StyledTextField
@@ -81,47 +59,17 @@ export const RegistrationForm: React.FC = () => {
           size="small"
           fullWidth
         />
-        <StyledTextField
-          {...register('confirmPassword', {
-            required: 'Confirm Password is required',
-            minLength: 6,
-            validate: {
-              passwordsNotMatching: confirmPasswordValue =>
-                confirmPasswordValue === getValues('password') || 'Password not matching',
-            },
-          })}
-          label="Confirm Password"
-          type="password"
-          error={!!errors.confirmPassword}
-          helperText={errors.confirmPassword?.message}
-          size="small"
-          fullWidth
-        />
-        <RoleFormControl>
-          <FormLabel>I want to participate as</FormLabel>
-          <RadioGroup defaultValue={false}>
-            <FormControlLabel
-              {...register('isMentor')}
-              value={false}
-              control={<Radio size="small" />}
-              label="Student"
-            />
-            <FormControlLabel {...register('isMentor')} value={true} control={<Radio size="small" />} label="Mentor" />
-          </RadioGroup>
-        </RoleFormControl>
 
-        <FormControlLabel
-          control={<Checkbox {...register('terms', { required: true })} />}
-          label={
-            <Typography color={errors.terms ? 'error' : 'text.secondary'}>
-              I agree with the Terms & Conditions
-            </Typography>
-          }
-        />
-        <SubmitButton type="submit">Create Account</SubmitButton>
-        <MuiLink href="/login" color="secondary.main">
-          Already registered?
+        <SubmitButton type="submit">Sign in</SubmitButton>
+
+        {/* TODO: Hook up forgot password or maybe not */}
+        <MuiLink href="" color="secondary.main" variant="caption">
+          Forgot password?
         </MuiLink>
+
+        <StyledLink href="/register" color="secondary.main">
+          Don&apos;t have an account?
+        </StyledLink>
       </FormContainer>
     </Wrapper>
   )
@@ -131,6 +79,9 @@ const Wrapper = styled('div')`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  height: 584px;
+  width: 100%;
+  position: relative;
   gap: 24px;
 `
 
@@ -138,9 +89,9 @@ const FormContainer = styled(Box)`
   max-height: 584px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
   padding: 0 32px;
   margin: 0 24px;
+  gap: 2px;
 `
 
 const Header = styled('div')`
@@ -185,10 +136,8 @@ const SubmitButton = styled(Button)`
   }
 `
 
-const RoleFormControl = styled(FormControl)`
-  &,
-  label,
-  span {
-    color: ${props => props.theme.palette.text.secondary} !important;
-  }
+const StyledLink = styled(MuiLink)`
+  position: absolute;
+  bottom: 20px;
+  align-self: center;
 `
