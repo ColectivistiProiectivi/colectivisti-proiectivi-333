@@ -4,13 +4,18 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { theme } from './theme'
 
 import { LoadingScreen } from './LoadingScreen'
+import WelcomePage from '../welcome/WelcomePage'
 
 const RegisterPage = React.lazy(() => import('../registration/RegisterPage'))
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <div>Work in progress...</div>,
+    element: (
+      <LoadingScreen>
+        <WelcomePage />
+      </LoadingScreen>
+    ),
   },
   {
     path: '/register',
