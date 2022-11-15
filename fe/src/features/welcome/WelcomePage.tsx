@@ -1,72 +1,90 @@
 import React from 'react'
 import { styled, Typography } from '@mui/material'
-import SearchBar from './SearchBar/SearchBar'
-import NavBar from '../common/NavBar/NavBar'
+import { SearchBar } from './SearchBar/SearchBar'
+import { NavBar } from '../common/NavBar/NavBar'
+import { Badge } from './Badge/Badge'
 import illustrationSrc from './images/welcome_figure.png'
-import Badge from './Badge/Badge'
 
 const WelcomePage: React.FC = () => {
-  // items={["Proiectivii", "Browse", "Contact", "FAQ"]
-  // const [showResults, setShowResults] = useState(true);
   return (
     <Container>
       <TopSection>
         <NavBar />
       </TopSection>
-      (
       <BottomSection>
-        <Title variant="h3">
-          Find a mentor
-          <br />
-          suitable to your needs
-        </Title>
-        <SearchBar />
+        <LeftSection>
+          <Title variant="h3">
+            Find a mentor
+            <br />
+            suitable to your needs
+          </Title>
+          <SearchBar />
+          <Suggestions>
+            <SuggestedText variant="h6">Suggested:</SuggestedText>
+            <Badge />
+          </Suggestions>
+        </LeftSection>
         <Illustration src={illustrationSrc} alt="Register Illustration" />
-        <Suggestions>
-          <SuggestedText variant="h6">Suggested:</SuggestedText>
-          <Badge />
-        </Suggestions>
       </BottomSection>
-      )
     </Container>
   )
 }
+
 const Container = styled('div')`
-  display: grid;
-  height: 100vh;
-  width: 90%;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: center;
 `
 
 const TopSection = styled('div')`
-  height: 10vh;
+  height: 10%;
+  flex: 1 50%;
 `
 
 const BottomSection = styled('div')`
-  margin: 10vh 0 0 25vh;
-  height: 60vh;
+  display: flex;
+  width: 100%
+  flex-flow: row wrap;
+  padding-top: 14rem;
+`
+
+const LeftSection = styled('div')`
+  min-width: 60%;
+  order: 1;
+  padding-right: 16rem;
 `
 
 const Title = styled(Typography)`
   min-width: 50%;
+  height: 8rem;
   font-weight: bold;
+  order: 1;
+`
+
+const Suggestions = styled('div')`
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  height: fit-content;
+  padding-top: 1rem;
+  order: 3;
+`
+
+const SuggestedText = styled(Typography)`
+  font-size: 1rem;
+  font-weight: bold;
+  padding-right: 1rem;
 `
 
 const Illustration = styled('img')`
-  min-width: 400px;
+  width: 400px;
   height: 400px;
+  padding-bottom: 3rem;
   object-fit: cover;
-  margin: -30vh 0 0 100vh;
-`
-const SuggestedText = styled(Typography)`
-  font-size: 1rem;
-  padding-right: 1rem;
-  font-weight: bold;
-`
-const Suggestions = styled('div')`
-  display: flex;
-  margin-top: -25vh;
-  width: fit-content;
-  height: fit-content;
+  order: 1;
 `
 
 export default WelcomePage

@@ -1,12 +1,13 @@
-import React, { useState } from 'react'
-import { Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
+import { useState } from 'react'
+import { Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, styled } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
-const pages = ['Browse', 'Contact', 'FAQ']
-const DrawerComp = () => {
+
+export const DrawerComp = () => {
   const [openDrawer, setOpenDrawer] = useState(false)
+  const pages = ['Browse', 'Contact', 'FAQ']
 
   return (
-    <React.Fragment>
+    <>
       <Drawer anchor="left" open={openDrawer} onClose={() => setOpenDrawer(false)}>
         <List>
           {pages.map((page, index) => (
@@ -18,14 +19,14 @@ const DrawerComp = () => {
           ))}
         </List>
       </Drawer>
-      <IconButton
-        sx={{ color: '${props => props.theme.palette.primary.main}', marginLeft: 'auto' }}
-        onClick={() => setOpenDrawer(!openDrawer)}
-      >
+      <DrawerButton onClick={() => setOpenDrawer(!openDrawer)}>
         <MenuIcon color="inherit" />
-      </IconButton>
-    </React.Fragment>
+      </DrawerButton>
+    </>
   )
 }
 
-export default DrawerComp
+const DrawerButton = styled(IconButton)`
+  color: #616161;
+  margin-left: auto;
+`

@@ -1,16 +1,16 @@
 import React from 'react'
 import SearchSharpIcon from '@mui/icons-material/SearchSharp'
-import { styled, Button, TextField } from '@mui/material'
+import { styled, Button, Input } from '@mui/material'
 
-const SearchBar: React.FC = () => {
+export const SearchBar: React.FC = () => {
   const submitButton = () => {
-    //TO DO
+    //TO DO <mesaj>
   }
 
   return (
     <Container>
-      <SearchSharpIcon style={styles.icon} />
-      <SearchInput label="Type a subject or a name" type="text" size="small" onChange={submitButton} />
+      <SearchIcon />
+      <SearchInput placeholder="Type a subject or a name" onChange={submitButton} disableUnderline={true} />
       <SearchButton type="submit" onClick={submitButton}>
         Search
       </SearchButton>
@@ -20,13 +20,15 @@ const SearchBar: React.FC = () => {
 
 const Container = styled('div')`
   display: flex;
+  align-items: center;
+  //padding: 1rem;
   background-color: #dddddd;
-  justify-content: flex-start;
   border-radius: 0.5rem;
   height: 2.5rem;
-  margin-top: 2rem;
-  width: 35%;
+  min-width: 35%;
+  order: 1;
 `
+
 const SearchButton = styled(Button)`
   background-color: ${props => props.theme.palette.secondary.main};
   color: ${props => props.theme.palette.common.white};
@@ -37,11 +39,12 @@ const SearchButton = styled(Button)`
   :hover {
     background-color: ${props => props.theme.palette.secondary.main};
     color: ${props => props.theme.palette.common.black};
+    transition: color 0.125s ease-in-out;
   }
 `
-const SearchInput = styled(TextField)`
-  width: 100%;
-  border: none;
+
+const SearchInput = styled(Input)`
+  width: 75%;
   input,
   label {
     color: #616161;
@@ -49,16 +52,10 @@ const SearchInput = styled(TextField)`
   }
   fieldset {
     color: #616161;
-    border: none;
   }
 `
 
-const styles = {
-  icon: {
-    width: 'auto',
-    color: '#616161',
-    padding: '.5rem .5rem 0',
-    fontSize: '30',
-  },
-}
-export default SearchBar
+const SearchIcon = styled(SearchSharpIcon)`
+  width: 10%;
+  color: #616161;
+`
