@@ -76,8 +76,7 @@ public class SecurityConfiguration {
                 // TODO check role ("granthed authority") for an authenticated user and redirect
                 //.antMatchers("/mentor/**").hasRole("MENTOR")
                 //.antMatchers("/student/**").hasAnyRole("STUDENT")
-                .antMatchers("/register/**").permitAll()
-                .antMatchers("/signin/**").permitAll()
+                .antMatchers("/register/").permitAll()
                 .antMatchers("/login")
                 .anonymous()
                 .anyRequest()
