@@ -5,9 +5,6 @@ import { DrawerComp } from './DrawerComp'
 export const NavBar: React.FC = () => {
   const theme = useTheme()
   const isMatch = useMediaQuery(theme.breakpoints.down('md'))
-  const onChange = () => {
-    //TO DO <message>
-  }
 
   return (
     <NavContainer>
@@ -19,7 +16,7 @@ export const NavBar: React.FC = () => {
           </>
         ) : (
           <>
-            <TabsContainer indicatorColor="secondary" textColor="inherit" onChange={onChange} />
+            <TabsContainer indicatorColor="secondary" textColor="inherit" />
             <FancyText variant="h4"> Proiectivii</FancyText>
 
             <MuiButton href="" underline="none" sx={{ margin: '0 2rem' }}>

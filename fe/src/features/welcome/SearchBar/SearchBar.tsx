@@ -4,7 +4,7 @@ import { styled, Button, Input } from '@mui/material'
 
 export const SearchBar: React.FC = () => {
   const submitButton = () => {
-    //TO DO <mesaj>
+    //Sends the data to the endpoint and displays the results based on user's needs
   }
 
   return (
@@ -21,7 +21,6 @@ export const SearchBar: React.FC = () => {
 const Container = styled('div')`
   display: flex;
   align-items: center;
-  //padding: 1rem;
   background-color: #dddddd;
   border-radius: 0.5rem;
   height: 2.5rem;

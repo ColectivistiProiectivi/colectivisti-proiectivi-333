@@ -46,7 +46,6 @@ const TopSection = styled('div')`
 
 const BottomSection = styled('div')`
   display: flex;
-  width: 100%
   flex-flow: row wrap;
   padding-top: 14rem;
 `
