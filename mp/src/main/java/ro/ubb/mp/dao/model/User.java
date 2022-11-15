@@ -55,8 +55,14 @@ public class User {
             columnDefinition = "TEXT"
     )
     private String password;
-    private String profilePicture;
 
+    @Column(
+            name = "username",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
+    private String username;
+    private String profilePicture;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
