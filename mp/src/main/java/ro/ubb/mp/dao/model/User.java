@@ -65,7 +65,6 @@ public class User {
 
     private String profilePicture;
 
-
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "interestAreas",

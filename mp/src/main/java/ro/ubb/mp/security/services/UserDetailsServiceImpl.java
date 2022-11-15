@@ -15,9 +15,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     UserRepository userRepository;
 
     /**
-     *
+     * creates a partial user based on the email (= username)
      * @param username username will be the same as email
-     * @return
+     * @return partial user
      * @throws UsernameNotFoundException
      */
     @Override

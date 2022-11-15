@@ -17,5 +17,4 @@ public class UserRequestDTO {
     private String profilePicture;
     private Set<String> interestAreas = new HashSet<String>();
     private Role role;
-
 }

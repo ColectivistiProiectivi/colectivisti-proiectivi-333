@@ -31,7 +31,6 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
-
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody UserRequestDTO user) {
         URI uri = URI.create((ServletUriComponentsBuilder.fromCurrentContextPath().path("/register").toUriString()));
