@@ -62,7 +62,6 @@ public class User {
             columnDefinition = "TEXT"
     )
     private String username;
-
     private String profilePicture;
 
     @ElementCollection(fetch = FetchType.EAGER)
