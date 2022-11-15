@@ -46,7 +46,7 @@ class UserServiceImplTest {
     public void updateUser() {
         User u1 = User.builder()
                 .fullName("A")
-                .email("a@testupdate.com")
+                .email("a@testupdate1.com")
                 .password("password")
                 .role(Role.STUDENT)
                 .interestAreas(Set.of("mate", "computer"))
@@ -56,10 +56,9 @@ class UserServiceImplTest {
 
         UserRequestDTO userDTO = UserRequestDTO.builder()
                 .fullName("aUpdate")
-                .email("a@testupdatedto.com")
+                .email("a@testupdatedto1.com")
                 .password("password")
                 .role(Role.STUDENT)
-                .interestAreas("info")
                 .build();
 
         userService.updateUser(u1.getId(), userDTO);

@@ -2,6 +2,9 @@ package ro.ubb.mp.service.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ro.ubb.mp.controller.dto.UserRequestDTO;
 import ro.ubb.mp.dao.model.User;
@@ -19,6 +22,9 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public List<User> getAll() {
@@ -45,10 +51,13 @@ public class UserServiceImpl implements UserService {
                 .fullName(userDTO.getFullName())
                 .email(userDTO.getEmail())
                 .password(userDTO.getPassword())
+                .role(userDTO.getRole())
                 .profilePicture(userDTO.getProfilePicture())
                 .build();
 
-        userToBeSaved.getInterestAreas().add(userDTO.getInterestAreas());
+        userToBeSaved.setUsername(userDTO.getEmail());
+        userToBeSaved.setPassword(passwordEncoder.encode((userDTO.getPassword())));
+        userToBeSaved.setInterestAreas(userDTO.getInterestAreas()); //.getInterestAreas());
 
         return userRepository.save(userToBeSaved);
     }
@@ -63,8 +72,9 @@ public class UserServiceImpl implements UserService {
 
         userToUpdate.setFullName(userDTO.getFullName());
         userToUpdate.setEmail(userDTO.getEmail());
+        userToUpdate.setUsername(userDTO.getEmail());
         userToUpdate.setPassword(userDTO.getPassword());
-        userToUpdate.getInterestAreas().add(userDTO.getInterestAreas());
+        userToUpdate.setInterestAreas(userDTO.getInterestAreas());
         userToUpdate.setProfilePicture(userDTO.getProfilePicture());
         userToUpdate.setRole(userDTO.getRole());
 

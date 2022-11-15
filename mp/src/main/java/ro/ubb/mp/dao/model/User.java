@@ -55,6 +55,14 @@ public class User {
             columnDefinition = "TEXT"
     )
     private String password;
+
+    @Column(
+            name = "username",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
+    private String username;
+
     private String profilePicture;
 
 
