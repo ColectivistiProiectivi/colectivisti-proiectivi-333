@@ -65,7 +65,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        //TODO add/ continue with authorizations
+        //TODO add/ continue with authorizations, check role ("granthed authority") for an authenticated user and redirect
 
         http.cors().and().csrf()
                 .disable()
@@ -73,9 +73,6 @@ public class SecurityConfiguration {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/**").permitAll()
-                // TODO check role ("granthed authority") for an authenticated user and redirect
-                //.antMatchers("/mentor/**").hasRole("MENTOR")
-                //.antMatchers("/student/**").hasAnyRole("STUDENT")
                 .antMatchers("/register/").permitAll()
                 .antMatchers("/login")
                 .anonymous()
@@ -99,20 +96,5 @@ public class SecurityConfiguration {
         return (web) -> web.debug(securityDebug)
                 .ignoring()
                 .antMatchers("/css/**", "/js/**", "/img/**", "/lib/**", "/favicon.ico");
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder bCryptPasswordEncoder) {
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(User.withUsername("student")
-                .password(bCryptPasswordEncoder.encode("student"))
-                .roles("STUDENT")
-                .build());
-        manager.createUser(User.withUsername("mentor")
-                .password(bCryptPasswordEncoder.encode("mentor"))
-                .roles("MENTOR")
-                .build());
-
-        return manager;
     }
 }
