@@ -42,12 +42,13 @@ const Container = styled('div')`
 const TopSection = styled('div')`
   height: 10%;
   flex: 1 50%;
+  margin-bottom: 10rem;
 `
 
 const BottomSection = styled('div')`
   display: flex;
   flex-flow: row wrap;
-  padding-top: 14rem;
+  margin-top: 4rem;
 `
 
 const LeftSection = styled('div')`
