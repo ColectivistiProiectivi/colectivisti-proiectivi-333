@@ -16,16 +16,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     /**
      * creates a partial user based on the email (= username)
-     * @param username username will be the same as email
-     * @return partial user
-     * @throws UsernameNotFoundException
+     * @param username is the email
+     * @return the found user
+     * @throws UsernameNotFoundException in case there is no user to be found
      */
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email: " + username));
 
-        return UserDetailsImpl.build(user);
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email: " + username));
     }
 }
