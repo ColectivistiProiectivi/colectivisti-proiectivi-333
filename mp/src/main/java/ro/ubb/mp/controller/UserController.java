@@ -22,4 +22,9 @@ public class UserController {
     public ResponseEntity<List<User>> getUsers() {
         return ResponseEntity.ok().body(userService.getAll());
     }
+
+    @GetMapping("/mentors")
+    public ResponseEntity<List<User>> getMentors() {
+        return ResponseEntity.ok().body(userService.getAllMentors());
+    }
 }

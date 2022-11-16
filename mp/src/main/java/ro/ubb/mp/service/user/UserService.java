@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface UserService {
     List<User> getAll();
+    List<User> getAllMentors();
 
     Optional<User> getUserById(Long id);
 

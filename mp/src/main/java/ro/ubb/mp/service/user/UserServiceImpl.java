@@ -3,14 +3,15 @@ package ro.ubb.mp.service.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ro.ubb.mp.controller.dto.UserRequestDTO;
+import ro.ubb.mp.dao.model.Role;
 import ro.ubb.mp.dao.model.User;
 import ro.ubb.mp.dao.repository.UserRepository;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -107,4 +108,14 @@ public class UserServiceImpl implements UserService {
             throw new IllegalStateException(String.format("Email address %s already exists", email));
         }
     }
+
+    public List<User> getAllMentors() {
+        List<User> mentors = new ArrayList<>();
+        List<User> users = getAll();
+        for (User user : users)
+            if (user.getRole() == Role.MENTOR)
+                mentors.add(user);
+        return mentors;
+    }
+
 }

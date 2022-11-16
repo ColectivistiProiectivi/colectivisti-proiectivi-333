@@ -34,7 +34,6 @@ class UserServiceImplTest {
                 .password("password")
                 .role(Role.STUDENT)
                 .build();
-
         userRepository.save(u1);
         userRepository.save(u2);
 
