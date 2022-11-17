@@ -6,6 +6,7 @@ import { theme } from './theme'
 import { LoadingScreen } from './LoadingScreen'
 import WelcomePage from '../welcome/WelcomePage'
 import LoginPage from '../login/LoginPage'
+import ResultsPage from '../results/ResultsPage'
 
 const RegisterPage = React.lazy(() => import('../registration/RegisterPage'))
 
@@ -31,6 +32,14 @@ const router = createBrowserRouter([
     element: (
       <LoadingScreen>
         <LoginPage />
+      </LoadingScreen>
+    ),
+  },
+  {
+    path: '/results',
+    element: (
+      <LoadingScreen>
+        <ResultsPage />
       </LoadingScreen>
     ),
   },

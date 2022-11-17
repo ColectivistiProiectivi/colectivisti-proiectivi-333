@@ -49,6 +49,7 @@ const BottomSection = styled('div')`
   display: flex;
   flex-flow: row wrap;
   margin-top: 4rem;
+  padding: 0 12rem;
 `
 
 const LeftSection = styled('div')`

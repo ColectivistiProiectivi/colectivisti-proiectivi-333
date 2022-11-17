@@ -1,16 +1,37 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import SearchSharpIcon from '@mui/icons-material/SearchSharp'
 import { styled, Button, Input } from '@mui/material'
+import { data } from '../../../data/data'
 
 export const SearchBar: React.FC = () => {
+  const [search, setSearch] = useState('')
+  const navigate = useNavigate()
+
   const submitButton = () => {
-    //Sends the data to the endpoint and displays the results based on user's needs
+    let searchResult = {}
+    searchResult = data.filter(item => {
+      return search.toLowerCase() === '' ? item : item.subject.toLowerCase().includes(search.toLowerCase())
+    })
+
+    navigate('/results', {
+      state: {
+        result: searchResult,
+        search: search,
+      },
+    })
   }
 
   return (
     <Container>
       <SearchIcon />
-      <SearchInput placeholder="Type a subject or a name" onChange={submitButton} disableUnderline={true} />
+      <SearchInput
+        placeholder="Type a subject or a name"
+        onChange={e => {
+          setSearch(e.target.value)
+        }}
+        disableUnderline={true}
+      />
       <SearchButton type="submit" onClick={submitButton}>
         Search
       </SearchButton>

@@ -8,7 +8,7 @@ export const DrawerComp = () => {
 
   return (
     <>
-      <Drawer anchor="left" open={openDrawer} onClose={() => setOpenDrawer(false)}>
+      <Drawer anchor="right" open={openDrawer} onClose={() => setOpenDrawer(false)}>
         <List>
           {pages.map((page, index) => (
             <ListItemButton key={index}>
