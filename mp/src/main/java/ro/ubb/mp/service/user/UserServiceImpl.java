@@ -102,12 +102,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public List<User> getAllMentors() {
-        List<User> mentors = new ArrayList<>();
-        List<User> users = getAll();
-        for (User user : users)
-            if (user.getRole() == Role.MENTOR)
-                mentors.add(user);
-        return mentors;
+        return userRepository.findAllByRole(Role.MENTOR);
     }
 
 }
