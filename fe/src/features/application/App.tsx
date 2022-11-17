@@ -9,6 +9,8 @@ import LoginPage from '../login/LoginPage'
 import ResultsPage from '../results/ResultsPage'
 
 const RegisterPage = React.lazy(() => import('../registration/RegisterPage'))
+const LoginPage = React.lazy(() => import('../login/LoginPage'))
+const WelcomePage = React.lazy(() => import('../welcome/WelcomePage'))
 
 const router = createBrowserRouter([
   {
