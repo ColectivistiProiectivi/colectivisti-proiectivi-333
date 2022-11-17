@@ -12,9 +12,8 @@ import java.util.Set;
 public class UserRequestDTO {
     private String fullName;
     private String username;
-    private String email;
     private String password;
     private String profilePicture;
-    private Set<String> interestAreas = new HashSet<String>();
+    private Set<String> interestAreas;
     private Role role;
 }
