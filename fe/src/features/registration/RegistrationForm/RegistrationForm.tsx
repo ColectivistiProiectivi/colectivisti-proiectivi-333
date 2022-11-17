@@ -15,7 +15,9 @@ import {
 import { Link as MuiLink } from '@mui/material'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
-import { User } from '../../../types/User'
+import { RegisterUserDTO, Role, User } from '../../../types/User'
+import { useAppDispatch } from '../../../redux/hooks'
+import { addUser } from '../actions'
 
 export type RegistrationFormType = Omit<User, 'profilePic' | 'interestAreas'> & {
   confirmPassword: string
@@ -30,10 +32,21 @@ export const RegistrationForm: React.FC = () => {
     getValues,
   } = useForm<RegistrationFormType>({ defaultValues: { terms: false } })
 
+  const dispatch = useAppDispatch()
+
   // Wire to backend endpoint using RTK (create a slice etc.)
   // Note: handleRegistrationSubmit accepts formData as a parameter
-  const handleRegistrationSubmit: SubmitHandler<RegistrationFormType> = () => {
-    // console.log('Data sent:', JSON.stringify(data))
+  const handleRegistrationSubmit: SubmitHandler<RegistrationFormType> = formData => {
+    // transform Form Data into User object
+    const userData: RegisterUserDTO = {
+      username: formData.email,
+      fullName: formData.fullName,
+      role: formData.role,
+      password: formData.password,
+    }
+
+    // call API to '/register'
+    dispatch(addUser(userData))
   }
 
   return (
@@ -101,12 +114,17 @@ export const RegistrationForm: React.FC = () => {
           <FormLabel>I want to participate as</FormLabel>
           <RadioGroup defaultValue={false}>
             <FormControlLabel
-              {...register('isMentor')}
-              value={false}
+              {...register('role')}
+              value={Role.STUDENT}
               control={<Radio size="small" />}
               label="Student"
             />
-            <FormControlLabel {...register('isMentor')} value={true} control={<Radio size="small" />} label="Mentor" />
+            <FormControlLabel
+              {...register('role')}
+              value={Role.MENTOR}
+              control={<Radio size="small" />}
+              label="Mentor"
+            />
           </RadioGroup>
         </RoleFormControl>
 

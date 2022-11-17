@@ -1,13 +1,14 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 
-import { exampleSlice } from '../features/exampleFeature'
+import appReducer from '../features/application/slice'
 
 export const reducer = combineReducers({
-  exampleState: exampleSlice.reducer,
+  appState: appReducer,
 })
 
 export const store = configureStore({
   reducer,
+  middleware: getDefaultMiddleware => getDefaultMiddleware({ serializableCheck: false }),
 })
 
 export type RootState = ReturnType<typeof store.getState>

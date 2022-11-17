@@ -4,9 +4,9 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { theme } from './theme'
 
 import { LoadingScreen } from './LoadingScreen'
-import LoginPage from '../login/LoginPage'
 
 const RegisterPage = React.lazy(() => import('../registration/RegisterPage'))
+const LoginPage = React.lazy(() => import('../login/LoginPage'))
 
 const router = createBrowserRouter([
   {

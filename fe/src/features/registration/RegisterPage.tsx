@@ -4,23 +4,23 @@ import { styled, Typography } from '@mui/material'
 import { RegistrationForm } from './RegistrationForm'
 
 import illustrationSrc from './images/register_figure.png'
+import { Snackbar } from '../common/Snackbar'
 
-const RegisterPage: React.FC = () => {
-  return (
-    <Container>
-      <LeftSection>
-        <TextContainer>
-          <Title variant="h4">Learn from our</Title>
-          <FancyText variant="h3"> mentors</FancyText>
-        </TextContainer>
-        <Illustration src={illustrationSrc} alt="Register Illustration" />
-      </LeftSection>
-      <RightSection>
-        <RegistrationForm />
-      </RightSection>
-    </Container>
-  )
-}
+const RegisterPage: React.FC = () => (
+  <Container>
+    <LeftSection>
+      <TextContainer>
+        <Title variant="h4">Learn from our</Title>
+        <FancyText variant="h3"> mentors</FancyText>
+      </TextContainer>
+      <Illustration src={illustrationSrc} alt="Register Illustration" />
+    </LeftSection>
+    <RightSection>
+      <RegistrationForm />
+    </RightSection>
+    <Snackbar />
+  </Container>
+)
 
 const Container = styled('div')`
   display: flex;
