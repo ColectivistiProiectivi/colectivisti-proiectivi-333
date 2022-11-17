@@ -8,7 +8,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ro.ubb.mp.controller.dto.JWTResponseDTO;
@@ -18,6 +21,7 @@ import ro.ubb.mp.dao.model.User;
 import ro.ubb.mp.security.jwt.JwtUtils;
 import ro.ubb.mp.service.user.UserService;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.Set;
 
@@ -34,7 +38,8 @@ public class AuthController {
     private final JwtUtils jwtUtils;
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody UserRequestDTO user) {
+    public ResponseEntity<User> register(@Valid @RequestBody UserRequestDTO user) {
+
         URI uri = URI.create((ServletUriComponentsBuilder.fromCurrentContextPath().path("/register").toUriString()));
 
         return ResponseEntity.created(uri).body(getUserService().saveUser(user));

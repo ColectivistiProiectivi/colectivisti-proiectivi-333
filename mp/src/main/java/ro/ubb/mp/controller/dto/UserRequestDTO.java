@@ -4,12 +4,14 @@ import lombok.Builder;
 import lombok.Data;
 import ro.ubb.mp.dao.model.Role;
 
-import java.util.HashSet;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Data
 @Builder
 public class UserRequestDTO {
+    @NotBlank
     private String fullName;
     private String username;
     private String password;
