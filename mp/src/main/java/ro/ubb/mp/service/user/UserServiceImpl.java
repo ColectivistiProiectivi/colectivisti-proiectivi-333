@@ -3,6 +3,7 @@ package ro.ubb.mp.service.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ro.ubb.mp.controller.dto.UserRequestDTO;
@@ -40,25 +41,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByUsername(email).orElseThrow(() -> new UsernameNotFoundException("User with the given email is not found: " + email));
     }
 
     @Override
     public User saveUser(UserRequestDTO userDTO) {
 
-        validateEmailExists(userDTO.getEmail());
+        validateEmailExists(userDTO.getUsername());
 
         final User userToBeSaved = User.builder()
                 .fullName(userDTO.getFullName())
-                .email(userDTO.getEmail())
                 .password(userDTO.getPassword())
                 .role(userDTO.getRole())
                 .profilePicture(userDTO.getProfilePicture())
                 .build();
 
-        userToBeSaved.setUsername(userDTO.getEmail());
+        userToBeSaved.setUsername(userDTO.getUsername());
         userToBeSaved.setPassword(passwordEncoder.encode((userDTO.getPassword())));
-        userToBeSaved.setInterestAreas(userDTO.getInterestAreas()); //.getInterestAreas());
+        userToBeSaved.setInterestAreas(userDTO.getInterestAreas());
 
         return userRepository.save(userToBeSaved);
     }
@@ -69,11 +69,10 @@ public class UserServiceImpl implements UserService {
                 () -> new IllegalStateException(String.format("User with id %s doesn't exist", id))
         );
 
-        validateEmailExists(userDTO.getEmail());
+        validateEmailExists(userDTO.getUsername());
 
         userToUpdate.setFullName(userDTO.getFullName());
-        userToUpdate.setEmail(userDTO.getEmail());
-        userToUpdate.setUsername(userDTO.getEmail());
+        userToUpdate.setUsername(userDTO.getUsername());
         userToUpdate.setPassword(userDTO.getPassword());
         userToUpdate.setInterestAreas(userDTO.getInterestAreas());
         userToUpdate.setProfilePicture(userDTO.getProfilePicture());
@@ -84,26 +83,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUserByEmail(String email) {
-        boolean userExists = userRepository.existsById(userRepository.findByEmail(email).getId());
-        if (userExists) {
-            userRepository.deleteById(getUserByEmail(email).getId());
-        } else {
-            throw new IllegalStateException(String.format("User with email %s doesn't exist", email));
-        }
+
+        final User user = userRepository.findByUsername(email)
+                .orElseThrow(() -> new UsernameNotFoundException("The user with the given email does not exist" + email));
+        userRepository.deleteById(user.getId());
     }
 
     @Override
     public void deleteUserById(Long id) {
-        boolean userExists = userRepository.existsById(id);
-        if (userExists) {
-            userRepository.deleteById(id);
-        } else {
-            throw new IllegalStateException(String.format("User with id %s doesn't exist", id));
-        }
+        userRepository.deleteById(id);
     }
 
     void validateEmailExists(String email) {
-        Optional<User> userOptional = Optional.ofNullable(userRepository.findByEmail(email));
+        Optional<User> userOptional = userRepository.findByUsername(email);
         if (userOptional.isPresent()) {
             throw new IllegalStateException(String.format("Email address %s already exists", email));
         }

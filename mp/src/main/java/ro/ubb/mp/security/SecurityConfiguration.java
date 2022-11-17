@@ -1,5 +1,7 @@
 package ro.ubb.mp.security;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -23,16 +25,15 @@ import ro.ubb.mp.security.jwt.AuthTokenFilter;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 @Configuration
+@RequiredArgsConstructor
+@Getter
 public class SecurityConfiguration {
 
     @Value("${spring.security.debug:false}")
     boolean securityDebug;
 
-    @Autowired
-    UserDetailsService userDetailService;
-
-    @Autowired
-    private AuthEntryPointJwt unauthorizedHandler;
+    private final UserDetailsService userDetailService;
+    private final AuthEntryPointJwt unauthorizedHandler;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -48,7 +49,7 @@ public class SecurityConfiguration {
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 
-        authProvider.setUserDetailsService(userDetailService);
+        authProvider.setUserDetailsService(getUserDetailService());
         authProvider.setPasswordEncoder(passwordEncoder());
 
         return authProvider;
@@ -59,6 +60,14 @@ public class SecurityConfiguration {
         return authConfiguration.getAuthenticationManager();
     }
 
+    /**
+     *
+     * We are setting the security configuration here.
+     * The antMatcher define how certain endpoints should behave
+     * given we have an authenticated or anonymous user.
+     * We give a custom authenticationProvider to the http object
+     * because we want the authentication to happen in our way.
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -66,20 +75,19 @@ public class SecurityConfiguration {
 
         http.cors().and().csrf()
                 .disable()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
+                .exceptionHandling().authenticationEntryPoint(getUnauthorizedHandler())
                 .and()
                 .authorizeRequests()
-                .antMatchers("/**").permitAll()
-                .antMatchers("/register/").permitAll()
+                .antMatchers("/", "/register").permitAll()
                 .antMatchers("/login")
-                .anonymous()
+                    .anonymous()
                 .anyRequest()
-                .authenticated()
+                    .authenticated()
                 .and()
-                .httpBasic()
+                    .httpBasic()
                 .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                    .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authenticationProvider(authenticationProvider());
 

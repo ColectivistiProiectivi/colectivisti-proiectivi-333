@@ -1,18 +1,13 @@
 package ro.ubb.mp.security.jwt;
 
+import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.WebUtils;
-import ro.ubb.mp.security.services.UserDetailsImpl;
+import ro.ubb.mp.dao.model.User;
+
 import java.util.Date;
-
-import io.jsonwebtoken.*;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 
 @Component
 public class JwtUtils {
@@ -24,23 +19,8 @@ public class JwtUtils {
     @Value("${app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
-    @Value("${app.jwtCookieName}")
-    private String jwtCookie;
-
-    public String getJwtFromCookies(HttpServletRequest request) {
-        Cookie cookie = WebUtils.getCookie(request, jwtCookie);
-        return cookie != null ? cookie.getValue() : null;
-    }
-
-    public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
-        String jwt = generateTokenFromUsername(userPrincipal.getUsername());
-        return ResponseCookie.from(jwtCookie, jwt).path("/").maxAge(24 * 60 * 60).httpOnly(true).build();
-
-    }
-
-    public ResponseCookie getCleanJwtCookie() {
-        return ResponseCookie.from(jwtCookie, null).path("/").build();
-
+    public String generateJwtCookie(User userPrincipal) {
+        return generateTokenFromUsername(userPrincipal.getUsername());
     }
 
     public String getUserNameFromJwtToken(String token) {
