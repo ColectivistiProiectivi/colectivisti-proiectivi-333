@@ -19,6 +19,7 @@ import ro.ubb.mp.security.jwt.JwtUtils;
 import ro.ubb.mp.service.user.UserService;
 
 import java.net.URI;
+import java.util.Set;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -53,15 +54,18 @@ public class AuthController {
             Authentication authenticate = getAuthenticationManager()
                     .authenticate(
                             new UsernamePasswordAuthenticationToken(
-                                    userLoginDTO.getUsername(), userLoginDTO.getPassword()
+                                    userLoginDTO.getEmail(), userLoginDTO.getPassword()
                             )
                     );
 
             final User user = (User) authenticate.getPrincipal();
+
             return ResponseEntity.ok().body(
                     JWTResponseDTO
                             .builder()
                             .value(getJwtUtils().generateJwtCookie(user))
+                            .email(user.getUsername())
+                            .authorities(Set.of(user.getRole().toString()))
                             .build()
             );
         } catch (BadCredentialsException ex) {
