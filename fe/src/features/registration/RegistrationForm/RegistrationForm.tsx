@@ -11,12 +11,13 @@ import {
   Checkbox,
   RadioGroup,
   Radio,
+  CircularProgress,
 } from '@mui/material'
 import { Link as MuiLink } from '@mui/material'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
 import { RegisterUserDTO, Role, User } from '../../../types/User'
-import { useAppDispatch } from '../../../redux/hooks'
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { addUser } from '../actions'
 
 export type RegistrationFormType = Omit<User, 'profilePic' | 'interestAreas'> & {
@@ -33,6 +34,7 @@ export const RegistrationForm: React.FC = () => {
   } = useForm<RegistrationFormType>({ defaultValues: { terms: false } })
 
   const dispatch = useAppDispatch()
+  const registerLoading = useAppSelector(state => state.appState.registerLoading)
 
   // Wire to backend endpoint using RTK (create a slice etc.)
   // Note: handleRegistrationSubmit accepts formData as a parameter
@@ -45,7 +47,7 @@ export const RegistrationForm: React.FC = () => {
       password: formData.password,
     }
 
-    // call API to '/register'
+    // API call to '/register'
     dispatch(addUser(userData))
   }
 
@@ -136,7 +138,9 @@ export const RegistrationForm: React.FC = () => {
             </Typography>
           }
         />
-        <SubmitButton type="submit">Create Account</SubmitButton>
+        <SubmitButton type="submit">
+          {registerLoading ? <CircularProgress color="inherit" size={24} /> : 'Create Account'}
+        </SubmitButton>
         <MuiLink href="/login" color="secondary.main">
           Already registered?
         </MuiLink>

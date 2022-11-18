@@ -1,9 +1,12 @@
 import React from 'react'
-import { styled, Button, Box, Typography, TextField } from '@mui/material'
+import { styled, Button, Box, Typography, TextField, CircularProgress } from '@mui/material'
 import { Link as MuiLink } from '@mui/material'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { User } from '../../../types/User'
+import { authenticateUser } from '../actions'
 
 export type LoginFormType = Pick<User, 'email' | 'password'>
 
@@ -14,10 +17,24 @@ export const LoginForm: React.FC = () => {
     formState: { errors },
   } = useForm<LoginFormType>()
 
+  const dispatch = useAppDispatch()
+  const loginLoading = useAppSelector(state => state.appState.loginLoading)
+  const loginSuccessful = useAppSelector(state => state.appState.loginComplete)
+
+  const navigate = useNavigate()
+
   // Wire to backend endpoint using RTK (create a slice etc.)
   // Note: handleRegistrationSubmit accepts formData as a parameter
-  const handleLoginSubmit: SubmitHandler<LoginFormType> = () => {
-    // console.log('Data sent:', JSON.stringify(data))
+  const handleLoginSubmit: SubmitHandler<LoginFormType> = formData => {
+    // API call to '/login'
+    dispatch(authenticateUser(formData))
+  }
+
+  // Redirect to homepage if user has been successfully logged in
+  if (loginSuccessful) {
+    setTimeout(() => {
+      navigate('/')
+    }, 2000)
   }
 
   return (
@@ -60,7 +77,9 @@ export const LoginForm: React.FC = () => {
           fullWidth
         />
 
-        <SubmitButton type="submit">Sign in</SubmitButton>
+        <SubmitButton type="submit">
+          {loginLoading ? <CircularProgress color="inherit" size={24} /> : 'Sign in'}
+        </SubmitButton>
 
         {/* TODO: Hook up forgot password or maybe not */}
         <MuiLink href="" color="secondary.main" variant="caption">

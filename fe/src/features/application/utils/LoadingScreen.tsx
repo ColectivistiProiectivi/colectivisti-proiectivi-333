@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react'
-import { Loader } from '../common/Loader'
+import { Loader } from '../../common/Loader'
 
 interface LoadingScreenProps {
   children: React.ReactNode
