@@ -14,9 +14,13 @@ import java.util.Set;
 public class UserRequestDTO {
     @NotBlank
     private String fullName;
+    @NotBlank
     private String username;
+    @NotBlank
+    @Size(min=7)
     private String password;
     private String profilePicture;
     private Set<String> interestAreas;
+    @NotNull
     private Role role;
 }
