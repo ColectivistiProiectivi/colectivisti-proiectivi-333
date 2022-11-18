@@ -4,7 +4,6 @@ import { styled, Typography } from '@mui/material'
 import { RegistrationForm } from './RegistrationForm'
 
 import illustrationSrc from './images/register_figure.png'
-import { Snackbar } from '../common/Snackbar'
 
 const RegisterPage: React.FC = () => (
   <Container>
@@ -18,7 +17,6 @@ const RegisterPage: React.FC = () => (
     <RightSection>
       <RegistrationForm />
     </RightSection>
-    <Snackbar />
   </Container>
 )
 

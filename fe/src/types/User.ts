@@ -18,3 +18,13 @@ export interface RegisterUserDTO {
   password: string
   role: Role
 }
+
+export interface LoginUserDTO {
+  email: string
+  password: string
+}
+
+export interface LoginResponseBody {
+  value: string // JWT token
+  email: string
+}

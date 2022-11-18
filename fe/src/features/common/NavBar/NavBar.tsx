@@ -5,6 +5,8 @@ import { DrawerComp } from './DrawerComp'
 export const NavBar: React.FC = () => {
   const theme = useTheme()
   const isMatch = useMediaQuery(theme.breakpoints.down('md'))
+  const userEmail = localStorage.getItem('user')
+  const isAuthenticated = !!userEmail
 
   return (
     <NavContainer>
@@ -31,13 +33,28 @@ export const NavBar: React.FC = () => {
               FAQ
             </MuiButton>
 
-            <MuiButton href="/login" underline="none" sx={{ marginRight: '2rem' }}>
-              Sign in
-            </MuiButton>
+            {isAuthenticated && (
+              <>
+                <MuiButton href="#" underline="none" sx={{ marginRight: '2rem' }}>
+                  {userEmail}
+                </MuiButton>
+                <MuiButton href="/logout" underline="none" sx={{ marginRight: '10%' }}>
+                  Sign out
+                </MuiButton>
+              </>
+            )}
 
-            <MuiButton href="/register" underline="none" sx={{ color: '#4CAF50', marginRight: '10%' }}>
-              Join
-            </MuiButton>
+            {!isAuthenticated && (
+              <>
+                <MuiButton href="/login" underline="none" sx={{ marginRight: '2rem' }}>
+                  Sign in
+                </MuiButton>
+
+                <MuiButton href="/register" underline="none" sx={{ color: '#4CAF50', marginRight: '10%' }}>
+                  Join
+                </MuiButton>
+              </>
+            )}
           </>
         )}
       </Toolbar>
