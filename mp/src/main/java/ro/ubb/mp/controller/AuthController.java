@@ -8,7 +8,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ro.ubb.mp.controller.dto.JWTResponseDTO;
@@ -18,7 +21,10 @@ import ro.ubb.mp.dao.model.User;
 import ro.ubb.mp.security.jwt.JwtUtils;
 import ro.ubb.mp.service.user.UserService;
 
+import javax.validation.Valid;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -34,7 +40,8 @@ public class AuthController {
     private final JwtUtils jwtUtils;
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody UserRequestDTO user) {
+    public ResponseEntity<User> register(@Valid @RequestBody UserRequestDTO user) {
+
         URI uri = URI.create((ServletUriComponentsBuilder.fromCurrentContextPath().path("/register").toUriString()));
 
         return ResponseEntity.created(uri).body(getUserService().saveUser(user));
@@ -71,5 +78,18 @@ public class AuthController {
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
     }
 }
