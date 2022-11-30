@@ -1,90 +1,109 @@
-import React from 'react'
-import { styled, Typography } from '@mui/material'
-import { SearchBar } from './SearchBar/SearchBar'
-import { NavBar } from '../common/NavBar/NavBar'
-import { Badge } from './Badge/Badge'
-import illustrationSrc from './images/welcome_figure.png'
+import React, { useState } from 'react'
+import { css, styled, Typography } from '@mui/material'
+import { LoginForm } from '../login/LoginForm'
+import { RegistrationForm } from '../registration/RegistrationForm'
+
+import registerIllustrationSrc from '../registration/images/register_figure.png'
+import loginIllustrationSrc from '../login/images/login_figure.png'
+import bottomWaveSrc from './images/wave.svg'
+
+enum Mode {
+  REGISTER = 'REGISTER',
+  LOGIN = 'LOGIN',
+}
 
 const WelcomePage: React.FC = () => {
+  const [mode, setMode] = useState(Mode.LOGIN)
+
+  const leftSectionInfo = {
+    [Mode.REGISTER]: {
+      title: 'Find a mentor',
+      subtitle: 'suitable to your needs',
+      src: registerIllustrationSrc,
+    },
+    [Mode.LOGIN]: {
+      title: 'Welcome back!',
+      subtitle: '',
+      src: loginIllustrationSrc,
+    },
+  }
+
   return (
     <Container>
-      <TopSection>
-        <NavBar />
-      </TopSection>
-      <BottomSection>
-        <LeftSection>
-          <Title variant="h3">
-            Find a mentor
-            <br />
-            suitable to your needs
-          </Title>
-          <SearchBar />
-          <Suggestions>
-            <SuggestedText variant="h6">Suggested:</SuggestedText>
-            <Badge />
-          </Suggestions>
-        </LeftSection>
-        <Illustration src={illustrationSrc} alt="Register Illustration" />
-      </BottomSection>
+      <LeftSection>
+        <Title variant="h3">{leftSectionInfo[mode].title}</Title>
+        <SubTitle variant="h5">{leftSectionInfo[mode].subtitle}</SubTitle>
+        <Illustration src={leftSectionInfo[mode].src} alt={`${mode} Illustration`} />
+      </LeftSection>
+      <RightSection>
+        <Layer visible={mode === Mode.LOGIN}>
+          <LoginForm registerClick={() => setMode(Mode.REGISTER)} />
+        </Layer>
+        <Layer visible={mode === Mode.REGISTER}>
+          <RegistrationForm loginClick={() => setMode(Mode.LOGIN)} />
+        </Layer>
+      </RightSection>
+      <BottomWave src={bottomWaveSrc} alt="" />
     </Container>
   )
 }
 
 const Container = styled('div')`
   display: flex;
-  width: 100%;
-  height: 100%;
-  flex-flow: row wrap;
-  align-items: center;
+  gap: 10%;
   justify-content: center;
-`
-
-const TopSection = styled('div')`
-  height: 10%;
-  flex: 1 50%;
-  margin-bottom: 10rem;
-`
-
-const BottomSection = styled('div')`
-  display: flex;
-  flex-flow: row wrap;
-  margin-top: 4rem;
-`
-
-const LeftSection = styled('div')`
-  min-width: 60%;
-  order: 1;
-  padding-right: 16rem;
+  align-items: center;
+  height: 100vh;
+  background: #fefefe;
 `
 
 const Title = styled(Typography)`
-  min-width: 50%;
-  height: 8rem;
+  user-select: none;
   font-weight: bold;
-  order: 1;
 `
 
-const Suggestions = styled('div')`
+const SubTitle = styled(Typography)`
+  user-select: none;
+  font-weight: bold;
+`
+
+const LeftSection = styled('div')`
   display: flex;
+  flex-direction: column;
   align-items: center;
-  width: fit-content;
-  height: fit-content;
-  padding-top: 1rem;
-  order: 3;
+  width: 400px;
 `
 
-const SuggestedText = styled(Typography)`
-  font-size: 1rem;
-  font-weight: bold;
-  padding-right: 1rem;
+const RightSection = styled('div')`
+  display: flex;
+  position: relative;
 `
 
 const Illustration = styled('img')`
-  width: 400px;
-  height: 400px;
-  padding-bottom: 3rem;
+  width: 300px;
+  height: 300px;
   object-fit: cover;
-  order: 1;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+`
+
+const Layer = styled('div')<{ visible?: boolean }>`
+  ${props =>
+    !props.visible &&
+    css`
+      display: none;
+    `}
+
+  z-index: 1;
+`
+
+const BottomWave = styled('img')`
+  user-select: none;
+  -webkit-user-drag: none;
+  position: absolute;
+  bottom: 0;
+  z-index: 0;
+  opacity: 0.8;
 `
 
 export default WelcomePage

@@ -8,6 +8,7 @@ export interface AppState {
   snackbarType: AlertColor
   snackbarMessage: string
   registerLoading: boolean
+  registerComplete: boolean
   loginLoading: boolean
   loginComplete: boolean
 }
@@ -17,6 +18,7 @@ const initialState: AppState = {
   snackbarType: 'warning',
   snackbarMessage: '',
   registerLoading: false,
+  registerComplete: false,
   loginLoading: false,
   loginComplete: false,
 }
@@ -48,6 +50,7 @@ export const appSlice = createSlice({
         state.snackbarType = 'success'
         state.snackbarMessage = 'You have been successfully signed up!'
         state.registerLoading = false
+        state.registerComplete = true
       })
 
       .addCase(addUser.pending, state => {

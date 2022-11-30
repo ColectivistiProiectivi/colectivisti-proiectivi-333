@@ -7,37 +7,28 @@ import { LoadingScreen, AlreadyAuth, RequireAuth } from './utils'
 import { Snackbar } from '../common/Snackbar'
 import { LogoutRedirect } from '../login/LogoutRedirect'
 
-const RegisterPage = React.lazy(() => import('../registration/RegisterPage'))
-const LoginPage = React.lazy(() => import('../login/LoginPage'))
 const WelcomePage = React.lazy(() => import('../welcome/WelcomePage'))
+const ProfilePage = React.lazy(() => import('../profile/ProfilePage'))
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <LoadingScreen>
-        <WelcomePage />
-      </LoadingScreen>
-    ),
-  },
-  {
-    path: '/register',
-    element: (
-      <AlreadyAuth redirectTo="/" message="You already have an account!">
+      <AlreadyAuth redirectTo="/profile">
         <LoadingScreen>
-          <RegisterPage />
+          <WelcomePage />
         </LoadingScreen>
       </AlreadyAuth>
     ),
   },
   {
-    path: '/login',
+    path: '/profile',
     element: (
-      <AlreadyAuth redirectTo="/">
+      <RequireAuth redirectTo="/">
         <LoadingScreen>
-          <LoginPage />
+          <ProfilePage />
         </LoadingScreen>
-      </AlreadyAuth>
+      </RequireAuth>
     ),
   },
   {
@@ -45,7 +36,7 @@ const router = createBrowserRouter([
     element: (
       <RequireAuth redirectTo="/">
         <LoadingScreen>
-          <LogoutRedirect redirectAfterLogoutTo="/login" />
+          <LogoutRedirect redirectAfterLogoutTo="/" />
         </LoadingScreen>
       </RequireAuth>
     ),

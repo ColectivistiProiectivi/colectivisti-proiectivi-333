@@ -1,5 +1,5 @@
 import React from 'react'
-import { styled, Button, Box, Typography, TextField, CircularProgress } from '@mui/material'
+import { styled, Button, Typography, TextField, CircularProgress, css, Divider } from '@mui/material'
 import { Link as MuiLink } from '@mui/material'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
@@ -10,10 +10,15 @@ import { authenticateUser } from '../actions'
 
 export type LoginFormType = Pick<User, 'email' | 'password'>
 
-export const LoginForm: React.FC = () => {
+interface LoginFormProps {
+  registerClick: () => void
+}
+
+export const LoginForm: React.FC<LoginFormProps> = ({ registerClick }) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<LoginFormType>()
 
@@ -30,133 +35,106 @@ export const LoginForm: React.FC = () => {
     dispatch(authenticateUser(formData))
   }
 
+  const goToRegister = () => {
+    registerClick()
+    reset()
+  }
+
   // Redirect to homepage if user has been successfully logged in
   if (loginSuccessful) {
     setTimeout(() => {
-      navigate('/')
-    }, 2000)
+      navigate('/profile')
+    }, 200)
   }
 
   return (
-    <Wrapper>
-      <Header>
-        <Typography variant="h4" color="text.secondary">
-          Sign in
-        </Typography>
-        <Typography variant="subtitle2" color="text.secondary">
-          Enter your credentials
-        </Typography>
-      </Header>
-      <FormContainer component="form" onSubmit={handleSubmit(handleLoginSubmit)}>
-        <TextFieldGroup>
-          <StyledTextField
-            {...register('email', {
-              required: 'Email is required',
-              pattern: {
-                value: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
-                message: 'Invalid email address',
-              },
-            })}
-            label="Email"
-            error={!!errors.email}
-            helperText={errors.email?.message}
-            size="small"
-            fullWidth
-          />
-        </TextFieldGroup>
+    <Container>
+      <FormTitle variant="h4">Sign in</FormTitle>
+      <FormWrapper onSubmit={handleSubmit(handleLoginSubmit)}>
+        <StyledTextField
+          {...register('email', {
+            required: 'Email is required',
+            pattern: {
+              value: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
+              message: 'Invalid email address',
+            },
+          })}
+          label="Email"
+          error={!!errors.email}
+          hasErrors={!!errors.email}
+          helperText={errors.email?.message}
+          size="small"
+          fullWidth
+          variant="filled"
+          color="secondary"
+        />
         <StyledTextField
           {...register('password', {
             required: 'Password is required',
-            minLength: 6,
+            minLength: {
+              value: 6,
+              message: 'Password too short',
+            },
           })}
           label="Password"
           type="password"
           error={!!errors.password}
+          hasErrors={!!errors.password}
           helperText={errors.password?.message}
           size="small"
           fullWidth
+          variant="filled"
+          color="secondary"
         />
-
-        <SubmitButton type="submit">
-          {loginLoading ? <CircularProgress color="inherit" size={24} /> : 'Sign in'}
-        </SubmitButton>
-
-        {/* TODO: Hook up forgot password or maybe not */}
+        {/*/!* TODO: Hook up forgot password or maybe not *!/*/}
         <MuiLink href="" color="secondary.main" variant="caption">
           Forgot password?
         </MuiLink>
 
-        <StyledLink href="/register" color="secondary.main">
-          Don&apos;t have an account?
-        </StyledLink>
-      </FormContainer>
-    </Wrapper>
+        <LoginButton variant="contained" color="secondary" type="submit">
+          {loginLoading ? <CircularProgress color="inherit" size={24} /> : 'Login'}
+        </LoginButton>
+      </FormWrapper>
+
+      <Divider></Divider>
+      <Button variant="outlined" color="success" onClick={goToRegister}>
+        Register
+      </Button>
+    </Container>
   )
 }
 
-const Wrapper = styled('div')`
+const Container = styled('div')`
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  height: 584px;
-  width: 100%;
-  position: relative;
-  gap: 24px;
+  gap: 15px;
+  padding: 25px;
+  background: #f4f4f4;
+  box-shadow: rgba(0, 0, 0, 0.16) 0 10px 36px 0, rgba(0, 0, 0, 0.06) 0 0 0 1px;
 `
 
-const FormContainer = styled(Box)`
-  max-height: 584px;
+const FormWrapper = styled('form')`
   display: flex;
   flex-direction: column;
-  padding: 0 32px;
-  margin: 0 24px;
-  gap: 2px;
-`
-
-const Header = styled('div')`
-  display: flex;
-  flex-direction: column;
+  width: 350px;
   gap: 4px;
+`
+
+const FormTitle = styled(Typography)`
   text-align: center;
-  user-select: none;
+  margin-bottom: 15px;
+  font-weight: bold;
 `
 
-const TextFieldGroup = styled('div')`
-  display: flex;
-  flex-direction: row;
-  gap: 24px;
+const LoginButton = styled(Button)`
+  margin-top: 10px;
+  color: white;
 `
 
-const StyledTextField = styled(TextField)`
-  height: 64px;
-
-  input,
-  label {
-    color: ${props => props.theme.palette.text.secondary};
-  }
-
-  fieldset {
-    border-color: ${props => props.theme.palette.text.secondary};
-  }
-
-  &:hover fieldset {
-    border-color: ${props => props.theme.palette.primary.main} !important;
-    transition: border-color 0.125s ease-in-out;
-  }
-`
-
-const SubmitButton = styled(Button)`
-  background-color: ${props => props.theme.palette.secondary.main};
-  color: ${props => props.theme.palette.common.white};
-
-  :hover {
-    background-color: ${props => props.theme.palette.common.white};
-    color: ${props => props.theme.palette.common.black};
-  }
-`
-
-const StyledLink = styled(MuiLink)`
-  position: absolute;
-  bottom: 20px;
-  align-self: center;
+const StyledTextField = styled(TextField)<{ hasErrors: boolean }>`
+  ${props =>
+    !props.hasErrors &&
+    css`
+      margin-bottom: 24px;
+    `}
 `
