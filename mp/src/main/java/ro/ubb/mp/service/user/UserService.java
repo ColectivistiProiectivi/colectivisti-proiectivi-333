@@ -1,6 +1,6 @@
 package ro.ubb.mp.service.user;
 
-import ro.ubb.mp.controller.dto.UserRequestDTO;
+import ro.ubb.mp.controller.dto.request.UserRequestDTO;
 import ro.ubb.mp.dao.model.User;
 
 import java.util.List;
