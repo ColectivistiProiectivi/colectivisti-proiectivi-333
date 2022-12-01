@@ -1,4 +1,4 @@
-package ro.ubb.mp.controller.dto;
+package ro.ubb.mp.controller.dto.request;
 
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +20,7 @@ public class UserRequestDTO {
     @Size(min=7)
     private String password;
     private String profilePicture;
-    private Set<String> interestAreas;
+    private Set<Long> interestAreaIds;
     @NotNull
     private Role role;
 }

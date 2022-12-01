@@ -1,18 +1,17 @@
 package ro.ubb.mp.service.user;
 
-import ro.ubb.mp.controller.dto.UserRequestDTO;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import ro.ubb.mp.controller.dto.request.UserRequestDTO;
 import ro.ubb.mp.dao.model.User;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
     List<User> getAll();
     List<User> getAllMentors();
 
     Optional<User> getUserById(Long id);
-
-    User getUserByEmail(String email);
 
     User saveUser(UserRequestDTO userDTO);
 

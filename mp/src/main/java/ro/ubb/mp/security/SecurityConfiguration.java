@@ -41,16 +41,11 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
+    public DaoAuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 
         authProvider.setUserDetailsService(getUserDetailService());
-        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setPasswordEncoder(passwordEncoder);
 
         return authProvider;
     }
@@ -69,7 +64,7 @@ public class SecurityConfiguration {
      * because we want the authentication to happen in our way.
      */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(PasswordEncoder passwordEncoder, HttpSecurity http) throws Exception {
 
         //TODO add/ continue with authorizations, check role ("granthed authority") for an authenticated user and redirect
 
@@ -89,7 +84,7 @@ public class SecurityConfiguration {
                     .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        http.authenticationProvider(authenticationProvider());
+        http.authenticationProvider(authenticationProvider(passwordEncoder));
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
