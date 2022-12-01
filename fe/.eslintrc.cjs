@@ -27,7 +27,11 @@ module.exports = {
     quotes: ['error', 'single'],
     semi: ['error', 'never'],
     'prettier/prettier': ['error'],
-    '@typescript-eslint/no-unused-vars': ['error'],
+    '@typescript-eslint/no-unused-vars': ['error', {
+      "argsIgnorePattern": "^_",
+      "varsIgnorePattern": "^_",
+      "caughtErrorsIgnorePattern": "^_"
+    }],
     'no-console': ['error'],
     'react/prop-types': 0,
     'jsx-a11y/no-autofocus': [

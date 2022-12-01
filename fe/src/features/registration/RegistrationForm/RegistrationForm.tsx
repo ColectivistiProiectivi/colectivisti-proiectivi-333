@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   styled,
   Button,
@@ -9,7 +9,6 @@ import {
   Checkbox,
   RadioGroup,
   Radio,
-  CircularProgress,
   css,
 } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
@@ -39,7 +38,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ loginClick }
   } = useForm<RegistrationFormType>({ defaultValues: { terms: false } })
 
   const dispatch = useAppDispatch()
-  const registerLoading = useAppSelector(state => state.appState.registerLoading)
   const registerSuccessful = useAppSelector(state => state.appState.registerComplete)
 
   // Wire to backend endpoint using RTK (create a slice etc.)
@@ -63,11 +61,11 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ loginClick }
   }
 
   // Move back to login after successfully registering
-  if (registerSuccessful) {
-    setTimeout(() => {
+  useEffect(() => {
+    if (registerSuccessful) {
       loginClick()
-    }, 2000)
-  }
+    }
+  }, [registerSuccessful])
 
   return (
     <Container>
@@ -79,7 +77,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ loginClick }
             {...register('fullName', { required: 'Full Name is required' })}
             label="Full Name"
             error={!!errors.fullName}
-            hasErrors={!!errors.fullName}
             helperText={errors.fullName?.message}
             color="secondary"
             variant="filled"
@@ -95,7 +92,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ loginClick }
             })}
             label="Email"
             error={!!errors.email}
-            hasErrors={!!errors.email}
             helperText={errors.email?.message}
             color="secondary"
             variant="filled"
@@ -110,7 +106,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ loginClick }
           label="Password"
           type="password"
           error={!!errors.password}
-          hasErrors={!!errors.password}
           helperText={errors.password?.message}
           size="small"
           variant="filled"
@@ -129,7 +124,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ loginClick }
           label="Confirm Password"
           type="password"
           error={!!errors.confirmPassword}
-          hasErrors={!!errors.confirmPassword}
           helperText={errors.confirmPassword?.message}
           size="small"
           color="secondary"
@@ -154,7 +148,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ loginClick }
 
         <FormControlLabel
           control={
-            <StyledCheckbox {...register('terms', { required: true })} color="success" hasErrors={!!errors.terms} />
+            <StyledCheckbox {...register('terms', { required: true })} color={!errors.terms ? 'success' : 'error'} />
           }
           label={
             <Typography color={errors.terms ? 'error' : 'text.secondary'}>
@@ -163,7 +157,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ loginClick }
           }
         />
         <RegisterButton variant="contained" color="success" type="submit">
-          {registerLoading ? <CircularProgress color="inherit" size={24} /> : 'Create Account'}
+          Create Account
         </RegisterButton>
       </FormWrapper>
     </Container>
@@ -215,17 +209,17 @@ const TextFieldGroup = styled('div')`
   gap: 24px;
 `
 
-const StyledTextField = styled(TextField)<{ hasErrors: boolean }>`
+const StyledTextField = styled(TextField)`
   ${props =>
-    !props.hasErrors &&
+    !props.error &&
     css`
       margin-bottom: 24px;
     `}
 `
 
-const StyledCheckbox = styled(Checkbox)<{ hasErrors: boolean }>`
+const StyledCheckbox = styled(Checkbox)`
   ${props =>
-    props.hasErrors &&
+    props.color === 'error' &&
     css`
       color: ${props.theme.palette.error.main};
     `}

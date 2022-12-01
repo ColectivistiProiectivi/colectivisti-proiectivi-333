@@ -1,7 +1,8 @@
 import { AlertColor } from '@mui/material'
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { addUser } from '../registration/actions'
 import { authenticateUser } from '../login/actions'
+import { AuthProps } from '../../types/User'
 
 export interface AppState {
   snackbarOpen: boolean
@@ -34,6 +35,20 @@ export const appSlice = createSlice({
     },
     closeSnackbar: state => {
       state.snackbarOpen = false
+    },
+    resetAuthState: state => {
+      state.registerComplete = false
+      state.registerLoading = false
+      state.loginLoading = false
+      state.loginComplete = false
+    },
+    authenticate: (_, action: PayloadAction<AuthProps>) => {
+      localStorage.setItem('jwtToken', action.payload.jwtToken)
+      localStorage.setItem('user', action.payload.user)
+    },
+    deauthenticate: _ => {
+      localStorage.removeItem('jwtToken')
+      localStorage.removeItem('user')
     },
   },
   extraReducers: builder => {
@@ -80,6 +95,6 @@ export const appSlice = createSlice({
   },
 })
 
-export const { displaySnackbar, closeSnackbar } = appSlice.actions
+export const { displaySnackbar, closeSnackbar, resetAuthState, authenticate, deauthenticate } = appSlice.actions
 
 export default appSlice.reducer

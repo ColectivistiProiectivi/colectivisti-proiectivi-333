@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
 import { css, styled, Typography } from '@mui/material'
+import { useAppSelector } from '../../redux/hooks'
+
 import { LoginForm } from '../login/LoginForm'
 import { RegistrationForm } from '../registration/RegistrationForm'
+import { LoadingOverlay } from '../common/LoadingOverlay'
 
 import registerIllustrationSrc from '../registration/images/register_figure.png'
 import loginIllustrationSrc from '../login/images/login_figure.png'
@@ -14,6 +17,10 @@ enum Mode {
 
 const WelcomePage: React.FC = () => {
   const [mode, setMode] = useState(Mode.LOGIN)
+
+  const loginLoading = useAppSelector(state => state.appState.loginLoading)
+  const registerLoading = useAppSelector(state => state.appState.registerLoading)
+  const showLoading = loginLoading || registerLoading
 
   const leftSectionInfo = {
     [Mode.REGISTER]: {
@@ -30,6 +37,7 @@ const WelcomePage: React.FC = () => {
 
   return (
     <Container>
+      <LoadingOverlay visible={showLoading} />
       <LeftSection>
         <Title variant="h3">{leftSectionInfo[mode].title}</Title>
         <SubTitle variant="h5">{leftSectionInfo[mode].subtitle}</SubTitle>

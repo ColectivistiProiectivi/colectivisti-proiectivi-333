@@ -1,12 +1,13 @@
-import React from 'react'
-import { styled, Button, Typography, TextField, CircularProgress, css, Divider } from '@mui/material'
+import React, { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { styled, Button, Typography, TextField, css, Divider } from '@mui/material'
 import { Link as MuiLink } from '@mui/material'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
 
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { User } from '../../../types/User'
 import { authenticateUser } from '../actions'
+import { resetAuthState } from '../../application/slice'
 
 export type LoginFormType = Pick<User, 'email' | 'password'>
 
@@ -23,7 +24,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ registerClick }) => {
   } = useForm<LoginFormType>()
 
   const dispatch = useAppDispatch()
-  const loginLoading = useAppSelector(state => state.appState.loginLoading)
   const loginSuccessful = useAppSelector(state => state.appState.loginComplete)
 
   const navigate = useNavigate()
@@ -41,11 +41,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({ registerClick }) => {
   }
 
   // Redirect to homepage if user has been successfully logged in
-  if (loginSuccessful) {
-    setTimeout(() => {
+  useEffect(() => {
+    if (loginSuccessful) {
+      dispatch(resetAuthState())
       navigate('/profile')
-    }, 200)
-  }
+    }
+  }, [loginSuccessful])
 
   return (
     <Container>
@@ -61,7 +62,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ registerClick }) => {
           })}
           label="Email"
           error={!!errors.email}
-          hasErrors={!!errors.email}
           helperText={errors.email?.message}
           size="small"
           fullWidth
@@ -79,7 +79,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ registerClick }) => {
           label="Password"
           type="password"
           error={!!errors.password}
-          hasErrors={!!errors.password}
           helperText={errors.password?.message}
           size="small"
           fullWidth
@@ -92,7 +91,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ registerClick }) => {
         </MuiLink>
 
         <LoginButton variant="contained" color="secondary" type="submit">
-          {loginLoading ? <CircularProgress color="inherit" size={24} /> : 'Login'}
+          Login
         </LoginButton>
       </FormWrapper>
 
@@ -131,9 +130,9 @@ const LoginButton = styled(Button)`
   color: white;
 `
 
-const StyledTextField = styled(TextField)<{ hasErrors: boolean }>`
+const StyledTextField = styled(TextField)`
   ${props =>
-    !props.hasErrors &&
+    !props.error &&
     css`
       margin-bottom: 24px;
     `}
