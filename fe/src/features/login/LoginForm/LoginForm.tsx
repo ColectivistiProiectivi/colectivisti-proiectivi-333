@@ -1,24 +1,29 @@
-import React from 'react'
-import { styled, Button, Box, Typography, TextField, CircularProgress } from '@mui/material'
+import React, { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { styled, Button, Typography, TextField, css, Divider } from '@mui/material'
 import { Link as MuiLink } from '@mui/material'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
 
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { User } from '../../../types/User'
 import { authenticateUser } from '../actions'
+import { resetAuthState } from '../../application/slice'
 
 export type LoginFormType = Pick<User, 'email' | 'password'>
 
-export const LoginForm: React.FC = () => {
+interface LoginFormProps {
+  registerClick: () => void
+}
+
+export const LoginForm: React.FC<LoginFormProps> = ({ registerClick }) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<LoginFormType>()
 
   const dispatch = useAppDispatch()
-  const loginLoading = useAppSelector(state => state.appState.loginLoading)
   const loginSuccessful = useAppSelector(state => state.appState.loginComplete)
 
   const navigate = useNavigate()
@@ -30,44 +35,46 @@ export const LoginForm: React.FC = () => {
     dispatch(authenticateUser(formData))
   }
 
-  // Redirect to homepage if user has been successfully logged in
-  if (loginSuccessful) {
-    setTimeout(() => {
-      navigate('/')
-    }, 2000)
+  const goToRegister = () => {
+    registerClick()
+    reset()
   }
 
+  // Redirect to homepage if user has been successfully logged in
+  useEffect(() => {
+    if (loginSuccessful) {
+      dispatch(resetAuthState())
+      navigate('/profile')
+    }
+  }, [loginSuccessful])
+
   return (
-    <Wrapper>
-      <Header>
-        <Typography variant="h4" color="text.secondary">
-          Sign in
-        </Typography>
-        <Typography variant="subtitle2" color="text.secondary">
-          Enter your credentials
-        </Typography>
-      </Header>
-      <FormContainer component="form" onSubmit={handleSubmit(handleLoginSubmit)}>
-        <TextFieldGroup>
-          <StyledTextField
-            {...register('email', {
-              required: 'Email is required',
-              pattern: {
-                value: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
-                message: 'Invalid email address',
-              },
-            })}
-            label="Email"
-            error={!!errors.email}
-            helperText={errors.email?.message}
-            size="small"
-            fullWidth
-          />
-        </TextFieldGroup>
+    <Container>
+      <FormTitle variant="h4">Sign in</FormTitle>
+      <FormWrapper onSubmit={handleSubmit(handleLoginSubmit)}>
+        <StyledTextField
+          {...register('email', {
+            required: 'Email is required',
+            pattern: {
+              value: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
+              message: 'Invalid email address',
+            },
+          })}
+          label="Email"
+          error={!!errors.email}
+          helperText={errors.email?.message}
+          size="small"
+          fullWidth
+          variant="filled"
+          color="secondary"
+        />
         <StyledTextField
           {...register('password', {
             required: 'Password is required',
-            minLength: 6,
+            minLength: {
+              value: 6,
+              message: 'Password too short',
+            },
           })}
           label="Password"
           type="password"
@@ -75,88 +82,58 @@ export const LoginForm: React.FC = () => {
           helperText={errors.password?.message}
           size="small"
           fullWidth
+          variant="filled"
+          color="secondary"
         />
-
-        <SubmitButton type="submit">
-          {loginLoading ? <CircularProgress color="inherit" size={24} /> : 'Sign in'}
-        </SubmitButton>
-
-        {/* TODO: Hook up forgot password or maybe not */}
+        {/*/!* TODO: Hook up forgot password or maybe not *!/*/}
         <MuiLink href="" color="secondary.main" variant="caption">
           Forgot password?
         </MuiLink>
 
-        <StyledLink href="/register" color="secondary.main">
-          Don&apos;t have an account?
-        </StyledLink>
-      </FormContainer>
-    </Wrapper>
+        <LoginButton variant="contained" color="secondary" type="submit">
+          Login
+        </LoginButton>
+      </FormWrapper>
+
+      <Divider></Divider>
+      <Button variant="outlined" color="success" onClick={goToRegister}>
+        Register
+      </Button>
+    </Container>
   )
 }
 
-const Wrapper = styled('div')`
+const Container = styled('div')`
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  height: 584px;
-  width: 100%;
-  position: relative;
-  gap: 24px;
+  gap: 15px;
+  padding: 25px;
+  background: #f4f4f4;
+  box-shadow: rgba(0, 0, 0, 0.16) 0 10px 36px 0, rgba(0, 0, 0, 0.06) 0 0 0 1px;
 `
 
-const FormContainer = styled(Box)`
-  max-height: 584px;
+const FormWrapper = styled('form')`
   display: flex;
   flex-direction: column;
-  padding: 0 32px;
-  margin: 0 24px;
-  gap: 2px;
-`
-
-const Header = styled('div')`
-  display: flex;
-  flex-direction: column;
+  width: 350px;
   gap: 4px;
-  text-align: center;
-  user-select: none;
 `
 
-const TextFieldGroup = styled('div')`
-  display: flex;
-  flex-direction: row;
-  gap: 24px;
+const FormTitle = styled(Typography)`
+  text-align: center;
+  margin-bottom: 15px;
+  font-weight: bold;
+`
+
+const LoginButton = styled(Button)`
+  margin-top: 10px;
+  color: white;
 `
 
 const StyledTextField = styled(TextField)`
-  height: 64px;
-
-  input,
-  label {
-    color: ${props => props.theme.palette.text.secondary};
-  }
-
-  fieldset {
-    border-color: ${props => props.theme.palette.text.secondary};
-  }
-
-  &:hover fieldset {
-    border-color: ${props => props.theme.palette.primary.main} !important;
-    transition: border-color 0.125s ease-in-out;
-  }
-`
-
-const SubmitButton = styled(Button)`
-  background-color: ${props => props.theme.palette.secondary.main};
-  color: ${props => props.theme.palette.common.white};
-
-  :hover {
-    background-color: ${props => props.theme.palette.common.white};
-    color: ${props => props.theme.palette.common.black};
-  }
-`
-
-const StyledLink = styled(MuiLink)`
-  position: absolute;
-  bottom: 20px;
-  align-self: center;
+  ${props =>
+    !props.error &&
+    css`
+      margin-bottom: 24px;
+    `}
 `

@@ -28,3 +28,8 @@ export interface LoginResponseBody {
   value: string // JWT token
   email: string
 }
+
+export interface AuthProps {
+  jwtToken: string
+  user: string
+}

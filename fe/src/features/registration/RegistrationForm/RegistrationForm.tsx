@@ -1,19 +1,18 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   styled,
   Button,
-  Box,
   Typography,
-  FormControl,
   FormLabel,
   TextField,
   FormControlLabel,
   Checkbox,
   RadioGroup,
   Radio,
-  CircularProgress,
+  css,
 } from '@mui/material'
-import { Link as MuiLink } from '@mui/material'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+
 import { SubmitHandler, useForm } from 'react-hook-form'
 
 import { RegisterUserDTO, Role, User } from '../../../types/User'
@@ -25,16 +24,21 @@ export type RegistrationFormType = Omit<User, 'profilePic' | 'interestAreas'> & 
   terms: boolean
 }
 
-export const RegistrationForm: React.FC = () => {
+interface RegistrationFormProps {
+  loginClick: () => void
+}
+
+export const RegistrationForm: React.FC<RegistrationFormProps> = ({ loginClick }) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
     getValues,
   } = useForm<RegistrationFormType>({ defaultValues: { terms: false } })
 
   const dispatch = useAppDispatch()
-  const registerLoading = useAppSelector(state => state.appState.registerLoading)
+  const registerSuccessful = useAppSelector(state => state.appState.registerComplete)
 
   // Wire to backend endpoint using RTK (create a slice etc.)
   // Note: handleRegistrationSubmit accepts formData as a parameter
@@ -51,23 +55,31 @@ export const RegistrationForm: React.FC = () => {
     dispatch(addUser(userData))
   }
 
+  const goToLogin = () => {
+    loginClick()
+    reset()
+  }
+
+  // Move back to login after successfully registering
+  useEffect(() => {
+    if (registerSuccessful) {
+      loginClick()
+    }
+  }, [registerSuccessful])
+
   return (
-    <Wrapper>
-      <Header>
-        <Typography variant="h4" color="text.secondary">
-          Sign up
-        </Typography>
-        <Typography variant="subtitle2" color="text.secondary">
-          Tell us about yourself
-        </Typography>
-      </Header>
-      <FormContainer component="form" onSubmit={handleSubmit(handleRegistrationSubmit)}>
+    <Container>
+      <ArrowBack onClick={goToLogin} />
+      <FormTitle variant="h4">Sign Up</FormTitle>
+      <FormWrapper onSubmit={handleSubmit(handleRegistrationSubmit)}>
         <TextFieldGroup>
           <StyledTextField
             {...register('fullName', { required: 'Full Name is required' })}
             label="Full Name"
             error={!!errors.fullName}
             helperText={errors.fullName?.message}
+            color="secondary"
+            variant="filled"
             size="small"
           />
           <StyledTextField
@@ -81,6 +93,8 @@ export const RegistrationForm: React.FC = () => {
             label="Email"
             error={!!errors.email}
             helperText={errors.email?.message}
+            color="secondary"
+            variant="filled"
             size="small"
           />
         </TextFieldGroup>
@@ -94,6 +108,8 @@ export const RegistrationForm: React.FC = () => {
           error={!!errors.password}
           helperText={errors.password?.message}
           size="small"
+          variant="filled"
+          color="secondary"
           fullWidth
         />
         <StyledTextField
@@ -110,67 +126,81 @@ export const RegistrationForm: React.FC = () => {
           error={!!errors.confirmPassword}
           helperText={errors.confirmPassword?.message}
           size="small"
+          color="secondary"
+          variant="filled"
           fullWidth
         />
-        <RoleFormControl>
-          <FormLabel>I want to participate as</FormLabel>
-          <RadioGroup defaultValue={false}>
-            <FormControlLabel
-              {...register('role')}
-              value={Role.STUDENT}
-              control={<Radio size="small" />}
-              label="Student"
-            />
-            <FormControlLabel
-              {...register('role')}
-              value={Role.MENTOR}
-              control={<Radio size="small" />}
-              label="Mentor"
-            />
-          </RadioGroup>
-        </RoleFormControl>
+        <FormLabel>I want to participate as</FormLabel>
+        <RadioGroup defaultValue={Role.STUDENT}>
+          <FormControlLabel
+            {...register('role')}
+            value={Role.STUDENT}
+            control={<Radio size="small" color="secondary" />}
+            label="Student"
+          />
+          <FormControlLabel
+            {...register('role')}
+            value={Role.MENTOR}
+            control={<Radio size="small" color="secondary" />}
+            label="Mentor"
+          />
+        </RadioGroup>
 
         <FormControlLabel
-          control={<Checkbox {...register('terms', { required: true })} />}
+          control={
+            <StyledCheckbox {...register('terms', { required: true })} color={!errors.terms ? 'success' : 'error'} />
+          }
           label={
             <Typography color={errors.terms ? 'error' : 'text.secondary'}>
               I agree with the Terms & Conditions
             </Typography>
           }
         />
-        <SubmitButton type="submit">
-          {registerLoading ? <CircularProgress color="inherit" size={24} /> : 'Create Account'}
-        </SubmitButton>
-        <MuiLink href="/login" color="secondary.main">
-          Already registered?
-        </MuiLink>
-      </FormContainer>
-    </Wrapper>
+        <RegisterButton variant="contained" color="success" type="submit">
+          Create Account
+        </RegisterButton>
+      </FormWrapper>
+    </Container>
   )
 }
 
-const Wrapper = styled('div')`
+const Container = styled('div')`
+  position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 24px;
+  gap: 15px;
+  padding: 25px;
+  background: #f4f4f4;
+  box-shadow: rgba(0, 0, 0, 0.16) 0 10px 36px 0, rgba(0, 0, 0, 0.06) 0 0 0 1px;
 `
 
-const FormContainer = styled(Box)`
-  max-height: 584px;
+const FormWrapper = styled('form')`
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 0 32px;
-  margin: 0 24px;
-`
-
-const Header = styled('div')`
-  display: flex;
-  flex-direction: column;
+  width: 350px;
   gap: 4px;
+`
+
+const FormTitle = styled(Typography)`
   text-align: center;
-  user-select: none;
+  margin-bottom: 15px;
+  font-weight: bold;
+`
+
+const ArrowBack = styled(ArrowBackIcon)`
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  cursor: pointer;
+
+  width: 30px;
+  height: 30px;
+
+  transition: color 0.1s ease-in;
+
+  :hover {
+    color: #f7941d;
+  }
 `
 
 const TextFieldGroup = styled('div')`
@@ -180,37 +210,22 @@ const TextFieldGroup = styled('div')`
 `
 
 const StyledTextField = styled(TextField)`
-  height: 64px;
-
-  input,
-  label {
-    color: ${props => props.theme.palette.text.secondary};
-  }
-
-  fieldset {
-    border-color: ${props => props.theme.palette.text.secondary};
-  }
-
-  &:hover fieldset {
-    border-color: ${props => props.theme.palette.primary.main} !important;
-    transition: border-color 0.125s ease-in-out;
-  }
+  ${props =>
+    !props.error &&
+    css`
+      margin-bottom: 24px;
+    `}
 `
 
-const SubmitButton = styled(Button)`
-  background-color: ${props => props.theme.palette.secondary.main};
-  color: ${props => props.theme.palette.common.white};
-
-  :hover {
-    background-color: ${props => props.theme.palette.common.white};
-    color: ${props => props.theme.palette.common.black};
-  }
+const StyledCheckbox = styled(Checkbox)`
+  ${props =>
+    props.color === 'error' &&
+    css`
+      color: ${props.theme.palette.error.main};
+    `}
 `
 
-const RoleFormControl = styled(FormControl)`
-  &,
-  label,
-  span {
-    color: ${props => props.theme.palette.text.secondary} !important;
-  }
+const RegisterButton = styled(Button)`
+  margin-top: 10px;
+  color: white;
 `

@@ -1,13 +1,15 @@
 import { AlertColor } from '@mui/material'
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { addUser } from '../registration/actions'
 import { authenticateUser } from '../login/actions'
+import { AuthProps } from '../../types/User'
 
 export interface AppState {
   snackbarOpen: boolean
   snackbarType: AlertColor
   snackbarMessage: string
   registerLoading: boolean
+  registerComplete: boolean
   loginLoading: boolean
   loginComplete: boolean
 }
@@ -17,6 +19,7 @@ const initialState: AppState = {
   snackbarType: 'warning',
   snackbarMessage: '',
   registerLoading: false,
+  registerComplete: false,
   loginLoading: false,
   loginComplete: false,
 }
@@ -33,6 +36,20 @@ export const appSlice = createSlice({
     closeSnackbar: state => {
       state.snackbarOpen = false
     },
+    resetAuthState: state => {
+      state.registerComplete = false
+      state.registerLoading = false
+      state.loginLoading = false
+      state.loginComplete = false
+    },
+    authenticate: (_, action: PayloadAction<AuthProps>) => {
+      localStorage.setItem('jwtToken', action.payload.jwtToken)
+      localStorage.setItem('user', action.payload.user)
+    },
+    deauthenticate: _ => {
+      localStorage.removeItem('jwtToken')
+      localStorage.removeItem('user')
+    },
   },
   extraReducers: builder => {
     builder
@@ -48,6 +65,7 @@ export const appSlice = createSlice({
         state.snackbarType = 'success'
         state.snackbarMessage = 'You have been successfully signed up!'
         state.registerLoading = false
+        state.registerComplete = true
       })
 
       .addCase(addUser.pending, state => {
@@ -77,6 +95,6 @@ export const appSlice = createSlice({
   },
 })
 
-export const { displaySnackbar, closeSnackbar } = appSlice.actions
+export const { displaySnackbar, closeSnackbar, resetAuthState, authenticate, deauthenticate } = appSlice.actions
 
 export default appSlice.reducer
