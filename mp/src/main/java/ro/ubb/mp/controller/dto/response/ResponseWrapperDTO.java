@@ -7,5 +7,5 @@ import lombok.experimental.SuperBuilder;
 @Data
 public class ResponseWrapperDTO<T> {
     private T value;
-    private String error;
+    private String errorMessage;
 }

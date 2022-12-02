@@ -44,7 +44,7 @@ public class NotificationController {
             return ResponseEntity.ok(notificationService.findByUserPaginated(user, pageNr, pageSize));
         }
 
-        return ResponseEntity.badRequest().body(PageResponseWrapperDTO.<List<NotificationResponseDTO>>builder().error("bad authentication type").build());
+        return ResponseEntity.badRequest().body(PageResponseWrapperDTO.<List<NotificationResponseDTO>>builder().errorMessage("bad authentication type").build());
     }
 
     /**
@@ -60,6 +60,6 @@ public class NotificationController {
             return ResponseEntity.ok(ResponseWrapperDTO.<String>builder().value("Marked as Read").build());
         }
 
-        return ResponseEntity.badRequest().body(ResponseWrapperDTO.<String>builder().error("bad authentication type").build());
+        return ResponseEntity.badRequest().body(ResponseWrapperDTO.<String>builder().errorMessage("bad authentication type").build());
     }
 }
