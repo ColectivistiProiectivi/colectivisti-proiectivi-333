@@ -15,11 +15,11 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
 import { SubmitHandler, useForm } from 'react-hook-form'
 
-import { RegisterUserDTO, Role, User } from '../../../types/User'
+import { BaseUser, RegisterUserDTO, Role } from '../../../types/User'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { addUser } from '../actions'
 
-export type RegistrationFormType = Omit<User, 'profilePic' | 'interestAreas'> & {
+export type RegistrationFormType = BaseUser & {
   confirmPassword: string
   terms: boolean
 }

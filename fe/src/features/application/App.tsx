@@ -3,18 +3,20 @@ import { CssBaseline, StyledEngineProvider, ThemeProvider } from '@mui/material'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { theme } from './theme'
 
-import { LoadingScreen, AlreadyAuth, RequireAuth } from './utils'
+import { LoadingScreen, AlreadyAuth } from './utils'
 import { Snackbar } from '../common/Snackbar'
 import { LogoutRedirect } from '../login/LogoutRedirect'
+import { Layout } from '../layout'
+import { paths } from '../../api'
 
 const WelcomePage = React.lazy(() => import('../welcome/WelcomePage'))
 const ProfilePage = React.lazy(() => import('../profile/ProfilePage'))
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: paths.LANDING_PAGE,
     element: (
-      <AlreadyAuth redirectTo="/profile">
+      <AlreadyAuth redirectTo={paths.PROFILE}>
         <LoadingScreen>
           <WelcomePage />
         </LoadingScreen>
@@ -22,24 +24,17 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/profile',
-    element: (
-      <RequireAuth redirectTo="/">
-        <LoadingScreen>
-          <ProfilePage />
-        </LoadingScreen>
-      </RequireAuth>
-    ),
-  },
-  {
-    path: '/logout',
-    element: (
-      <RequireAuth redirectTo="/">
-        <LoadingScreen>
-          <LogoutRedirect redirectAfterLogoutTo="/" />
-        </LoadingScreen>
-      </RequireAuth>
-    ),
+    element: <Layout />,
+    children: [
+      {
+        path: paths.PROFILE,
+        element: <ProfilePage />,
+      },
+      {
+        path: paths.LOGOUT,
+        element: <LogoutRedirect redirectAfterLogoutTo={paths.LANDING_PAGE} />,
+      },
+    ],
   },
 ])
 

@@ -3,14 +3,23 @@ export enum Role {
   MENTOR = 'MENTOR',
 }
 
-export interface User {
+export interface BaseUser {
   fullName: string
   email: string
   password: string
   role: Role
-  profilePic?: File
-  interestAreas?: string[]
 }
+
+export interface User extends BaseUser {
+  profilePicture: string
+  completedStudies: string[]
+  ongoingStudy: string
+  interestAreas: string[]
+  description: string
+  birthdate: string
+}
+
+export type UserDto = Partial<User>
 
 export interface RegisterUserDTO {
   fullName: string
