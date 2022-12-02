@@ -1,4 +1,4 @@
-package ro.ubb.mp.controller.dto;
+package ro.ubb.mp.controller.dto.response;
 
 import lombok.Builder;
 import lombok.Data;

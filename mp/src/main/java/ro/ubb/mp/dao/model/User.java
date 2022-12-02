@@ -10,8 +10,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -65,12 +67,32 @@ public class User implements UserDetails {
     private String username;
     private String profilePicture;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(
-            name = "interestAreas",
-            joinColumns = @JoinColumn(name = "id")
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "user_completed_study_xref",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "study_id")
     )
-    private Set<String> interestAreas = new HashSet<>();
+    private List<Study> completedStudies;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Study ongoingStudy;
+
+    private Date birthdate;
+
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "user_interest_area_xref",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "interest_area_id")
+    )
+    private Set<InterestArea> interestAreas = new HashSet<>();
+
+    private String description;
 
     @Enumerated(EnumType.STRING)
     private Role role;

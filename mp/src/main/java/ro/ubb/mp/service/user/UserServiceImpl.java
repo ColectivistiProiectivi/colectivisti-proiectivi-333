@@ -2,46 +2,35 @@ package ro.ubb.mp.service.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ro.ubb.mp.controller.dto.UserRequestDTO;
+import org.springframework.transaction.annotation.Transactional;
+import ro.ubb.mp.controller.dto.request.UserRequestDTO;
 import ro.ubb.mp.dao.model.Role;
 import ro.ubb.mp.dao.model.User;
 import ro.ubb.mp.dao.repository.UserRepository;
 
-import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service("userService")
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
-
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<User> getAll() {
-
         return userRepository.findAll();
     }
 
     @Override
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
-    }
-
-    @Override
-    public User getUserByEmail(String email) {
-        return userRepository.findByUsername(email).orElseThrow(() -> new UsernameNotFoundException("User with the given email is not found: " + email));
     }
 
     @Override
@@ -58,7 +47,6 @@ public class UserServiceImpl implements UserService {
 
         userToBeSaved.setUsername(userDTO.getUsername());
         userToBeSaved.setPassword(passwordEncoder.encode((userDTO.getPassword())));
-        userToBeSaved.setInterestAreas(userDTO.getInterestAreas());
 
         return userRepository.save(userToBeSaved);
     }
@@ -74,7 +62,6 @@ public class UserServiceImpl implements UserService {
         userToUpdate.setFullName(userDTO.getFullName());
         userToUpdate.setUsername(userDTO.getUsername());
         userToUpdate.setPassword(userDTO.getPassword());
-        userToUpdate.setInterestAreas(userDTO.getInterestAreas());
         userToUpdate.setProfilePicture(userDTO.getProfilePicture());
         userToUpdate.setRole(userDTO.getRole());
 
@@ -101,8 +88,21 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * creates a partial user based on the email (= username)
+     * @param username is the email
+     * @return the found user
+     * @throws UsernameNotFoundException in case there is no user to be found
+     */
+    @Override
+    @Transactional
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email: " + username));
+    }
+
     public List<User> getAllMentors() {
         return userRepository.findAllByRole(Role.MENTOR);
     }
-
 }
