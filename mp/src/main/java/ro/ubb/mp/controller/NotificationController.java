@@ -41,10 +41,16 @@ public class NotificationController {
         logger.debug("inside getNotificationsByUser api for fetch user notification ");
         if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User user) {
 
-            return ResponseEntity.ok(notificationService.findByUserPaginated(user, pageNr, pageSize));
+            return ResponseEntity
+                    .ok(notificationService.findByUserPaginated(user, pageNr, pageSize));
         }
 
-        return ResponseEntity.badRequest().body(PageResponseWrapperDTO.<List<NotificationResponseDTO>>builder().errorMessage("bad authentication type").build());
+        return ResponseEntity
+                .badRequest()
+                .body(PageResponseWrapperDTO
+                        .<List<NotificationResponseDTO>>builder()
+                        .errorMessage("bad authentication type")
+                        .build());
     }
 
     /**
@@ -57,9 +63,18 @@ public class NotificationController {
         if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User user) {
             notificationService.markAsRead(user, notificationId);
 
-            return ResponseEntity.ok(ResponseWrapperDTO.<String>builder().value("Marked as Read").build());
+            return ResponseEntity
+                    .ok(ResponseWrapperDTO
+                            .<String>builder()
+                            .value("Marked as Read")
+                            .build());
         }
 
-        return ResponseEntity.badRequest().body(ResponseWrapperDTO.<String>builder().errorMessage("bad authentication type").build());
+        return ResponseEntity
+                .badRequest()
+                .body(ResponseWrapperDTO
+                        .<String>builder()
+                        .errorMessage("bad authentication type")
+                        .build());
     }
 }
