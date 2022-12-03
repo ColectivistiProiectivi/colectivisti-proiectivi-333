@@ -23,7 +23,7 @@ export const Sidebar: React.FC = () => {
           <ListItemIcon>
             <NewspaperIcon />
           </ListItemIcon>
-          <ListItemText primary="Announces" />
+          <ListItemText primary="Announcements" />
         </ListItemButton>
         <ListItemButton selected={activeItem(paths.PROFILE)}>
           <ListItemIcon>

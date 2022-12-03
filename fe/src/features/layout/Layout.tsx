@@ -1,15 +1,25 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Navbar } from '../common/Navbar'
 import { Navigate, Outlet } from 'react-router-dom'
 import { LoadingScreen } from '../application/utils'
-import { useAppDispatch } from '../../redux/hooks'
+import { useAppDispatch, useAppSelector } from '../../redux/hooks'
 import { displaySnackbar } from '../application/slice'
 import { styled } from '@mui/material'
 import { Sidebar } from '../common/Sidebar'
+import { selectUserData } from '../account/selectors'
+import { fetchUserData } from '../account/actions'
+import { paths } from '../../api'
 
 export const Layout: React.FC = () => {
   const dispatch = useAppDispatch()
-  const isAuthenticated = !!localStorage.getItem('user')
+  const isAuthenticated = !!localStorage.getItem('jwtToken')
+  const userData = useAppSelector(selectUserData)
+
+  useEffect(() => {
+    if (!userData) {
+      dispatch(fetchUserData())
+    }
+  }, [])
 
   if (!isAuthenticated) {
     dispatch(
@@ -20,7 +30,7 @@ export const Layout: React.FC = () => {
       })
     )
 
-    return <Navigate to={'/'} />
+    return <Navigate to={paths.LANDING_PAGE} />
   }
 
   return (

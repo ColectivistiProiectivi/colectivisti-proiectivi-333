@@ -2,34 +2,12 @@ import React, { useEffect } from 'react'
 import { Button, css, Divider, styled, TextField, Typography } from '@mui/material'
 import { UserDto } from '../../types/User'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { useAppDispatch, useAppSelector } from '../../redux/hooks'
-import { selectUserData, selectUserDataLoading } from './selectors'
 import { LoadingOverlay } from '../common/LoadingOverlay'
-import { fetchUserData } from './actions'
 import { urlMatchRegexp } from './utils'
+import { useAppSelector } from '../../redux/hooks'
+import { selectUserData, selectUserDataLoading } from './selectors'
 
 export type ProfileFormType = Omit<UserDto, 'email' | 'role'>
-
-const useUserData = () => {
-  const dispatch = useAppDispatch()
-
-  const userData = useAppSelector(selectUserData)
-  const userDataLoading = useAppSelector(selectUserDataLoading)
-
-  const refetchUser = () => {
-    dispatch(fetchUserData())
-  }
-
-  useEffect(() => {
-    refetchUser()
-  }, [])
-
-  return {
-    userData,
-    userDataLoading,
-    refetchUser,
-  }
-}
 
 const ProfilePage: React.FC = () => {
   const {
@@ -38,8 +16,8 @@ const ProfilePage: React.FC = () => {
     setValue,
     formState: { errors },
   } = useForm<ProfileFormType>()
-  const { userData, userDataLoading } = useUserData()
-  // const dispatch = useAppDispatch()
+  const userData = useAppSelector(selectUserData)
+  const userDataLoading = useAppSelector(selectUserDataLoading)
 
   useEffect(() => {
     if (userData) {
@@ -50,7 +28,7 @@ const ProfilePage: React.FC = () => {
   }, [userData])
 
   const handleSaveProfile: SubmitHandler<ProfileFormType> = _formData => {
-    // API call to '/users/profile'
+    // API call to '/users/account'
     // dispatch(updateUser(formData))
   }
 
@@ -62,7 +40,7 @@ const ProfilePage: React.FC = () => {
         <FormSection>
           <FormSubtitle>Account settings</FormSubtitle>
           <StyledTextField
-            value={userData?.email}
+            value={userData?.email || ''}
             InputProps={{
               readOnly: true,
             }}
@@ -141,7 +119,7 @@ const ProfilePage: React.FC = () => {
           <StyledTextField {...register('interestAreas')} label="Interest Areas" size="small" color="info" fullWidth />
         </FormSection>
 
-        <SaveButton variant="contained" color="info" type="submit">
+        <SaveButton variant="contained" color="success" type="submit">
           Update Profile
         </SaveButton>
       </FormWrapper>

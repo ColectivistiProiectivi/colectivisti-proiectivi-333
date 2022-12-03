@@ -6,23 +6,14 @@ import { theme } from './theme'
 import { LoadingScreen, AlreadyAuth } from './utils'
 import { Snackbar } from '../common/Snackbar'
 import { LogoutRedirect } from '../login/LogoutRedirect'
+import { NotFound } from '../layout/errorPages'
 import { Layout } from '../layout'
 import { paths } from '../../api'
 
 const WelcomePage = React.lazy(() => import('../welcome/WelcomePage'))
-const ProfilePage = React.lazy(() => import('../profile/ProfilePage'))
+const ProfilePage = React.lazy(() => import('../account/ProfilePage'))
 
 const router = createBrowserRouter([
-  {
-    path: paths.LANDING_PAGE,
-    element: (
-      <AlreadyAuth redirectTo={paths.PROFILE}>
-        <LoadingScreen>
-          <WelcomePage />
-        </LoadingScreen>
-      </AlreadyAuth>
-    ),
-  },
   {
     element: <Layout />,
     children: [
@@ -35,6 +26,20 @@ const router = createBrowserRouter([
         element: <LogoutRedirect redirectAfterLogoutTo={paths.LANDING_PAGE} />,
       },
     ],
+  },
+  {
+    path: paths.LANDING_PAGE,
+    element: (
+      <AlreadyAuth redirectTo={paths.PROFILE}>
+        <LoadingScreen>
+          <WelcomePage />
+        </LoadingScreen>
+      </AlreadyAuth>
+    ),
+  },
+  {
+    path: '*',
+    element: <NotFound />,
   },
 ])
 
