@@ -16,4 +16,7 @@ const Container = styled('div')`
   align-items: center;
   font-weight: bold;
   text-align: center;
+
+  position: fixed;
+  z-index: 2;
 `

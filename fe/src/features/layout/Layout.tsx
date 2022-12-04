@@ -56,7 +56,7 @@ const Page = styled('div')`
 const Container = styled('div')`
   display: flex;
   flex-direction: column;
-  gap: 80px;
+  gap: 40px;
 `
 
 const Content = styled('div')`
@@ -64,4 +64,5 @@ const Content = styled('div')`
   display: flex;
   align-self: center;
   gap: 100px;
+  padding-top: 80px;
 `

@@ -1,54 +1,80 @@
 import React from 'react'
 import { matchPath, useLocation } from 'react-router'
-import { List, ListItemButton, ListItemIcon, ListItemText, ListSubheader, styled } from '@mui/material'
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
+import { alpha, css, List, ListItemButton, ListItemIcon, ListItemText, styled } from '@mui/material'
+import { toggleSidebar } from '../../application/slice'
+import { selectSidebarExpanded } from '../../application/selectors'
 
+import MenuIcon from '@mui/icons-material/Menu'
 import NewspaperIcon from '@mui/icons-material/Newspaper'
 import AccountBoxIcon from '@mui/icons-material/AccountBox'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import NoteAltIcon from '@mui/icons-material/NoteAlt'
+
 import { paths } from '../../../api'
 
 export const Sidebar: React.FC = () => {
-  const username = localStorage.getItem('user')
+  const dispatch = useAppDispatch()
   const { pathname } = useLocation()
 
   const activeItem = (itemPath: string) => {
     return !!matchPath(itemPath, pathname)
   }
 
+  const sidebarExpanded = useAppSelector(selectSidebarExpanded)
+
   return (
     <Container>
-      <List component="nav" subheader={<ListSubheader component="div">{username}</ListSubheader>}>
-        <ListItemButton>
+      <ExpandableList expanded={sidebarExpanded}>
+        <CustomListItem onClick={() => dispatch(toggleSidebar())}>
+          <ListItemIcon>
+            <MenuIcon />
+          </ListItemIcon>
+        </CustomListItem>
+        <CustomListItem>
           <ListItemIcon>
             <NewspaperIcon />
           </ListItemIcon>
           <ListItemText primary="Announcements" />
-        </ListItemButton>
-        <ListItemButton selected={activeItem(paths.PROFILE)}>
+        </CustomListItem>
+        <CustomListItem selected={activeItem(paths.PROFILE)}>
           <ListItemIcon>
             <AccountBoxIcon />
           </ListItemIcon>
           <ListItemText primary="Profile" />
-        </ListItemButton>
-        <ListItemButton>
+        </CustomListItem>
+        <CustomListItem>
           <ListItemIcon>
             <ScheduleIcon />
           </ListItemIcon>
           <ListItemText primary="Appointments" />
-        </ListItemButton>
-        <ListItemButton>
+        </CustomListItem>
+        <CustomListItem>
           <ListItemIcon>
             <NoteAltIcon />
           </ListItemIcon>
           <ListItemText primary="Assignments" />
-        </ListItemButton>
-      </List>
+        </CustomListItem>
+      </ExpandableList>
     </Container>
   )
 }
 
 const Container = styled('div')`
-  display: flex;
-  justify-content: center;
+  position: fixed;
+`
+
+const ExpandableList = styled(List)<{ expanded: boolean }>`
+  transition: all 0.15s ease-in-out;
+  overflow: hidden;
+
+  width: ${props => (props.expanded ? '300px' : '55px')};
+`
+
+const CustomListItem = styled(ListItemButton)`
+  ${props =>
+    props.selected &&
+    css`
+      background: ${alpha(props.theme.palette.secondary.light, 0.2)} !important;
+    `}
 `
