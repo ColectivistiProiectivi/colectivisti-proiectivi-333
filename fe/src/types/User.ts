@@ -11,7 +11,7 @@ export interface BaseUser {
 }
 
 export interface User extends BaseUser {
-  profilePicture: string
+  profilePicture: File | string
   completedStudies: string[]
   ongoingStudy: string
   interestAreas: string[]

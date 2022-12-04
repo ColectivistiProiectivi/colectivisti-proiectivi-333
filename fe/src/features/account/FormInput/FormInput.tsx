@@ -36,7 +36,7 @@ export const FormInputWithChips: React.FC<TextFieldProps & { fieldName: string }
 
   useEffect(() => {
     if (hasErrors) {
-      setError(fieldName, { message: 'Max 5 words. 30 characters per word' })
+      setError(fieldName, { type: 'Field Error' })
     } else {
       clearErrors(fieldName)
     }
@@ -59,6 +59,8 @@ export const FormInputWithChips: React.FC<TextFieldProps & { fieldName: string }
     if (event.key !== 'Enter' || enteredWords.length >= maxWords || currentInput.length >= maxCharactersPerWord) {
       return
     }
+
+    event.preventDefault()
 
     setEnteredWords(prevEnteredWords => {
       const word = currentInput.trim()
