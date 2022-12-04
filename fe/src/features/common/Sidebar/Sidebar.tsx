@@ -64,7 +64,7 @@ const Container = styled('div')`
   position: fixed;
 `
 
-const ExpandableList = styled(List)<{ expanded: boolean }>`
+const ExpandableList = styled(List, { shouldForwardProp: prop => prop !== 'expanded' })<{ expanded?: boolean }>`
   transition: all 0.15s ease-in-out;
   overflow: hidden;
 

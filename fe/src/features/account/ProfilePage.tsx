@@ -1,14 +1,17 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, css, styled, Tab, Tabs, TextField, Typography } from '@mui/material'
+import { Button, css, styled, Tab, Tabs, Typography } from '@mui/material'
 import { UserDto } from '../../types/User'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { SubmitHandler, useForm, FormProvider } from 'react-hook-form'
 import { LoadingOverlay } from '../common/LoadingOverlay'
 import { dateMatchRegexp, initialPictureURL } from './utils'
 import { useAppSelector } from '../../redux/hooks'
 import { selectUserData, selectUserDataLoading } from './selectors'
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate'
+import { FormInput, FormInputWithChips, ReadOnlyFormInput } from './FormInput'
 
-export type ProfileFormType = Omit<UserDto, 'email' | 'role'>
+export type ProfileFormType = Omit<UserDto, 'email' | 'role' | 'profilePicture'> & {
+  profilePicture?: File
+}
 
 enum Section {
   GENERAL,
@@ -16,16 +19,17 @@ enum Section {
 }
 
 const ProfilePage: React.FC = () => {
+  const formMethods = useForm<ProfileFormType>()
   const {
-    register,
-    handleSubmit,
     setValue,
     watch,
-    formState: { errors, isValid },
-  } = useForm<ProfileFormType>()
+    handleSubmit,
+    formState: { errors },
+  } = formMethods
   const userData = useAppSelector(selectUserData)
   const userDataLoading = useAppSelector(selectUserDataLoading)
 
+  // Handle Fields Info
   useEffect(() => {
     if (userData) {
       for (const [key, value] of Object.entries(userData)) {
@@ -52,6 +56,7 @@ const ProfilePage: React.FC = () => {
     setSection(section)
   }
 
+  // TODO: Fix this / refactor
   const calculateSectionReached = useCallback(() => {
     if (generalSectionRef.current && profileSectionRef.current) {
       const generalHeight = generalSectionRef.current.offsetHeight
@@ -78,8 +83,7 @@ const ProfilePage: React.FC = () => {
   const handlePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const imageFile: File = e.target.files[0]
-      const imageURL = URL.createObjectURL(imageFile)
-      setValue('profilePicture', imageURL)
+      formMethods.setValue('profilePicture', imageFile)
     }
   }
 
@@ -89,108 +93,83 @@ const ProfilePage: React.FC = () => {
     <Container>
       <LoadingOverlay visible={userDataLoading} />
       <FormTitle variant="overline">Profile</FormTitle>
-      <FormWrapper onSubmit={handleSubmit(handleSaveProfile)}>
-        <PictureSection>
-          <PictureWrapper onClick={() => pictureRef.current?.click()}>
-            <PictureHoverIcon id="image-upload-icon" />
-            <Picture src={pictureURL || initialPictureURL} />
-          </PictureWrapper>
-          <PictureSubtitle variant="overline">Upload a photo</PictureSubtitle>
-          <PictureInput ref={pictureRef} type="file" accept="image/png, image/jpeg" onChange={handlePictureUpload} />
-        </PictureSection>
+      <FormProvider {...formMethods}>
+        <FormWrapper onSubmit={handleSubmit(handleSaveProfile)}>
+          <PictureSection>
+            <PictureWrapper onClick={() => pictureRef.current?.click()}>
+              <PictureHoverIcon id="image-upload-icon" />
+              <Picture src={pictureURL ? URL.createObjectURL(pictureURL) : initialPictureURL} />
+            </PictureWrapper>
+            <PictureSubtitle variant="overline">Upload a photo</PictureSubtitle>
+            <PictureInput ref={pictureRef} type="file" accept="image/png, image/jpeg" onChange={handlePictureUpload} />
+          </PictureSection>
 
-        <FormSection ref={generalSectionRef} id={Section.GENERAL.toString()}>
-          <FormSubtitle variant="overline">General</FormSubtitle>
-          <StyledTextField
-            value={userData?.email || ''}
-            InputProps={{
-              readOnly: true,
-            }}
-            disabled
-            label="Email"
-            helperText="Cannot be modified"
-            size="small"
-            color="secondary"
-            fullWidth
-          />
-          <StyledTextField
-            {...register('fullName', {
-              minLength: {
-                value: 3,
-                message: 'Full name should be min 3 characters long',
-              },
-            })}
-            label="Full Name"
-            error={!!errors.fullName}
-            helperText={errors.fullName?.message}
-            size="small"
-            color="secondary"
-            fullWidth
-          />
-          <StyledTextField
-            {...register('password', {
-              minLength: {
-                value: 6,
-                message: 'Password too short',
-              },
-            })}
-            label="New Password"
-            type="password"
-            error={!!errors.password}
-            helperText={errors.password?.message}
-            size="small"
-            color="secondary"
-            fullWidth
-          />
-        </FormSection>
-        <FormSection ref={profileSectionRef} id={Section.PROFILE.toString()}>
-          <FormSubtitle variant="overline">Profile</FormSubtitle>
-          <StyledTextField
-            {...register('birthdate', { pattern: { value: dateMatchRegexp, message: 'Wrong Date Format' } })}
-            label="Birth Date"
-            helperText={'Date format: DD/MM/YYYY'}
-            size="small"
-            color="secondary"
-            fullWidth
-          />
-          <StyledTextField
-            {...register('completedStudies')}
-            label="Completed Studies"
-            helperText="Words separated by commas"
-            size="small"
-            color="secondary"
-            fullWidth
-          />
-          <StyledTextField
-            {...register('description', { maxLength: 200 })}
-            label="Description"
-            helperText="Max 200 characters"
-            size="small"
-            color="secondary"
-            fullWidth
-          />
-          <StyledTextField
-            {...register('ongoingStudy', { maxLength: 50 })}
-            label="Ongoing Study"
-            helperText="Max 50 characters"
-            size="small"
-            color="secondary"
-            fullWidth
-          />
-          <StyledTextField
-            {...register('interestAreas')}
-            label="Interest Areas"
-            helperText="Words separated by commas"
-            size="small"
-            color="secondary"
-            fullWidth
-          />
-        </FormSection>
+          <FormSection ref={generalSectionRef} id={Section.GENERAL.toString()}>
+            <FormSubtitle variant="overline">General</FormSubtitle>
+            <ReadOnlyFormInput label="Email" value={userData?.email || ''} />
+            <FormInput
+              label="Full Name"
+              fieldName="fullName"
+              options={{
+                minLength: {
+                  value: 3,
+                  message: 'Full name should be min 3 characters long',
+                },
+              }}
+              error={!!errors.fullName}
+              helperText={errors.fullName?.message}
+            />
+            <FormInput
+              label="New Password"
+              fieldName={'password'}
+              options={{
+                minLength: {
+                  value: 6,
+                  message: 'Password too short',
+                },
+              }}
+              type="password"
+              error={!!errors.password}
+              helperText={errors.password?.message}
+            />
+          </FormSection>
+          <FormSection ref={profileSectionRef} id={Section.PROFILE.toString()}>
+            <FormSubtitle variant="overline">Profile</FormSubtitle>
+            <FormInput
+              label="Birth Date"
+              fieldName="birthdate"
+              options={{ pattern: { value: dateMatchRegexp, message: 'Wrong Date Format' } }}
+              error={!!errors.birthdate}
+              helperText="Date format: DD/MM/YYYY"
+            />
+            <FormInput
+              label="Ongoing Study"
+              fieldName="ongoingStudy"
+              options={{ maxLength: 50 }}
+              helperText="Max 50 characters"
+            />
+            <FormInputWithChips label="Completed Studies" fieldName="completedStudies" />
+            <FormInputWithChips label="Interest Areas" fieldName="interestAreas" />
+            <FormInput
+              label="Description"
+              fieldName="description"
+              options={{ maxLength: 200 }}
+              helperText="Max 200 characters"
+              multiline
+              rows={3}
+            />
+          </FormSection>
 
-        <SaveButton variant="contained" color="secondary" type="submit" disabled={!isValid}>
-          Update Profile
-        </SaveButton>
-      </FormWrapper>
+          <SaveButton
+            variant="contained"
+            color="secondary"
+            type="submit"
+            disabled={!formMethods.formState.isDirty && !!Object.values(errors).length}
+          >
+            Update Profile
+          </SaveButton>
+        </FormWrapper>
+      </FormProvider>
       <TabsWrapper>
         <Typography variant="overline">Sections</Typography>
         <Tabs
@@ -229,7 +208,6 @@ const FormSubtitle = styled(Typography)`
 `
 
 const FormWrapper = styled('form')`
-  gap: 4px;
   padding: 20px;
   width: 50%;
 `
@@ -237,20 +215,12 @@ const FormWrapper = styled('form')`
 const FormSection = styled('div')`
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 20px;
   margin: 20px 0;
 `
 
 const SaveButton = styled(Button)`
   color: white;
-`
-
-const StyledTextField = styled(TextField)`
-  ${props =>
-    !props.error &&
-    css`
-      margin-bottom: 24px;
-    `}
 `
 
 const PictureSection = styled('div')`
