@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import { Navbar } from '../common/Navbar'
 import { Navigate, Outlet } from 'react-router-dom'
 import { LoadingScreen } from '../application/utils'
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
@@ -9,6 +8,7 @@ import { Sidebar } from '../common/Sidebar'
 import { selectUserData } from '../account/selectors'
 import { fetchUserData } from '../account/actions'
 import { paths } from '../../api'
+import { NavPlaceholder } from '../common/NavPlaceholder'
 
 export const Layout: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -37,7 +37,8 @@ export const Layout: React.FC = () => {
     <LoadingScreen>
       <Page>
         <Container>
-          <Navbar />
+          {/*<NavBar />*/}
+          <NavPlaceholder />
           <Content>
             <Sidebar />
             <Outlet />
