@@ -12,6 +12,7 @@ export interface AppState {
   registerComplete: boolean
   loginLoading: boolean
   loginComplete: boolean
+  sidebarExpanded: boolean
 }
 
 const initialState: AppState = {
@@ -22,6 +23,7 @@ const initialState: AppState = {
   registerComplete: false,
   loginLoading: false,
   loginComplete: false,
+  sidebarExpanded: true,
 }
 
 export const appSlice = createSlice({
@@ -49,6 +51,9 @@ export const appSlice = createSlice({
     deauthenticate: _ => {
       localStorage.removeItem('jwtToken')
       localStorage.removeItem('user')
+    },
+    toggleSidebar: state => {
+      state.sidebarExpanded = !state.sidebarExpanded
     },
   },
   extraReducers: builder => {
@@ -95,6 +100,7 @@ export const appSlice = createSlice({
   },
 })
 
-export const { displaySnackbar, closeSnackbar, resetAuthState, authenticate, deauthenticate } = appSlice.actions
+export const { displaySnackbar, closeSnackbar, resetAuthState, authenticate, deauthenticate, toggleSidebar } =
+  appSlice.actions
 
 export default appSlice.reducer

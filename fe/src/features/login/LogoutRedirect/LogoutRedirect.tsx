@@ -9,7 +9,7 @@ interface LogoutRedirectProps {
 
 export const LogoutRedirect: React.FC<LogoutRedirectProps> = ({ redirectAfterLogoutTo }) => {
   const dispatch = useAppDispatch()
-  const isAuthenticated = !!localStorage.getItem('user')
+  const isAuthenticated = !!localStorage.getItem('jwtToken')
 
   useEffect(() => {
     if (isAuthenticated) {
