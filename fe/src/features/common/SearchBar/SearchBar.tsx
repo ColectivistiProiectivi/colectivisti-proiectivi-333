@@ -21,11 +21,10 @@ export const SearchBar: React.FC = () => {
 const Container = styled('div')`
   display: flex;
   align-items: center;
-  background-color: #dddddd;
+  background: ${props => props.theme.palette.common.white};
   border-radius: 0.5rem;
   height: 2.5rem;
-  min-width: 35%;
-  order: 1;
+  width: 30%;
 `
 
 const SearchButton = styled(Button)`
