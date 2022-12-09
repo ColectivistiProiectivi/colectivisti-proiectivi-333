@@ -8,7 +8,7 @@ import { Snackbar } from '../common/Snackbar'
 import { LogoutRedirect } from '../login/LogoutRedirect'
 
 const WelcomePage = React.lazy(() => import('../welcome/WelcomePage'))
-const ProfilePage = React.lazy(() => import('../profile/ProfilePage'))
+const ProfilePage = React.lazy(() => import('../account/ProfilePage'))
 
 const router = createBrowserRouter([
   {
