@@ -1,10 +1,12 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '../../redux/store'
 
-const getSnackbarState = (state: RootState) => state.appState
+const getAppState = (state: RootState) => state.appState
 
-export const selectSnackbarOpen = createSelector([getSnackbarState], snackbarState => snackbarState.snackbarOpen)
+export const selectSnackbarOpen = createSelector([getAppState], appState => appState.snackbarOpen)
 
-export const selectSnackbarType = createSelector([getSnackbarState], snackbarState => snackbarState.snackbarType)
+export const selectSnackbarType = createSelector([getAppState], appState => appState.snackbarType)
 
-export const selectSnackbarMessage = createSelector([getSnackbarState], snackbarState => snackbarState.snackbarMessage)
+export const selectSnackbarMessage = createSelector([getAppState], appState => appState.snackbarMessage)
+
+export const selectSidebarExpanded = createSelector([getAppState], appState => appState.sidebarExpanded)

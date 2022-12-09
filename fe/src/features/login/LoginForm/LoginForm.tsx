@@ -1,13 +1,14 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { styled, Button, Typography, TextField, css, Divider } from '@mui/material'
 import { Link as MuiLink } from '@mui/material'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
-import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
+import { useAppDispatch } from '../../../redux/hooks'
 import { User } from '../../../types/User'
 import { authenticateUser } from '../actions'
 import { resetAuthState } from '../../application/slice'
+import { paths } from '../../../api'
 
 export type LoginFormType = Pick<User, 'email' | 'password'>
 
@@ -24,29 +25,22 @@ export const LoginForm: React.FC<LoginFormProps> = ({ registerClick }) => {
   } = useForm<LoginFormType>()
 
   const dispatch = useAppDispatch()
-  const loginSuccessful = useAppSelector(state => state.appState.loginComplete)
-
   const navigate = useNavigate()
 
   // Wire to backend endpoint using RTK (create a slice etc.)
   // Note: handleRegistrationSubmit accepts formData as a parameter
-  const handleLoginSubmit: SubmitHandler<LoginFormType> = formData => {
+  const handleLoginSubmit: SubmitHandler<LoginFormType> = async formData => {
     // API call to '/login'
-    dispatch(authenticateUser(formData))
+    dispatch(authenticateUser(formData)).then(() => {
+      dispatch(resetAuthState())
+      navigate(paths.PROFILE)
+    })
   }
 
   const goToRegister = () => {
     registerClick()
     reset()
   }
-
-  // Redirect to homepage if user has been successfully logged in
-  useEffect(() => {
-    if (loginSuccessful) {
-      dispatch(resetAuthState())
-      navigate('/profile')
-    }
-  }, [loginSuccessful])
 
   return (
     <Container>

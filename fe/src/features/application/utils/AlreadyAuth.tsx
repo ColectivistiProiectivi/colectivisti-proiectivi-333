@@ -1,7 +1,5 @@
 import { FC, PropsWithChildren } from 'react'
 import { Navigate } from 'react-router-dom'
-import { useAppDispatch } from '../../../redux/hooks'
-import { displaySnackbar } from '../slice'
 
 interface AlreadyAuthProps {
   redirectTo: string
@@ -15,19 +13,10 @@ interface AlreadyAuthProps {
  * @param message is the message displayed in a snackbar informing the user what happened
  */
 
-export const AlreadyAuth: FC<PropsWithChildren<AlreadyAuthProps>> = ({ children, redirectTo, message }) => {
-  const dispatch = useAppDispatch()
-  const isAuthenticated = !!localStorage.getItem('user')
+export const AlreadyAuth: FC<PropsWithChildren<AlreadyAuthProps>> = ({ children, redirectTo }) => {
+  const isAuthenticated = !!localStorage.getItem('jwtToken')
 
   if (isAuthenticated) {
-    dispatch(
-      displaySnackbar({
-        open: true,
-        type: 'warning',
-        message: message || 'You are already logged in!',
-      })
-    )
-
     return <Navigate to={redirectTo} />
   }
 
