@@ -8,7 +8,7 @@ import { Sidebar } from '../common/Sidebar'
 import { selectUserData } from '../account/selectors'
 import { fetchUserData } from '../account/actions'
 import { paths } from '../../api'
-import { NavPlaceholder } from '../common/NavPlaceholder'
+import { NavBar } from '../common/Navbar'
 
 export const Layout: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -37,8 +37,7 @@ export const Layout: React.FC = () => {
     <LoadingScreen>
       <Page>
         <Container>
-          {/*<NavBar />*/}
-          <NavPlaceholder />
+          <NavBar />
           <Content>
             <Sidebar />
             <Outlet />
