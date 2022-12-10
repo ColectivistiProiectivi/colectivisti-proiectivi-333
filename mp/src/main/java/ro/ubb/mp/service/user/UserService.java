@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService extends UserDetailsService {
+
     List<User> getAll();
     List<User> getAllMentors();
 
@@ -20,4 +21,5 @@ public interface UserService extends UserDetailsService {
     void deleteUserByEmail(String email);
 
     void deleteUserById(Long id);
+
 }
