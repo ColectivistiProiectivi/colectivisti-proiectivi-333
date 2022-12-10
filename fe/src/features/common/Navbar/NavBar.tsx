@@ -104,7 +104,6 @@ const Container = styled('div')`
   height: 80px;
   background: #ddd;
   color: #777;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
