@@ -77,6 +77,7 @@ export const NavBar: React.FC = () => {
           'aria-labelledby': 'basic-button',
         }}
         sx={{ marginTop: '10px', maxWidth: '300px', maxHeigh: '500px' }}
+        disableScrollLock={true}
       >
         {/* {showNotificationsMenu && notifications.length !== 0 ? (
           notifications.map((n, index) => (
