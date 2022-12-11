@@ -10,6 +10,6 @@ public class UserLoginDTO {
     @NotBlank
     private String email;
     @NotBlank
-    @Size(min=7)
+    @Size(min = 7)
     private String password;
 }

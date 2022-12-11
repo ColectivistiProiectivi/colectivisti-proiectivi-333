@@ -10,11 +10,12 @@ import java.util.Date;
 @Builder
 public class AnnouncementRequestDTO {
 
-    private Long interestAreasId;  //???id sau clasa interest area
+    private Long interestAreasId;
     private Long userId;
     private String title;
     private BigDecimal price;
     private Date postingDate;
     private String description;
+
 }
 

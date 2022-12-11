@@ -24,7 +24,6 @@ public class UserController {
     private final UserService userService;
 
     /**
-     *
      * This endpoint will let only users that have the MENTOR authority(ROLE) to access it.
      * In case the MENTOR authority is missing the 403 code is being returned
      * (403 Forbidden => Means we are lacking the necessary authorities(ROLES) to access the given resource
@@ -41,11 +40,11 @@ public class UserController {
     }
 
     @GetMapping("/users/profile")
-    public ResponseEntity<ResponseWrapperDTO<UserProfileDTO>> getProfileInfo (final Authentication authentication) {
+    public ResponseEntity<ResponseWrapperDTO<UserProfileDTO>> getProfileInfo(final Authentication authentication) {
 
-        if(authentication.getPrincipal() instanceof User user) {
+        if (authentication.getPrincipal() instanceof User user) {
 
-            final User fetchedUser = (User)userService.loadUserByUsername(user.getUsername());
+            final User fetchedUser = (User) userService.loadUserByUsername(user.getUsername());
 
             final UserProfileDTO userProfileDTO = UserProfileDTO
                     .builder()
