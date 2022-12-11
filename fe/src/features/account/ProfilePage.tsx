@@ -9,7 +9,6 @@ import { selectUserData, selectUserDataLoading } from './selectors'
 import { FormInput, FormInputWithChips, ReadOnlyFormInput } from './FormInput'
 import { ProfilePicture } from './ProfilePicture'
 import { Section, useSectionScroll } from './hooks'
-import { NavBar } from '../common/Navbar'
 
 export type ProfileFormType = Omit<UserDto, 'email' | 'role' | 'profilePicture'> & {
   profilePicture?: File
@@ -43,98 +42,95 @@ const ProfilePage: React.FC = () => {
 
   return (
     <Container>
-      <NavBar />
-      <BottomSection>
-        <LoadingOverlay visible={userDataLoading} />
-        <FormTitle variant="overline">Profile</FormTitle>
-        <FormProvider {...formMethods}>
-          <FormWrapper onSubmit={handleSubmit(handleSaveProfile)}>
-            <PictureSection>
-              <ProfilePicture />
-              <PictureSubtitle variant="overline">Upload a photo</PictureSubtitle>
-            </PictureSection>
-            <FormSection ref={generalSectionRef} id={Section.GENERAL.toString()}>
-              <FormSubtitle variant="overline">General</FormSubtitle>
-              <ReadOnlyFormInput label="Email" value={userData?.email || ''} />
-              <FormInput
-                label="Full Name"
-                fieldName="fullName"
-                options={{
-                  minLength: {
-                    value: 3,
-                    message: 'Full name should be min 3 characters long',
-                  },
-                }}
-                error={!!errors.fullName}
-                helperText={errors.fullName?.message}
-              />
-              <FormInput
-                label="New Password"
-                fieldName={'password'}
-                options={{
-                  minLength: {
-                    value: 6,
-                    message: 'Password too short',
-                  },
-                }}
-                type="password"
-                error={!!errors.password}
-                helperText={errors.password?.message}
-              />
-            </FormSection>
-            <FormSection ref={profileSectionRef} id={Section.PROFILE.toString()}>
-              <FormSubtitle variant="overline">Profile</FormSubtitle>
-              <FormInput
-                label="Birth Date"
-                fieldName="birthdate"
-                options={{ pattern: { value: dateMatchRegexp, message: 'Wrong Date Format' } }}
-                error={!!errors.birthdate}
-                helperText="Date format: DD/MM/YYYY"
-              />
-              <FormInput
-                label="Ongoing Study"
-                fieldName="ongoingStudy"
-                options={{ maxLength: 50 }}
-                helperText="Max 50 characters"
-              />
-              <FormInputWithChips label="Completed Studies" fieldName="completedStudies" />
-              <FormInputWithChips label="Interest Areas" fieldName="interestAreas" />
-              <FormInput
-                label="Description"
-                fieldName="description"
-                options={{ maxLength: 200 }}
-                helperText="Max 200 characters"
-                multiline
-                rows={3}
-              />
-            </FormSection>
+      <LoadingOverlay visible={userDataLoading} />
+      <FormTitle variant="overline">Profile</FormTitle>
+      <FormProvider {...formMethods}>
+        <FormWrapper onSubmit={handleSubmit(handleSaveProfile)}>
+          <PictureSection>
+            <ProfilePicture />
+            <PictureSubtitle variant="overline">Upload a photo</PictureSubtitle>
+          </PictureSection>
+          <FormSection ref={generalSectionRef} id={Section.GENERAL.toString()}>
+            <FormSubtitle variant="overline">General</FormSubtitle>
+            <ReadOnlyFormInput label="Email" value={userData?.email || ''} />
+            <FormInput
+              label="Full Name"
+              fieldName="fullName"
+              options={{
+                minLength: {
+                  value: 3,
+                  message: 'Full name should be min 3 characters long',
+                },
+              }}
+              error={!!errors.fullName}
+              helperText={errors.fullName?.message}
+            />
+            <FormInput
+              label="New Password"
+              fieldName={'password'}
+              options={{
+                minLength: {
+                  value: 6,
+                  message: 'Password too short',
+                },
+              }}
+              type="password"
+              error={!!errors.password}
+              helperText={errors.password?.message}
+            />
+          </FormSection>
+          <FormSection ref={profileSectionRef} id={Section.PROFILE.toString()}>
+            <FormSubtitle variant="overline">Profile</FormSubtitle>
+            <FormInput
+              label="Birth Date"
+              fieldName="birthdate"
+              options={{ pattern: { value: dateMatchRegexp, message: 'Wrong Date Format' } }}
+              error={!!errors.birthdate}
+              helperText="Date format: DD/MM/YYYY"
+            />
+            <FormInput
+              label="Ongoing Study"
+              fieldName="ongoingStudy"
+              options={{ maxLength: 50 }}
+              helperText="Max 50 characters"
+            />
+            <FormInputWithChips label="Completed Studies" fieldName="completedStudies" />
+            <FormInputWithChips label="Interest Areas" fieldName="interestAreas" />
+            <FormInput
+              label="Description"
+              fieldName="description"
+              options={{ maxLength: 200 }}
+              helperText="Max 200 characters"
+              multiline
+              rows={3}
+            />
+          </FormSection>
 
-            <SaveButton
-              variant="contained"
-              color="secondary"
-              type="submit"
-              disabled={!formMethods.formState.isDirty && !!Object.values(errors).length}
-            >
-              Update Profile
-            </SaveButton>
-          </FormWrapper>
-        </FormProvider>
-        <TabsWrapper>
-          <Typography variant="overline">Sections</Typography>
-          <Tabs
-            orientation="vertical"
-            variant="scrollable"
-            value={activeSection}
-            onChange={handleSectionChange}
-            sx={{ borderLeft: 1, borderColor: 'divider' }}
-            TabIndicatorProps={{ sx: { left: 0 } }}
-            indicatorColor="secondary"
+          <SaveButton
+            variant="contained"
+            color="secondary"
+            type="submit"
+            disabled={!formMethods.formState.isDirty && !!Object.values(errors).length}
           >
-            <SectionTab label="GENERAL" aria-selected={activeSection === Section.GENERAL} />
-            <SectionTab label="PROFILE" aria-selected={activeSection === Section.PROFILE} />
-          </Tabs>
-        </TabsWrapper>
-      </BottomSection>
+            Update Profile
+          </SaveButton>
+        </FormWrapper>
+      </FormProvider>
+      <TabsWrapper>
+        <Typography variant="overline">Sections</Typography>
+        <Tabs
+          orientation="vertical"
+          variant="scrollable"
+          value={activeSection}
+          onChange={handleSectionChange}
+          sx={{ borderLeft: 1, borderColor: 'divider' }}
+          TabIndicatorProps={{ sx: { left: 0 } }}
+          indicatorColor="secondary"
+        >
+          <SectionTab label="GENERAL" aria-selected={activeSection === Section.GENERAL} />
+          <SectionTab label="PROFILE" aria-selected={activeSection === Section.PROFILE} />
+        </Tabs>
+      </TabsWrapper>
     </Container>
   )
 }
@@ -197,14 +193,6 @@ const SectionTab = styled(Tab)`
     css`
       color: ${props.theme.palette.secondary.main} !important;
     `}
-`
-
-const BottomSection = styled('div')`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  margin-top: 60px;
 `
 
 export default ProfilePage
