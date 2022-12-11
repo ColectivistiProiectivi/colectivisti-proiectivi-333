@@ -1,12 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { UserDto } from '../../types/User'
-import { fetchUserData } from './actions'
+import { fetchAllUsers, fetchUserData } from './actions'
 
 export interface UserData {
   userData?: UserDto
   userDataLoading: boolean
   userDataComplete: boolean
   userDataError: boolean
+  allUsers?: UserDto[]
 }
 
 const initialState: UserData = {
@@ -14,6 +15,7 @@ const initialState: UserData = {
   userDataLoading: false,
   userDataComplete: false,
   userDataError: false,
+  allUsers: undefined,
 }
 
 export const userSlice = createSlice({
@@ -38,6 +40,10 @@ export const userSlice = createSlice({
         state.userDataError = true
         state.userDataLoading = false
         state.userDataComplete = false
+      })
+
+      .addCase(fetchAllUsers.fulfilled, (state, action: PayloadAction<UserDto[]>) => {
+        state.allUsers = action.payload
       })
   },
 })

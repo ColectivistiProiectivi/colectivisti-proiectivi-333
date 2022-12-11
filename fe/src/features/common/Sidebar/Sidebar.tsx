@@ -1,5 +1,6 @@
 import React from 'react'
 import { matchPath, useLocation } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { alpha, css, List, ListItemButton, ListItemIcon, ListItemText, styled } from '@mui/material'
 import { toggleSidebar } from '../../application/slice'
@@ -15,6 +16,7 @@ import { paths } from '../../../api'
 
 export const Sidebar: React.FC = () => {
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
   const { pathname } = useLocation()
 
   const activeItem = (itemPath: string) => {
@@ -37,7 +39,7 @@ export const Sidebar: React.FC = () => {
           </ListItemIcon>
           <ListItemText primary="Announcements" />
         </CustomListItem>
-        <CustomListItem selected={activeItem(paths.PROFILE)}>
+        <CustomListItem selected={activeItem(paths.PROFILE)} onClick={() => navigate(paths.PROFILE)}>
           <ListItemIcon>
             <AccountBoxIcon />
           </ListItemIcon>
@@ -49,7 +51,7 @@ export const Sidebar: React.FC = () => {
           </ListItemIcon>
           <ListItemText primary="Appointments" />
         </CustomListItem>
-        <CustomListItem>
+        <CustomListItem selected={activeItem(paths.ASSIGNMENTS)} onClick={() => navigate(paths.ASSIGNMENTS)}>
           <ListItemIcon>
             <NoteAltIcon />
           </ListItemIcon>

@@ -5,21 +5,29 @@ import { useAppDispatch, useAppSelector } from '../../redux/hooks'
 import { displaySnackbar } from '../application/slice'
 import { styled } from '@mui/material'
 import { Sidebar } from '../common/Sidebar'
-import { selectUserData } from '../account/selectors'
-import { fetchUserData } from '../account/actions'
+import { selectAllUsers, selectUserData } from '../account/selectors'
+import { fetchAllUsers, fetchUserData } from '../account/actions'
 import { paths } from '../../api'
 import { NavPlaceholder } from '../common/NavPlaceholder'
+import { Role } from '../../types/User'
 
 export const Layout: React.FC = () => {
   const dispatch = useAppDispatch()
   const isAuthenticated = !!localStorage.getItem('jwtToken')
   const userData = useAppSelector(selectUserData)
+  const allUsersData = useAppSelector(selectAllUsers)
 
   useEffect(() => {
     if (!userData) {
       dispatch(fetchUserData())
     }
   }, [])
+
+  useEffect(() => {
+    if (!allUsersData && userData?.role == Role.MENTOR) {
+      dispatch(fetchAllUsers())
+    }
+  }, [userData])
 
   if (!isAuthenticated) {
     dispatch(

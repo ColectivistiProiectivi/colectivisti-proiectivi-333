@@ -8,3 +8,5 @@ export const selectUserData = createSelector([getUserState], userState => userSt
 export const selectUserDataLoading = createSelector([getUserState], userState => userState.userDataLoading)
 
 export const selectUserDataError = createSelector([getUserState], userState => userState.userDataError)
+
+export const selectAllUsers = createSelector([getUserState], userState => userState.allUsers)

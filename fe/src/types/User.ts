@@ -4,6 +4,7 @@ export enum Role {
 }
 
 export interface BaseUser {
+  id?: number
   fullName: string
   email: string
   password: string
@@ -11,7 +12,7 @@ export interface BaseUser {
 }
 
 export interface User extends BaseUser {
-  profilePicture: File | string
+  profilePicture: string
   completedStudies: string[]
   ongoingStudy: string
   interestAreas: string[]
