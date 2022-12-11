@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { styled, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { DrawerComp } from './DrawerComp'
@@ -7,62 +7,60 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import MessageIcon from '@mui/icons-material/Message'
 import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
 import IconButton from '@mui/material/IconButton'
-import { axiosInstance } from '../../../api'
+import HomeIcon from '@mui/icons-material/Home'
 
 export const NavBar: React.FC = () => {
-  const [notifications, setNotifications] = useState([])
-  //const [messages, setMessages] = useState([]);
+  const [showNotificationsMenu, setShowNotificationsMenu] = useState(false)
+  const [showMessagesMenu, setShowMessagesMenu] = useState(false)
+
   const navigate = useNavigate()
   const theme = useTheme()
   const isMatch = useMediaQuery(theme.breakpoints.down('md'))
-
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+
+  const openNotificationsMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
+    setShowNotificationsMenu(!showNotificationsMenu)
   }
 
-  const handleClose = () => {
-    setAnchorEl(null)
+  const openMessagesMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget)
+    setShowMessagesMenu(!showMessagesMenu)
   }
 
-  const handleNotifications = () => {
-    //TO DO
-    handleClose()
-  }
-
-  // const handleMessages = () => {
+  // const handleSelectedNotification = () => {
   //   //TO DO
-  //   handleClose();
-  // };
+  //   setAnchorEl(null)
+  // }
 
-  useEffect(() => {
-    axiosInstance.get('notifications/user').then(res => {
-      setNotifications(res.data)
-    })
-    // axiosInstance.get('messages/user').then(res => {
-    //   setMessages(res.data)
-    // })
-  })
+  // const handleSelectedMessage = () => {
+  //   //TO DO
+  //   setAnchorEl(null)
+  // };
 
   return (
     <Container>
       {isMatch ? (
         <>
-          <FancyText variant="h4">Proiectivii</FancyText>
+          <HomeIconNav />
+          <FancyText variant="h5">Colectivistii</FancyText>
           <DrawerComp />
         </>
       ) : (
         <NavContainer>
-          <FancyText variant="h4"> Proiectivii</FancyText>
+          <LeftSection>
+            <HomeIconNav />
+            <FancyText variant="h5">Colectivistii</FancyText>
+          </LeftSection>
           <SearchBar />
           <RightSection>
-            <BackgroundCircle onClick={handleClick}>
+            <BackgroundCircle onClick={openMessagesMenu}>
+              <Notifications>9+</Notifications>
               <MessageIcon />
             </BackgroundCircle>
-            <BackgroundCircle onClick={handleClick}>
+            <BackgroundCircle onClick={openNotificationsMenu}>
+              <Notifications>4</Notifications>
               <NotificationsIcon />
             </BackgroundCircle>
             <BackgroundCircle onClick={() => navigate('/logout')}>
@@ -72,26 +70,25 @@ export const NavBar: React.FC = () => {
         </NavContainer>
       )}
       <Menu
-        id="basic-menu"
         anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
         MenuListProps={{
           'aria-labelledby': 'basic-button',
         }}
-        sx={{ marginTop: '10px', maxWidth: '300px' }}
+        sx={{ marginTop: '10px', maxWidth: '300px', maxHeigh: '500px' }}
       >
-        {notifications.length !== 0 ? (
+        {/* {showNotificationsMenu && notifications.length !== 0 ? (
           notifications.map((n, index) => (
-            <MenuItem key={index} onClick={handleNotifications}>
+            <MenuItem key={index} onClick={handleSelectedNotification}>
               {n}
             </MenuItem>
           ))
         ) : (
           <p>NU AVETI NICIO NOTIFICARE</p>
-        )}
-        {/* {messages.length!==0 ? (messages.map((m, index) => (
-            <MenuItem key={index} onClick={handleMessages}>{m}</MenuItem>))) : 
+        )} */}
+        {/* showMessagesMenu &&{messages.length!==0 ? (messages.map((m, index) => (
+            <MenuItem key={index} onClick={handleSelectedMessage}>{m}</MenuItem>))) : 
             (<p>NU AVETI NICIUN MESAJ</p>)
           } */}
       </Menu>
@@ -101,8 +98,8 @@ export const NavBar: React.FC = () => {
 
 const Container = styled('div')`
   width: 100%;
-  height: 80px;
-  background: #ddd;
+  height: 60px;
+  background: ${props => props.theme.palette.secondary.main};
   color: #777;
   display: flex;
   justify-content: space-between;
@@ -126,7 +123,6 @@ const FancyText = styled(Typography)`
   font-family: 'PT Sans', cursive;
   color: ${props => props.theme.palette.common.black};
   font-weight: bold;
-  width: 35%;
   justify-content: center;
 `
 
@@ -136,6 +132,17 @@ const RightSection = styled('div')`
   align-items: center;
   height: inherit;
   width: 35%;
+  order: 3;
+`
+
+const LeftSection = styled('div')`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: inherit;
+  width: 35%;
+  order: 1;
+  gap: 20px;
 `
 
 const BackgroundCircle = styled(IconButton)`
@@ -143,12 +150,32 @@ const BackgroundCircle = styled(IconButton)`
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: ${props => props.theme.palette.common.white};
+  background: ${props => props.theme.palette.secondary.main};
   color: ${props => props.theme.palette.common.black};
   margin: 0 10px;
 
   :hover {
-    background: ${props => props.theme.palette.common.black};
-    color: ${props => props.theme.palette.common.white};
+    background: #f0bf84;
+    color: ${props => props.theme.palette.common.black};
   }
+`
+
+const HomeIconNav = styled(HomeIcon)`
+  color: ${props => props.theme.palette.common.black};
+`
+
+const Notifications = styled('div')`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  min-width: 14px;
+  max-width: 17px;
+  height: 14px;
+  background: red;
+  border-radius: 50%;
+  color: ${props => props.theme.palette.common.white};
+  position: absolute;
+  top: 5px;
+  right: 5px;
 `

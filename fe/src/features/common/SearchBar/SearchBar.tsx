@@ -1,6 +1,6 @@
 import React from 'react'
 import SearchSharpIcon from '@mui/icons-material/SearchSharp'
-import { styled, Button, Input } from '@mui/material'
+import { styled, Input } from '@mui/material'
 
 export const SearchBar: React.FC = () => {
   const submitButton = () => {
@@ -10,10 +10,7 @@ export const SearchBar: React.FC = () => {
   return (
     <Container>
       <SearchIcon />
-      <SearchInput placeholder="Type a subject or a name" onChange={submitButton} disableUnderline={true} />
-      <SearchButton type="submit" onClick={submitButton}>
-        Search
-      </SearchButton>
+      <SearchInput placeholder="Search Announcements..." onChange={submitButton} disableUnderline={true} />
     </Container>
   )
 }
@@ -21,40 +18,25 @@ export const SearchBar: React.FC = () => {
 const Container = styled('div')`
   display: flex;
   align-items: center;
-  background-color: #dddddd;
-  border-radius: 0.5rem;
+  background-color: #eea247;
   height: 2.5rem;
   min-width: 35%;
   order: 1;
-`
-
-const SearchButton = styled(Button)`
-  background-color: ${props => props.theme.palette.secondary.main};
-  color: ${props => props.theme.palette.common.white};
-  padding: 0 0.5rem;
-  border-radius: 0 0.5rem 0.5rem 0;
-  height: 2.5rem;
-  margin-left: auto;
-  :hover {
-    background-color: ${props => props.theme.palette.secondary.main};
-    color: ${props => props.theme.palette.common.black};
-    transition: color 0.125s ease-in-out;
-  }
 `
 
 const SearchInput = styled(Input)`
   width: 75%;
   input,
   label {
-    color: #616161;
+    color: ${props => props.theme.palette.common.black};
     font-weight: bold;
   }
   fieldset {
-    color: #616161;
+    color: ${props => props.theme.palette.common.black};
   }
 `
 
 const SearchIcon = styled(SearchSharpIcon)`
   width: 10%;
-  color: #616161;
+  color: ${props => props.theme.palette.common.black};
 `
