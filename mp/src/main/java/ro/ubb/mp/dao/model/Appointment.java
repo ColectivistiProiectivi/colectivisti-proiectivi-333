@@ -16,12 +16,10 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "studentId")
+    @ManyToOne(fetch = FetchType.LAZY)
     private User student;
 
-    @ManyToOne
-    @JoinColumn(name = "mentorId")
+    @ManyToOne(fetch = FetchType.LAZY)
     private User mentor;
 
     private Long announcement; // legam cand avem partea de anunturi

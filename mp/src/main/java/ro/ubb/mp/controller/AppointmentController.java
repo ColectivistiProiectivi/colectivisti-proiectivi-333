@@ -17,7 +17,7 @@ import java.util.List;
 public class AppointmentController {
     @Autowired
     AppointmentService service;
-    //probabil trebuie paginat si aici
+
 
     @GetMapping("/student")
     public ResponseEntity<PageResponseWrapperDTO<List<AppointmentResponseDTO>>> getAllStudentAppointments
