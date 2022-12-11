@@ -5,10 +5,10 @@ import { DrawerComp } from './DrawerComp'
 import { SearchBar } from '../SearchBar/SearchBar'
 import LogoutIcon from '@mui/icons-material/Logout'
 import NotificationsIcon from '@mui/icons-material/Notifications'
-import MessageIcon from '@mui/icons-material/Message'
 import Menu from '@mui/material/Menu'
 import IconButton from '@mui/material/IconButton'
 import HomeIcon from '@mui/icons-material/Home'
+import MailIcon from '@mui/icons-material/Mail'
 
 export const NavBar: React.FC = () => {
   const [showNotificationsMenu, setShowNotificationsMenu] = useState(false)
@@ -57,7 +57,7 @@ export const NavBar: React.FC = () => {
           <RightSection>
             <BackgroundCircle onClick={openMessagesMenu}>
               <Notifications>9+</Notifications>
-              <MessageIcon />
+              <MailIcon />
             </BackgroundCircle>
             <BackgroundCircle onClick={openNotificationsMenu}>
               <Notifications>4</Notifications>
@@ -168,14 +168,14 @@ const Notifications = styled('div')`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  min-width: 14px;
-  max-width: 17px;
-  height: 14px;
-  background: red;
+  font-size: 13px;
+  min-width: 15px;
+  max-width: 18px;
+  height: 15px;
+  background: #da0000;
   border-radius: 50%;
   color: ${props => props.theme.palette.common.white};
   position: absolute;
-  top: 5px;
+  top: 4px;
   right: 5px;
 `
