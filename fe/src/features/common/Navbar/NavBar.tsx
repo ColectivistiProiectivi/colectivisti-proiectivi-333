@@ -168,6 +168,7 @@ const Notifications = styled('div')`
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
   font-size: 13px;
   min-width: 15px;
   max-width: 18px;
@@ -176,6 +177,6 @@ const Notifications = styled('div')`
   border-radius: 50%;
   color: ${props => props.theme.palette.common.white};
   position: absolute;
-  top: 4px;
-  right: 5px;
+  top: 2px;
+  right: 4px;
 `
