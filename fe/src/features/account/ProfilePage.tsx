@@ -145,6 +145,7 @@ const Container = styled('div')`
 const FormTitle = styled(Typography)`
   font-weight: bold;
   font-size: 24px;
+  margin-top: 70px;
   margin: 0;
 `
 
