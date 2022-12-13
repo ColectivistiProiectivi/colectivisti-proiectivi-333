@@ -22,8 +22,6 @@ public class Appointment {
     @ManyToOne(fetch = FetchType.LAZY)
     private User mentor;
 
-    private Long announcement; // legam cand avem partea de anunturi
-
     private LocalDateTime date;
 
     private String locationDetails;

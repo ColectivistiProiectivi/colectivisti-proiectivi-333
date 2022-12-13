@@ -16,7 +16,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     Page<Appointment> getAppointmentsByMentor(User user, Pageable pageable);
 
-    //Page<Appointment> getAppointmentsByAnnouncement(Long announcementId);
 
 
 }
