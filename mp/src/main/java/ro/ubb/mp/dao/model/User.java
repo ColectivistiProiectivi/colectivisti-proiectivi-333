@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 @Table(
         name = "users",
         uniqueConstraints = {
-        @UniqueConstraint(name = "email_unique", columnNames = "username")}
+                @UniqueConstraint(name = "email_unique", columnNames = "username")}
 )
 @NoArgsConstructor
 @AllArgsConstructor

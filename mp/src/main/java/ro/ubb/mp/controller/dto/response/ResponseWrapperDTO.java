@@ -1,12 +1,11 @@
 package ro.ubb.mp.controller.dto.response;
 
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
+@SuperBuilder
 @Data
-@Builder
 public class ResponseWrapperDTO<T> {
-
     private T value;
     private String errorMessage;
 }
