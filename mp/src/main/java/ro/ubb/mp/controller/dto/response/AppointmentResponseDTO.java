@@ -2,6 +2,7 @@ package ro.ubb.mp.controller.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
+import ro.ubb.mp.controller.dto.response.user.UserFullNameDTO;
 
 import java.time.LocalDateTime;
 
@@ -9,8 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 public class AppointmentResponseDTO {
     private Long id;
-    private Long studentId;
-    private Long mentorId;
+    private UserFullNameDTO fullName;
     private LocalDateTime date;
     private String locationDetails;
 }
