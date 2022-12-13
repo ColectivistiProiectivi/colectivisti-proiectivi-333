@@ -2,26 +2,35 @@ package ro.ubb.mp.controller;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ro.ubb.mp.controller.dto.mapper.UserProfileResponseMapper;
+import ro.ubb.mp.controller.dto.request.ProfileRequestDTO;
 import ro.ubb.mp.controller.dto.response.ResponseWrapperDTO;
-import ro.ubb.mp.controller.dto.response.UserProfileDTO;
-import ro.ubb.mp.dao.model.InterestArea;
-import ro.ubb.mp.dao.model.Study;
+import ro.ubb.mp.controller.dto.response.user.UserProfileDTO;
 import ro.ubb.mp.dao.model.User;
+import ro.ubb.mp.service.file.FileService;
 import ro.ubb.mp.service.user.UserService;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 @Getter
+@Slf4j
 public class UserController {
     private final UserService userService;
+    private final UserProfileResponseMapper userMapper;
+    private final FileService fileService;
 
     /**
      *
@@ -47,25 +56,68 @@ public class UserController {
 
             final User fetchedUser = (User)userService.loadUserByUsername(user.getUsername());
 
-            final UserProfileDTO userProfileDTO = UserProfileDTO
-                    .builder()
-                    .id(fetchedUser.getId())
-                    .email(fetchedUser.getUsername())
-                    .profilePicture(fetchedUser.getProfilePicture())
-                    .birthdate(fetchedUser.getBirthdate())
-                    .completedStudies(fetchedUser.getCompletedStudies() != null ? fetchedUser.getCompletedStudies().stream().map(Study::getName).collect(Collectors.toList()) : null)
-                    .ongoingStudy(fetchedUser.getOngoingStudy() != null ? fetchedUser.getOngoingStudy().getName() : null)
-                    .interestAreas(fetchedUser.getInterestAreas() != null ? fetchedUser.getInterestAreas().stream().map(InterestArea::getName).collect(Collectors.toList()) : null)
-                    .description(fetchedUser.getDescription())
-                    .fullName(fetchedUser.getFullName())
-                    .role(fetchedUser.getRole().toString())
-                    .build();
+            final UserProfileDTO userProfileDTO = getUserMapper().toProfileDTO(fetchedUser);
             return ResponseEntity
                     .ok(ResponseWrapperDTO
                             .<UserProfileDTO>builder()
                             .value(userProfileDTO)
                             .build()
                     );
+        }
+
+        return ResponseEntity
+                .badRequest()
+                .body(ResponseWrapperDTO
+                        .<UserProfileDTO>builder()
+                        .errorMessage("Wrong authentication type")
+                        .build()
+                );
+    }
+
+    @PutMapping(
+            path = "/users/profile",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<ResponseWrapperDTO<UserProfileDTO>> updateProfile (final @ModelAttribute ProfileRequestDTO profileRequestDTO,
+                                                                             final Authentication authentication) throws IOException {
+
+        if(authentication.getPrincipal() instanceof User user) {
+
+            profileRequestDTO.setId(user.getId());
+
+            if(profileRequestDTO.getProfilePicture() != null) {
+                final String fileName = profileRequestDTO.getId() + "_profilePicture.jpg";
+                getFileService().saveImageToDisk(profileRequestDTO.getProfilePicture(), fileName);
+            }
+
+            final UserProfileDTO userProfileDTO = getUserMapper().toProfileDTO(getUserService().updateProfile(profileRequestDTO));
+            return ResponseEntity
+                    .ok(ResponseWrapperDTO
+                            .<UserProfileDTO>builder()
+                            .value(userProfileDTO)
+                            .build()
+                    );
+        }
+
+        return ResponseEntity
+                .badRequest()
+                .body(ResponseWrapperDTO
+                        .<UserProfileDTO>builder()
+                        .errorMessage("Wrong authentication type")
+                        .build()
+                );
+    }
+
+    @GetMapping("/users/profile/picture")
+    public ResponseEntity<?> getProfileImage (final Authentication authentication) throws IOException {
+
+        if(authentication.getPrincipal() instanceof User user) {
+
+            final ByteArrayResource profilePicture = fileService.getFileFromDisk(user.getId() + "_profilePicture.jpg");
+            return ResponseEntity.ok()
+                    .contentLength(profilePicture.contentLength())
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(profilePicture);
         }
 
         return ResponseEntity
