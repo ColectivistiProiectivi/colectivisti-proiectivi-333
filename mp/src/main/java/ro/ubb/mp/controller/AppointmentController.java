@@ -4,19 +4,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import ro.ubb.mp.controller.dto.mapper.AppointmentRequestMapper;
+import ro.ubb.mp.controller.dto.mapper.AppointmentResponseMapper;
+import ro.ubb.mp.controller.dto.request.AppointmentRequestDTO;
 import ro.ubb.mp.controller.dto.response.AppointmentResponseDTO;
 import ro.ubb.mp.controller.dto.response.PageResponseWrapperDTO;
+import ro.ubb.mp.controller.dto.response.ResponseWrapperDTO;
+import ro.ubb.mp.controller.dto.response.user.UserFullNameDTO;
 import ro.ubb.mp.dao.model.Appointment;
 import ro.ubb.mp.dao.model.User;
-import ro.ubb.mp.service.appointment.AppointmentService;
+import ro.ubb.mp.service.appointment.AppointmentServiceImpl;
 
+import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping(name = "appointments")
+@RequestMapping(name = "/appointments")
 public class AppointmentController {
     @Autowired
-    AppointmentService service;
+    AppointmentServiceImpl service;
+    AppointmentRequestMapper requestMapper;
+    AppointmentResponseMapper responseMapper;
 
 
     @GetMapping("/student")
@@ -52,4 +62,27 @@ public class AppointmentController {
                 .errorMessage("bad authentication type")
                 .build());
     }
+
+    @PostMapping("/create-appointment")
+    public ResponseEntity<ResponseWrapperDTO<AppointmentResponseDTO>> createAppointment(@RequestBody AppointmentRequestDTO appointmentRequestDTO){
+
+        if(SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User user){
+            URI uri = URI.create(((ServletUriComponentsBuilder
+                    .fromCurrentContextPath()
+                    .path("/create-appointment")
+                    .toUriString())));
+
+            AppointmentResponseDTO appointmentResponseDTO = responseMapper
+                    .toDTO(service.createAppointment(appointmentRequestDTO));
+
+            return ResponseEntity.created(uri).body(ResponseWrapperDTO.<AppointmentResponseDTO>builder()
+                    .value(appointmentResponseDTO).build());
+
+        }
+
+       return ResponseEntity.badRequest()
+               .body(ResponseWrapperDTO.<AppointmentResponseDTO>builder().errorMessage("Bad authentication type").build());
+    }
+
+
 }
