@@ -1,4 +1,4 @@
-package ro.ubb.mp.controller.dto.response;
+package ro.ubb.mp.controller.dto.response.user;
 
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +13,6 @@ public class UserProfileDTO {
     private Long id;
     private String fullName;
     private String email;
-    private String profilePicture;
     private List<String> completedStudies;
     private String ongoingStudy;
     private Date birthdate;
