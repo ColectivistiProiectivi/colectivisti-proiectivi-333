@@ -47,7 +47,7 @@ public class AnnouncementController {
         return ResponseEntity.created(uri).body(getAnnouncementService().saveAnnouncement(announcement));
     }
 
-    @DeleteMapping("/announcements/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Long> deletePost(@PathVariable Long id) {
 
         final Announcement announcement = getAnnouncementService().findById(id).
@@ -58,8 +58,8 @@ public class AnnouncementController {
 
     }
 
-//tb sa testez daca merge delete si put fara /announcement/?????????????????????
-    @PutMapping("/announcements/{id}")
+
+    @PutMapping("/{id}")
     public ResponseEntity<Announcement> updateAnnouncement(@RequestBody AnnouncementRequestDTO announcementRequestDTO,
                                                            @PathVariable Long id) {
         return ResponseEntity.ok().body(getAnnouncementService().updateAnnouncement(announcementRequestDTO, id));
