@@ -1,6 +1,7 @@
 package ro.ubb.mp.service.user;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
+import ro.ubb.mp.controller.dto.request.ProfileRequestDTO;
 import ro.ubb.mp.controller.dto.request.UserRequestDTO;
 import ro.ubb.mp.dao.model.User;
 
@@ -20,4 +21,6 @@ public interface UserService extends UserDetailsService {
     void deleteUserByEmail(String email);
 
     void deleteUserById(Long id);
+
+    User updateProfile(ProfileRequestDTO profileRequestDTO);
 }

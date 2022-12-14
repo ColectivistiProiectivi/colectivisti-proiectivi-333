@@ -1,5 +1,6 @@
 package ro.ubb.mp.service.user;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,21 +8,32 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ro.ubb.mp.controller.dto.mapper.UserProfileRequestMapper;
+import ro.ubb.mp.controller.dto.request.ProfileRequestDTO;
 import ro.ubb.mp.controller.dto.request.UserRequestDTO;
+import ro.ubb.mp.dao.model.InterestArea;
 import ro.ubb.mp.dao.model.Role;
+import ro.ubb.mp.dao.model.Study;
 import ro.ubb.mp.dao.model.User;
+import ro.ubb.mp.dao.repository.InterestAreaRepository;
+import ro.ubb.mp.dao.repository.StudyRepository;
 import ro.ubb.mp.dao.repository.UserRepository;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
 @Service("userService")
 @RequiredArgsConstructor
+@Getter
 @Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final StudyRepository studyRepository;
+    private final InterestAreaRepository interestAreaRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserProfileRequestMapper userProfileUpdateMapper;
 
     @Override
     public List<User> getAll() {
@@ -42,7 +54,6 @@ public class UserServiceImpl implements UserService {
                 .fullName(userDTO.getFullName())
                 .password(userDTO.getPassword())
                 .role(userDTO.getRole())
-                .profilePicture(userDTO.getProfilePicture())
                 .build();
 
         userToBeSaved.setUsername(userDTO.getUsername());
@@ -62,7 +73,6 @@ public class UserServiceImpl implements UserService {
         userToUpdate.setFullName(userDTO.getFullName());
         userToUpdate.setUsername(userDTO.getUsername());
         userToUpdate.setPassword(userDTO.getPassword());
-        userToUpdate.setProfilePicture(userDTO.getProfilePicture());
         userToUpdate.setRole(userDTO.getRole());
 
         return userRepository.save(userToUpdate);
@@ -79,6 +89,36 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public User updateProfile(ProfileRequestDTO profileRequestDTO) {
+
+        final User user = getUserById(profileRequestDTO.getId()).orElseThrow(EntityNotFoundException::new);
+        getUserProfileUpdateMapper().update(user, profileRequestDTO);
+
+        if(profileRequestDTO.getCompletedStudyIds() != null) {
+            final List<Study> completedStudies = getStudyRepository().findAllById(profileRequestDTO.getCompletedStudyIds());
+            user.getCompletedStudies().clear();
+            user.getCompletedStudies().addAll(completedStudies);
+        }
+
+        if(profileRequestDTO.getInterestAreaIds() != null) {
+            final List<InterestArea> interestAreas = getInterestAreaRepository().findAllById(profileRequestDTO.getInterestAreaIds());
+            user.getInterestAreas().clear();
+            user.getInterestAreas().addAll(interestAreas);
+        }
+
+        if(profileRequestDTO.getOngoingStudyId() != null) {
+            final Study ongoingStudy = getStudyRepository().findById(profileRequestDTO.getOngoingStudyId()).orElseThrow(EntityNotFoundException::new);
+            user.setOngoingStudy(ongoingStudy);
+        }
+
+        userRepository.save(user);
+
+        return user;
+
     }
 
     void validateEmailExists(String email) {
