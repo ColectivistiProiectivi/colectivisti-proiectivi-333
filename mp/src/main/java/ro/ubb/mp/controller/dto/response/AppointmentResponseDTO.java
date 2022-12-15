@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import ro.ubb.mp.controller.dto.response.user.UserFullNameDTO;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @Builder

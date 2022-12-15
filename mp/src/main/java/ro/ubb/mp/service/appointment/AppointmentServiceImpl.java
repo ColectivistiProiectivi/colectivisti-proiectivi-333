@@ -18,6 +18,7 @@ import ro.ubb.mp.dao.repository.AppointmentRepository;
 import ro.ubb.mp.service.user.UserService;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,7 @@ public class AppointmentServiceImpl implements AppointmentService{
     private final UserService userService;
 
 
+    @Transactional
     public Appointment createAppointment(AppointmentRequestDTO appointmentRequestDTO){
         final User student = getUserService().getUserById(appointmentRequestDTO.getStudentId())
                 .orElseThrow(EntityNotFoundException::new);

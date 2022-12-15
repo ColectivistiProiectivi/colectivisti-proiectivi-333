@@ -1,5 +1,7 @@
 package ro.ubb.mp.controller;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,11 +24,14 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(name = "/appointments")
+@Getter
+@RequiredArgsConstructor
 public class AppointmentController {
     @Autowired
     AppointmentServiceImpl service;
     AppointmentRequestMapper requestMapper;
-    AppointmentResponseMapper responseMapper;
+
+    final AppointmentResponseMapper responseMapper;
 
 
     @GetMapping("/student")
@@ -73,7 +78,7 @@ public class AppointmentController {
                     .toUriString())));
 
             AppointmentResponseDTO appointmentResponseDTO = responseMapper
-                    .toDTO(service.createAppointment(appointmentRequestDTO));
+                    .toDTO(getService().createAppointment(appointmentRequestDTO));
 
             return ResponseEntity.created(uri).body(ResponseWrapperDTO.<AppointmentResponseDTO>builder()
                     .value(appointmentResponseDTO).build());
