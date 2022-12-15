@@ -45,7 +45,7 @@ public class User implements UserDetails {
     private Long id;
 
     @Column(
-            name = "fullName",
+            name = "full_name",
             nullable = false,
             columnDefinition = "TEXT"
     )
@@ -65,7 +65,6 @@ public class User implements UserDetails {
             columnDefinition = "TEXT"
     )
     private String username;
-    private String profilePicture;
 
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
