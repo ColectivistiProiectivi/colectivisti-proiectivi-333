@@ -1,5 +1,6 @@
 package ro.ubb.mp.dao.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +26,7 @@ public class Appointment {
     @ManyToOne(fetch = FetchType.LAZY)
     private User mentor;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:[.ss][.SSS][.SS][.S]")
     private LocalDateTime date;
 
     private String locationDetails;

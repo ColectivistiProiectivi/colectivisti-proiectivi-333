@@ -1,5 +1,6 @@
 package ro.ubb.mp.controller.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -12,8 +13,9 @@ import java.util.Date;
 @Builder
 public class AppointmentResponseDTO {
     private Long id;
-    private UserFullNameDTO fullName;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private UserFullNameDTO student;
+    private UserFullNameDTO mentor;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:[.ss][.SSS][.SS][.S]")
     private LocalDateTime date;
     private String locationDetails;
 }
