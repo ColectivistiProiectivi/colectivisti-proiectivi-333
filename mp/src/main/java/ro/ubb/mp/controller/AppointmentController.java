@@ -15,6 +15,7 @@ import ro.ubb.mp.controller.dto.response.AppointmentResponseDTO;
 import ro.ubb.mp.controller.dto.response.PageResponseWrapperDTO;
 import ro.ubb.mp.controller.dto.response.ResponseWrapperDTO;
 import ro.ubb.mp.dao.model.Appointment;
+import ro.ubb.mp.dao.model.Role;
 import ro.ubb.mp.dao.model.User;
 import ro.ubb.mp.service.appointment.AppointmentServiceImpl;
 
@@ -33,54 +34,43 @@ public class AppointmentController {
     final AppointmentResponseMapper responseMapper;
     final UserFullNameMapper fullNameMapper;
 
-
-    @GetMapping("/student")
-    public ResponseEntity<PageResponseWrapperDTO<List<AppointmentResponseDTO>>> getAllStudentAppointments
+    @GetMapping()
+    public ResponseEntity<PageResponseWrapperDTO<List<AppointmentResponseDTO>>> getAllAppointments
             (
                     @RequestParam(required = false, defaultValue = "") Integer pageNo,
                     @RequestParam(required = false, defaultValue = "") Integer pageSize
             ) {
-        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User student) {
-            List<AppointmentResponseDTO> appointmentResponseDTOS = getService().getAppointmentsStudentPaginated(student, pageNo, pageSize)
-                    .stream().map(appointment -> getResponseMapper().toDTO(appointment)).toList();
+        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User user) {
+            if (user.getRole().equals(Role.MENTOR)) {
+                List<AppointmentResponseDTO> appointmentResponseDTOS = getService().getAppointmentsMentorPaginated(user, pageNo, pageSize)
+                        .stream().map(appointment -> getResponseMapper().toDTO(appointment)).toList();
 
-            return ResponseEntity.ok()
-                    .body(PageResponseWrapperDTO
-                            .<List<AppointmentResponseDTO>>builder().value(appointmentResponseDTOS)
-                            .pageSize(pageSize)
-                            .pageNr(pageNo)
-                            .totalItems(getService().getPageStudent(student, pageNo, pageSize).getTotalElements())
-                            .totalPages(getService().getPageStudent(student, pageNo, pageSize).getTotalPages())
-                            .build());
+                return ResponseEntity.ok()
+                        .body(PageResponseWrapperDTO
+                                .<List<AppointmentResponseDTO>>builder().value(appointmentResponseDTOS)
+                                .pageSize(pageSize)
+                                .pageNr(pageNo)
+                                .totalItems(getService().getPageMentor(user, pageNo, pageSize).getTotalElements())
+                                .totalPages(getService().getPageMentor(user, pageNo, pageSize).getTotalPages())
+                                .build());
 
+            } else if (user.getRole().equals(Role.STUDENT)) {
+                List<AppointmentResponseDTO> appointmentResponseDTOS = getService().getAppointmentsStudentPaginated(user, pageNo, pageSize)
+                        .stream().map(appointment -> getResponseMapper().toDTO(appointment)).toList();
 
-        }
-        return ResponseEntity.badRequest().body(PageResponseWrapperDTO
-                .<List<AppointmentResponseDTO>>builder()
-                .errorMessage("bad authentication type")
-                .build());
-    }
+                return ResponseEntity.ok()
+                        .body(PageResponseWrapperDTO
+                                .<List<AppointmentResponseDTO>>builder().value(appointmentResponseDTOS)
+                                .pageSize(pageSize)
+                                .pageNr(pageNo)
+                                .totalItems(getService().getPageStudent(user, pageNo, pageSize).getTotalElements())
+                                .totalPages(getService().getPageStudent(user, pageNo, pageSize).getTotalPages())
+                                .build());
+            }
 
-    @GetMapping("/mentor")
-    public ResponseEntity<PageResponseWrapperDTO<List<AppointmentResponseDTO>>> getAllMentorAppointments
-            (
-                    @RequestParam(required = false, defaultValue = "") Integer pageNo,
-                    @RequestParam(required = false, defaultValue = "") Integer pageSize
-            ) {
-        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User mentor) {
-            List<AppointmentResponseDTO> appointmentResponseDTOS = getService().getAppointmentsMentorPaginated(mentor, pageNo, pageSize)
-                    .stream().map(appointment -> getResponseMapper().toDTO(appointment)).toList();
-
-            return ResponseEntity.ok()
-                    .body(PageResponseWrapperDTO
-                            .<List<AppointmentResponseDTO>>builder().value(appointmentResponseDTOS)
-                            .pageSize(pageSize)
-                            .pageNr(pageNo)
-                            .totalItems(getService().getPageMentor(mentor, pageNo, pageSize).getTotalElements())
-                            .totalPages(getService().getPageMentor(mentor, pageNo, pageSize).getTotalPages())
-                            .build());
 
         }
+
         return ResponseEntity.badRequest().body(PageResponseWrapperDTO
                 .<List<AppointmentResponseDTO>>builder()
                 .errorMessage("bad authentication type")
