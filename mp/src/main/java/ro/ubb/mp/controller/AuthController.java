@@ -47,7 +47,6 @@ public class AuthController {
     }
 
     /**
-     *
      * @param userLoginDTO wrapper object containing the username and password Strings
      * @return the JWTResponseDTO in case the login is successful
      * Using the AuthenticationManager from SecurityConfiguration we try to do an authentication
