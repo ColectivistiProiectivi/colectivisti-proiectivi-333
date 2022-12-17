@@ -60,9 +60,10 @@ public class AnnouncementController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Announcement> updateAnnouncement(@RequestBody AnnouncementRequestDTO announcementRequestDTO,
+    public ResponseEntity<AnnouncementResponseDTO> updateAnnouncement(@RequestBody AnnouncementRequestDTO announcementRequestDTO,
                                                            @PathVariable Long id) {
-        return ResponseEntity.ok().body(getAnnouncementService().updateAnnouncement(announcementRequestDTO, id));
+        return ResponseEntity.ok().body(getAnnouncementMapper().toDTO(getAnnouncementService().
+                updateAnnouncement(announcementRequestDTO,id)));
 
     }
 }

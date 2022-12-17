@@ -25,7 +25,6 @@ public class Announcement {
     private InterestArea interestAreas;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    //@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User user;
 
     private String title;
