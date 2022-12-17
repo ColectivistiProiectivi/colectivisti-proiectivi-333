@@ -15,16 +15,17 @@ import java.nio.file.StandardCopyOption;
 public class FileServiceImpl implements FileService{
     @Override
     public void saveImageToDisk(MultipartFile file, String fileName) throws IOException {
-        final Path filePath = Paths.get("mp/src/main/resources/images/", fileName);
+        final Path imagesFolder = Paths.get("images");
 
         try (InputStream inputStream = file.getInputStream()) {
-            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(inputStream, imagesFolder.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
         }
     }
 
     @Override
     public ByteArrayResource getFileFromDisk(String fileName) throws IOException {
-        final Path filePath = Paths.get("mp/src/main/resources/images/", fileName);
+
+        final Path filePath = Paths.get("images", fileName);
 
         return new ByteArrayResource(Files.readAllBytes(filePath));
     }

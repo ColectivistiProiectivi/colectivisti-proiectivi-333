@@ -16,28 +16,4 @@ public interface UserProfileResponseMapper {
 
     @Mapping(target = "email", source = "username")
      UserProfileDTO toProfileDTO(User user);
-
-     default List<String> mapCompletedStudies (List<Study> completedStudies) {
-
-         if(completedStudies != null && !completedStudies.isEmpty()) {
-             return completedStudies.stream().map(Study::getName).collect(Collectors.toList());
-         }
-         return null;
-     }
-
-    default String mapOngoingStudy (Study ongoingStudy) {
-
-        if(ongoingStudy != null) {
-            return ongoingStudy.getName();
-        }
-        return null;
-    }
-
-    default List<String> mapInterestAreas (Set<InterestArea> interestAreas) {
-
-        if(interestAreas != null && !interestAreas.isEmpty()) {
-            return interestAreas.stream().map(InterestArea::getName).collect(Collectors.toList());
-        }
-        return null;
-    }
 }
