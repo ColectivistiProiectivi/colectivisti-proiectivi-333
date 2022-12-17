@@ -32,7 +32,6 @@ public class AppointmentController {
     @Autowired
     AppointmentServiceImpl service;
     final AppointmentResponseMapper responseMapper;
-    final UserFullNameMapper fullNameMapper;
 
     @GetMapping()
     public ResponseEntity<PageResponseWrapperDTO<List<AppointmentResponseDTO>>> getAllAppointments
