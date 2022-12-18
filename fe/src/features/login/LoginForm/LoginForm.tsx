@@ -63,13 +63,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ registerClick }) => {
           color="secondary"
         />
         <StyledTextField
-          {...register('password', {
-            required: 'Password is required',
-            minLength: {
-              value: 6,
-              message: 'Password too short',
-            },
-          })}
+          {...register('password')}
           label="Password"
           type="password"
           error={!!errors.password}

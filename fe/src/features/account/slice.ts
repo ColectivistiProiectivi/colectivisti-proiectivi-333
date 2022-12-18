@@ -1,12 +1,25 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { UserDto } from '../../types/User'
-import { fetchUserData } from './actions'
+import { InterestArea, Study, UserDto } from '../../types/User'
+import {
+  fetchCompletedStudiesOptions,
+  fetchInterestAreasOptions,
+  fetchUserAvatar,
+  fetchUserData,
+  updateUserData,
+} from './actions'
 
 export interface UserData {
   userData?: UserDto
   userDataLoading: boolean
   userDataComplete: boolean
   userDataError: boolean
+  userAvatar?: Blob
+  userAvatarLoading: boolean
+  updateUserLoading: boolean
+  completedStudiesOptions?: Study[]
+  completedStudiesOptionsLoading: boolean
+  interestAreasOptions?: InterestArea[]
+  interestAreasOptionsLoading: boolean
 }
 
 const initialState: UserData = {
@@ -14,6 +27,13 @@ const initialState: UserData = {
   userDataLoading: false,
   userDataComplete: false,
   userDataError: false,
+  userAvatar: undefined,
+  userAvatarLoading: false,
+  updateUserLoading: false,
+  completedStudiesOptions: undefined,
+  completedStudiesOptionsLoading: false,
+  interestAreasOptions: undefined,
+  interestAreasOptionsLoading: false,
 }
 
 export const userSlice = createSlice({
@@ -38,6 +58,49 @@ export const userSlice = createSlice({
         state.userDataError = true
         state.userDataLoading = false
         state.userDataComplete = false
+      })
+
+      .addCase(fetchUserAvatar.pending, state => {
+        state.userAvatarLoading = true
+      })
+      .addCase(fetchUserAvatar.fulfilled, (state, action: PayloadAction<Blob>) => {
+        state.userAvatar = action.payload
+        state.userAvatarLoading = false
+      })
+      .addCase(fetchUserAvatar.rejected, state => {
+        state.userAvatarLoading = false
+      })
+
+      .addCase(updateUserData.pending, state => {
+        state.updateUserLoading = true
+      })
+      .addCase(updateUserData.fulfilled, state => {
+        state.updateUserLoading = false
+      })
+      .addCase(updateUserData.rejected, state => {
+        state.updateUserLoading = false
+      })
+
+      .addCase(fetchCompletedStudiesOptions.pending, state => {
+        state.completedStudiesOptionsLoading = true
+      })
+      .addCase(fetchCompletedStudiesOptions.fulfilled, (state, action: PayloadAction<Study[]>) => {
+        state.completedStudiesOptions = action.payload
+        state.completedStudiesOptionsLoading = false
+      })
+      .addCase(fetchCompletedStudiesOptions.rejected, state => {
+        state.completedStudiesOptionsLoading = false
+      })
+
+      .addCase(fetchInterestAreasOptions.pending, state => {
+        state.interestAreasOptionsLoading = true
+      })
+      .addCase(fetchInterestAreasOptions.fulfilled, (state, action: PayloadAction<Study[]>) => {
+        state.interestAreasOptions = action.payload
+        state.interestAreasOptionsLoading = false
+      })
+      .addCase(fetchInterestAreasOptions.rejected, state => {
+        state.interestAreasOptionsLoading = false
       })
   },
 })

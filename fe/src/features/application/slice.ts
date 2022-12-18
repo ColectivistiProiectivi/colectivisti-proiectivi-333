@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { addUser } from '../registration/actions'
 import { authenticateUser } from '../login/actions'
 import { AuthProps } from '../../types/User'
+import { updateUserData } from '../account/actions'
 
 export interface AppState {
   snackbarOpen: boolean
@@ -92,10 +93,21 @@ export const appSlice = createSlice({
         state.loginLoading = false
         state.loginComplete = true
       })
-
       .addCase(authenticateUser.pending, state => {
         state.loginLoading = true
         state.loginComplete = false
+      })
+
+      // Update profile
+      .addCase(updateUserData.fulfilled, state => {
+        state.snackbarOpen = true
+        state.snackbarType = 'success'
+        state.snackbarMessage = 'Your profile has been updated!'
+      })
+      .addCase(updateUserData.rejected, state => {
+        state.snackbarOpen = true
+        state.snackbarType = 'error'
+        state.snackbarMessage = 'Something went wrong updating your profile.'
       })
   },
 })
