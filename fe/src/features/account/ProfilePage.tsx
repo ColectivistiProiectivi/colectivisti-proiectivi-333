@@ -1,29 +1,70 @@
 import React, { useEffect } from 'react'
-import { Button, css, styled, Tab, Tabs, Typography } from '@mui/material'
+import { Autocomplete, Button, css, styled, Tab, Tabs, TextField, Typography } from '@mui/material'
 import { UserDto } from '../../types/User'
-import { SubmitHandler, useForm, FormProvider } from 'react-hook-form'
+import { SubmitHandler, useForm, FormProvider, useController } from 'react-hook-form'
 import { LoadingOverlay } from '../common/LoadingOverlay'
 import { dateMatchRegexp } from './utils'
-import { useAppSelector } from '../../redux/hooks'
-import { selectUserData, selectUserDataLoading } from './selectors'
-import { FormInput, FormInputWithChips, ReadOnlyFormInput } from './FormInput'
+import { useAppDispatch, useAppSelector } from '../../redux/hooks'
+import {
+  selectCompletedStudiesOptions,
+  selectCompletedStudiesOptionsLoading,
+  selectInterestAreasOptions,
+  selectInterestAreasOptionsLoading,
+  selectUpdateUserLoading,
+  selectUserAvatar,
+  selectUserAvatarLoading,
+  selectUserData,
+  selectUserDataLoading,
+} from './selectors'
+import { FormInput, ReadOnlyFormInput } from './FormInput'
 import { ProfilePicture } from './ProfilePicture'
 import { Section, useSectionScroll } from './hooks'
+import { fetchCompletedStudiesOptions, fetchInterestAreasOptions, updateUserData } from './actions'
 
 export type ProfileFormType = Omit<UserDto, 'email' | 'role' | 'profilePicture'> & {
   profilePicture?: File
 }
 
+export type ProfileSubmitType = Omit<
+  UserDto,
+  'email' | 'role' | 'profilePicture' | 'completedStudies' | 'interestAreas'
+> & {
+  profilePicture?: File
+  completedStudyIds: number[]
+  interestAreaIds: number[]
+  ongoingStudyId?: number
+}
+
 const ProfilePage: React.FC = () => {
   const formMethods = useForm<ProfileFormType>()
   const {
+    control,
     setValue,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = formMethods
+  const { generalSectionRef, profileSectionRef, activeSection, handleSectionChange } = useSectionScroll()
+  const dispatch = useAppDispatch()
+
   const userData = useAppSelector(selectUserData)
   const userDataLoading = useAppSelector(selectUserDataLoading)
-  const { generalSectionRef, profileSectionRef, activeSection, handleSectionChange } = useSectionScroll()
+
+  const userAvatar = useAppSelector(selectUserAvatar)
+  const userAvatarLoading = useAppSelector(selectUserAvatarLoading)
+
+  const updateUserLoading = useAppSelector(selectUpdateUserLoading)
+
+  const completedStudiesOptions = useAppSelector(selectCompletedStudiesOptions)
+  const completedStudiesOptionsLoading = useAppSelector(selectCompletedStudiesOptionsLoading)
+
+  const interestAreasOptions = useAppSelector(selectInterestAreasOptions)
+  const interestAreasOptionsLoading = useAppSelector(selectInterestAreasOptionsLoading)
+
+  // Load Completed Studies Options
+  useEffect(() => {
+    dispatch(fetchCompletedStudiesOptions())
+    dispatch(fetchInterestAreasOptions())
+  }, [])
 
   // Load fields with existing data
   useEffect(() => {
@@ -34,15 +75,51 @@ const ProfilePage: React.FC = () => {
     }
   }, [userData])
 
-  const handleSaveProfile: SubmitHandler<ProfileFormType> = _formData => {
+  // Load the user profile picture
+  useEffect(() => {
+    if (userAvatar) {
+      const userAvatarObject = new File([userAvatar], 'profilePicture.jpg')
+      setValue('profilePicture', userAvatarObject, { shouldDirty: false })
+    }
+  }, [userAvatar])
+
+  const handleSaveProfile: SubmitHandler<ProfileFormType> = formData => {
     // IMPORTANT: Interest areas and fields that contain a list of strings should be handled here separately
     // API call to '/users/profile'
-    // dispatch(updateUser(formData))
+    const parsedCompletedStudies = formData['completedStudies']?.map(completedStudy => completedStudy.id) || []
+    const parsedInterestAreas = formData['interestAreas']?.map(interestArea => interestArea.id) || []
+    const parsedOngoingStudy = formData['ongoingStudy']?.id || undefined
+    const parsedPassword = formData['password'] === '' ? undefined : formData['password']
+
+    const submittedData: ProfileSubmitType = {
+      ...formData,
+      completedStudyIds: parsedCompletedStudies,
+      interestAreaIds: parsedInterestAreas,
+      ongoingStudyId: parsedOngoingStudy,
+      password: parsedPassword,
+    }
+
+    dispatch(updateUserData(submittedData))
   }
+
+  const { field: ongoingStudyField } = useController({ name: 'ongoingStudy', control })
+  const { field: completedStudiesField } = useController({ name: 'completedStudies', control })
+  const { field: interestAreasField } = useController({ name: 'interestAreas', control })
+
+  const ongoingStudyValue = formMethods.watch('ongoingStudy')
+  const completeStudiesValue = formMethods.watch('completedStudies')
+  const interestAreasValue = formMethods.watch('interestAreas')
+
+  const isPageLoading =
+    userDataLoading ||
+    userAvatarLoading ||
+    updateUserLoading ||
+    completedStudiesOptionsLoading ||
+    interestAreasOptionsLoading
 
   return (
     <Container>
-      <LoadingOverlay visible={userDataLoading} />
+      <LoadingOverlay visible={isPageLoading} />
       <FormTitle variant="overline">Profile</FormTitle>
       <FormProvider {...formMethods}>
         <FormWrapper onSubmit={handleSubmit(handleSaveProfile)}>
@@ -86,16 +163,88 @@ const ProfilePage: React.FC = () => {
               fieldName="birthdate"
               options={{ pattern: { value: dateMatchRegexp, message: 'Wrong Date Format' } }}
               error={!!errors.birthdate}
-              helperText="Date format: DD/MM/YYYY"
+              helperText="Date format: DD-MM-YYYY"
             />
-            <FormInput
-              label="Ongoing Study"
-              fieldName="ongoingStudy"
-              options={{ maxLength: 50 }}
-              helperText="Max 50 characters"
+            <Autocomplete
+              autoHighlight
+              options={completedStudiesOptions || []}
+              getOptionLabel={option => option.name}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              value={ongoingStudyValue || null}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  helperText={errors.ongoingStudy?.message}
+                  error={!!errors.ongoingStudy}
+                  label="Ongoing Study"
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: 'new-password', // disable autocomplete and autofill
+                  }}
+                />
+              )}
+              onChange={(_, newOngoingStudy) => {
+                formMethods.clearErrors('ongoingStudy')
+                if (!newOngoingStudy) {
+                  formMethods.setError('ongoingStudy', new Error('Required field!'))
+                }
+
+                ongoingStudyField.onChange(newOngoingStudy, { shouldDirty: true })
+                ongoingStudyField.onBlur()
+              }}
             />
-            <FormInputWithChips label="Completed Studies" fieldName="completedStudies" />
-            <FormInputWithChips label="Interest Areas" fieldName="interestAreas" />
+            <Autocomplete
+              multiple
+              options={completedStudiesOptions || []}
+              getOptionLabel={option => option.name}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              value={completeStudiesValue ?? []}
+              filterSelectedOptions
+              renderInput={params => (
+                <TextField
+                  helperText={errors.completedStudies?.message}
+                  error={!!errors.completedStudies}
+                  color="secondary"
+                  {...params}
+                  label="Completed Studies"
+                />
+              )}
+              onChange={(_, newCompletedStudies) => {
+                formMethods.clearErrors('completedStudies')
+                if (newCompletedStudies.length < 1) {
+                  formMethods.setError('completedStudies', new Error('Must have 1 selected'))
+                }
+
+                completedStudiesField.onChange(newCompletedStudies, { shouldDirty: true })
+                completedStudiesField.onBlur()
+              }}
+            />
+            <Autocomplete
+              multiple
+              options={interestAreasOptions || []}
+              getOptionLabel={option => option.name}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              value={interestAreasValue ?? []}
+              filterSelectedOptions
+              renderInput={params => (
+                <TextField
+                  helperText={errors.interestAreas?.message}
+                  error={!!errors.interestAreas}
+                  color="secondary"
+                  {...params}
+                  label="Interest Areas"
+                />
+              )}
+              onChange={(_, newInterestAreas) => {
+                formMethods.clearErrors('interestAreas')
+                if (newInterestAreas.length < 1) {
+                  formMethods.setError('interestAreas', new Error('Must have 1 selected'))
+                }
+
+                interestAreasField.onChange(newInterestAreas)
+                interestAreasField.onBlur()
+              }}
+            />
             <FormInput
               label="Description"
               fieldName="description"
@@ -110,7 +259,7 @@ const ProfilePage: React.FC = () => {
             variant="contained"
             color="secondary"
             type="submit"
-            disabled={!formMethods.formState.isDirty && !!Object.values(errors).length}
+            disabled={!isDirty || !!Object.values(errors).length}
           >
             Update Profile
           </SaveButton>
@@ -145,7 +294,6 @@ const Container = styled('div')`
 const FormTitle = styled(Typography)`
   font-weight: bold;
   font-size: 24px;
-  margin-top: 70px;
   margin: 0;
 `
 

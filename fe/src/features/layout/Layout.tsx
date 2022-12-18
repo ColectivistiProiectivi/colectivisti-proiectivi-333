@@ -6,7 +6,7 @@ import { displaySnackbar } from '../application/slice'
 import { styled } from '@mui/material'
 import { Sidebar } from '../common/Sidebar'
 import { selectUserData } from '../account/selectors'
-import { fetchUserData } from '../account/actions'
+import { fetchUserAvatar, fetchUserData } from '../account/actions'
 import { paths } from '../../api'
 import { NavBar } from '../common/Navbar'
 
@@ -18,6 +18,7 @@ export const Layout: React.FC = () => {
   useEffect(() => {
     if (!userData) {
       dispatch(fetchUserData())
+      dispatch(fetchUserAvatar())
     }
   }, [])
 
