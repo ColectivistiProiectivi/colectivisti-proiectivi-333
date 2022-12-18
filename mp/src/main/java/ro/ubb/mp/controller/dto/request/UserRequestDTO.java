@@ -17,7 +17,7 @@ public class UserRequestDTO {
     @NotBlank
     private String username;
     @NotBlank
-    @Size(min=7)
+    @Size(min = 7)
     private String password;
     private String profilePicture;
     private Set<Long> interestAreaIds;
