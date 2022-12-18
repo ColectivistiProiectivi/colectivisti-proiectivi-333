@@ -1,31 +1,36 @@
 package ro.ubb.mp.controller.dto;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ro.ubb.mp.dao.model.Message;
 import ro.ubb.mp.service.message.MessageService;
 
 import java.util.List;
-
+@RestController
+@RequestMapping("/messages")
+@Getter
+@RequiredArgsConstructor
 public class MessageController {
 
     //autowire the MessageService class
     @Autowired
     MessageService messageService;
     //creating a get mapping that retrieves all the messages from the database
-    @GetMapping("/message")
+    @GetMapping("/messages")
     private List<Message> getAllMessages()
     {
         return messageService.getAll();
     }
     //creating a get mapping that retrieves the detail of a specific message
-    @GetMapping("/message/{id}")
+    @GetMapping("/messages/{id}")
     private Message getMessages(@PathVariable("id") int id)
     {
         return messageService.getMessageById(id);
     }
     //creating a delete mapping that deletes a specified message
-    @DeleteMapping("/message/{id}")
+    @DeleteMapping("/messages/{id}")
     private void deleteMessage(@PathVariable("id") int id)
     {
         messageService.delete(id);
