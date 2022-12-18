@@ -13,18 +13,18 @@ public class MessageController {
     @Autowired
     MessageService messageService;
     //creating a get mapping that retrieves all the messages from the database
-    @GetMapping("/book")
+    @GetMapping("/message")
     private List<Message> getAllMessages()
     {
         return messageService.getAll();
     }
     //creating a get mapping that retrieves the detail of a specific message
     @GetMapping("/message/{id}")
-    private Message getBooks(@PathVariable("id") int id)
+    private Message getMessages(@PathVariable("id") int id)
     {
         return messageService.getMessageById(id);
     }
-    //creating a delete mapping that deletes a specified book
+    //creating a delete mapping that deletes a specified message
     @DeleteMapping("/message/{id}")
     private void deleteMessage(@PathVariable("id") int id)
     {
@@ -32,13 +32,13 @@ public class MessageController {
     }
     //creating post mapping that post the message detail in the database
     @PostMapping("/messages")
-    private int saveBook(@RequestBody Message message)
+    private int saveMessage(@RequestBody Message message)
     {
         messageService.saveOrUpdate(message);
         return message.getId();
     }
     //creating put mapping that updates the message detail
-    @PutMapping("/books")
+    @PutMapping("/messages")
     private Message update(@RequestBody Message message)
     {
         messageService.saveOrUpdate(message);
