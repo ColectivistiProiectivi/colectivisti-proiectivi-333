@@ -4,8 +4,6 @@ import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import { AssignedUser } from '../../../types/Assignment'
 import { alpha, Avatar, IconButton, styled, Typography } from '@mui/material'
 import { AssignmentCategory } from '../AssignmentsPage'
-import { useAppSelector } from '../../../redux/hooks'
-import { selectAllUsers } from '../../account/selectors'
 
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -31,7 +29,7 @@ export const AssignmentCard: React.FC<AssignmentCardProps> = ({
   assignedTo,
   category,
 }) => {
-  const users = useAppSelector(selectAllUsers)
+  // const _users: User[] = []
 
   const date = {
     [AssignmentCategory.NOT_STARTED]: `Starting on ${startDate.format('LLLL')}`,
@@ -49,7 +47,7 @@ export const AssignmentCard: React.FC<AssignmentCardProps> = ({
         {assignedTo.map(assignedUser => (
           <AssignedUsersAvatar
             key={assignedUser.userId}
-            src={users?.find(user_ => user_.id === assignedUser.userId)?.profilePicture}
+            // src={users?.find(user_ => user_.id === assignedUser.userId)?.profilePicture}
           />
         ))}
       </AssignedUsers>

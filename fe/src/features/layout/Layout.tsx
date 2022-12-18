@@ -5,29 +5,22 @@ import { useAppDispatch, useAppSelector } from '../../redux/hooks'
 import { displaySnackbar } from '../application/slice'
 import { styled } from '@mui/material'
 import { Sidebar } from '../common/Sidebar'
-import { selectAllUsers, selectUserData } from '../account/selectors'
-import { fetchAllUsers, fetchUserData } from '../account/actions'
+import { selectUserData } from '../account/selectors'
+import { fetchUserAvatar, fetchUserData } from '../account/actions'
 import { paths } from '../../api'
-import { NavPlaceholder } from '../common/NavPlaceholder'
-import { Role } from '../../types/User'
+import { NavBar } from '../common/Navbar'
 
 export const Layout: React.FC = () => {
   const dispatch = useAppDispatch()
   const isAuthenticated = !!localStorage.getItem('jwtToken')
   const userData = useAppSelector(selectUserData)
-  const allUsersData = useAppSelector(selectAllUsers)
 
   useEffect(() => {
     if (!userData) {
       dispatch(fetchUserData())
+      dispatch(fetchUserAvatar())
     }
   }, [])
-
-  useEffect(() => {
-    if (!allUsersData && userData?.role == Role.MENTOR) {
-      dispatch(fetchAllUsers())
-    }
-  }, [userData])
 
   if (!isAuthenticated) {
     dispatch(
@@ -45,8 +38,7 @@ export const Layout: React.FC = () => {
     <LoadingScreen>
       <Page>
         <Container>
-          {/*<NavBar />*/}
-          <NavPlaceholder />
+          <NavBar />
           <Content>
             <Sidebar />
             <Outlet />

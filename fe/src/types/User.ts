@@ -3,8 +3,17 @@ export enum Role {
   MENTOR = 'MENTOR',
 }
 
+export interface Study {
+  id: number
+  name: string
+}
+
+export interface InterestArea {
+  id: number
+  name: string
+}
+
 export interface BaseUser {
-  id?: number
   fullName: string
   email: string
   password: string
@@ -12,10 +21,10 @@ export interface BaseUser {
 }
 
 export interface User extends BaseUser {
-  profilePicture: string
-  completedStudies: string[]
-  ongoingStudy: string
-  interestAreas: string[]
+  profilePicture: File | string
+  completedStudies: Study[]
+  ongoingStudy: Study
+  interestAreas: InterestArea[]
   description: string
   birthdate: string
 }

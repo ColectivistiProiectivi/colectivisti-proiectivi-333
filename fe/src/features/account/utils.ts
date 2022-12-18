@@ -1,7 +1,7 @@
 export const urlMatchRegexp =
   /[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/
 
-export const dateMatchRegexp = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/
+export const dateMatchRegexp = /^([0-2][0-9]|(3)[0-1])(-)(((0)[0-9])|((1)[0-2]))(-)\d{4}$/
 
 export const commaSeparatedRegexp = /^[0-9a-zA-Z]+(,[0-9a-zA-Z]+)*/
 
