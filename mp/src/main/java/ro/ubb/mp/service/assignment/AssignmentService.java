@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface AssignmentService {
     Optional<Assignment> findById(Long id);
 
+    List<Assignment> getAll();
     List<Assignment> getByAuthor(Long authorId);
 
     Assignment saveAssignment(AssignmentRequestDTO assignmentRequestDTO);

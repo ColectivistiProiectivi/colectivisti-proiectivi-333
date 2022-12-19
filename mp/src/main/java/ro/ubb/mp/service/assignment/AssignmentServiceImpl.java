@@ -27,7 +27,12 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public Optional<Assignment> findById(Long id) {
-        return Optional.empty();
+        return assignmentRepository.findById(id);
+    }
+
+    @Override
+    public List<Assignment> getAll() {
+        return assignmentRepository.findAll();
     }
 
     @Override
@@ -59,17 +64,33 @@ public class AssignmentServiceImpl implements AssignmentService {
                 .maximumGrade(assignmentRequestDTO.getMaximumGrade())
                 .build();
 
-
         return assignmentRepository.save(assignmentToBeSaved);
     }
 
     @Override
     public Assignment updateAssignment(AssignmentRequestDTO assignmentRequestDTO, Long id) {
-        return null;
+        Assignment assignment = findById(id).orElseThrow(EntityNotFoundException::new);
+
+        final List<User> students = new ArrayList<>();
+
+        for(Long studentId: assignmentRequestDTO.getStudentIds()) {
+            students.add(getUserService().getUserById(studentId).
+                    orElseThrow(EntityNotFoundException::new));
+        }
+
+        assignment.setDescription(assignmentRequestDTO.getDescription());
+        assignment.setTitle(assignmentRequestDTO.getTitle());
+        assignment.setDescription(assignmentRequestDTO.getDescription());
+        assignment.setMaximumGrade(assignmentRequestDTO.getMaximumGrade());
+        assignment.setDeadline(Timestamp.valueOf(assignmentRequestDTO.getDeadline()));
+        assignment.setStartDate(Timestamp.valueOf(assignmentRequestDTO.getStartDate()));
+        assignment.setStudents(students);
+
+        return assignmentRepository.save(assignment);
     }
 
     @Override
     public void deleteAssignmentById(Long id) {
-
+        assignmentRepository.deleteById(id);
     }
 }
