@@ -13,7 +13,7 @@ public interface AssignmentRepository  extends JpaRepository<Assignment, Long> {
 
     Optional<Assignment> findByTitle(String title);
 
-    Assignment findByAuthor(User mentor);
+    List<Assignment> findByAuthor(User mentor);
 
     List<Assignment> findByStudents(User student);
 }

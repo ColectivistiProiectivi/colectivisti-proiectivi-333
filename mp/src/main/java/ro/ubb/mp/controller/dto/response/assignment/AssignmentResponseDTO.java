@@ -1,7 +1,6 @@
 package ro.ubb.mp.controller.dto.response.assignment;
 
 import ro.ubb.mp.controller.dto.request.UserRequestDTO;
-import ro.ubb.mp.dao.model.User;
 
 import java.util.Date;
 import java.util.List;

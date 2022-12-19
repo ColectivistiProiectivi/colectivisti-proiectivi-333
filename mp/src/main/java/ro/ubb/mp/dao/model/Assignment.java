@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -20,20 +21,30 @@ public class Assignment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "assignment_student_xref",
+            joinColumns = @JoinColumn(name = "assignment_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     private List<User> students;
 
-    @OneToOne(fetch = FetchType.LAZY)
+//    @OneToOne(cascade = {
+//            CascadeType.PERSIST,
+//            CascadeType.MERGE
+//    })
+//    @JoinTable(name = "assignment_author_xref",
+//            joinColumns = @JoinColumn(name = "assignment_id"),
+//            inverseJoinColumns = @JoinColumn(name = "user_id")
+//    )
+    @ManyToOne(fetch = FetchType.LAZY)
     private User author;
 
     private String title;
-
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
-    private Date startDate;
-
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
-    private Date deadline;
-
+    private Timestamp startDate;
+    private Timestamp deadline;
     private String description;
     private Double maximumGrade;
 }
