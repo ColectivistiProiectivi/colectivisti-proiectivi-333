@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface AssignmentRepository  extends JpaRepository<Assignment, Long> {
 
-    Optional<Assignment> findByTitle(String title);
+    List<Assignment> findByTitle(String title);
 
     List<Assignment> findByAuthor(User mentor);
 

@@ -8,11 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ro.ubb.mp.controller.dto.mapper.AssignmentMapper;
-import ro.ubb.mp.controller.dto.request.AnnouncementRequestDTO;
 import ro.ubb.mp.controller.dto.request.AssignmentRequestDTO;
-import ro.ubb.mp.controller.dto.response.announcement.AnnouncementResponseDTO;
 import ro.ubb.mp.controller.dto.response.assignment.AssignmentResponseDTO;
-import ro.ubb.mp.dao.model.Announcement;
 import ro.ubb.mp.dao.model.Assignment;
 import ro.ubb.mp.service.assignment.AssignmentService;
 import ro.ubb.mp.service.user.UserService;
@@ -49,13 +46,20 @@ public class AssignmentController {
         return ResponseEntity.ok().body(assignmentResponseDTOS);
     }
 
+    @RequestMapping(value = "/title/{title}", method = RequestMethod.GET)
+    public ResponseEntity<List<AssignmentResponseDTO>> getAssignments(@PathVariable String title) {
+        List<Assignment> assignments = assignmentService.getByTitle(title);
+        List<AssignmentResponseDTO> assignmentResponseDTOS = assignments.stream()
+                .map(assignment -> getAssignmentMapper().toDTO(assignment)).collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(assignmentResponseDTOS);
+    }
+
     @PostMapping()
-    public ResponseEntity<String> addAnnouncement(@RequestBody AssignmentRequestDTO assignment) {
+    public ResponseEntity<AssignmentResponseDTO> addAnnouncement(@RequestBody AssignmentRequestDTO assignment) {
         URI uri = URI.create((ServletUriComponentsBuilder.fromCurrentContextPath().path("/addAssignment").toUriString()));
 
-        getAssignmentService().saveAssignment(assignment);
-
-        return ResponseEntity.created(uri).body("success");
+        return ResponseEntity.created(uri).body(getAssignmentMapper().toDTO(getAssignmentService().saveAssignment(assignment)));
     }
 
     @PutMapping("/{id}")

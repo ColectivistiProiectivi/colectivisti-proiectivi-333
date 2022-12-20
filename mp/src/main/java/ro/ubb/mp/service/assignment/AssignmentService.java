@@ -11,6 +11,7 @@ public interface AssignmentService {
 
     List<Assignment> getAll();
     List<Assignment> getByAuthor(Long authorId);
+    List<Assignment> getByTitle(String title);
 
     Assignment saveAssignment(AssignmentRequestDTO assignmentRequestDTO);
     Assignment updateAssignment(AssignmentRequestDTO assignmentRequestDTO, Long id);

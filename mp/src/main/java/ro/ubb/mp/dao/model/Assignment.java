@@ -1,6 +1,5 @@
 package ro.ubb.mp.dao.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -31,14 +29,6 @@ public class Assignment {
     )
     private List<User> students;
 
-//    @OneToOne(cascade = {
-//            CascadeType.PERSIST,
-//            CascadeType.MERGE
-//    })
-//    @JoinTable(name = "assignment_author_xref",
-//            joinColumns = @JoinColumn(name = "assignment_id"),
-//            inverseJoinColumns = @JoinColumn(name = "user_id")
-//    )
     @ManyToOne(fetch = FetchType.LAZY)
     private User author;
 

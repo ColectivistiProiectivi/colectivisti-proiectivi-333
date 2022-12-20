@@ -2,12 +2,9 @@ package ro.ubb.mp.service.assignment;
 
 import lombok.Data;
 import lombok.Getter;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import ro.ubb.mp.controller.dto.request.AssignmentRequestDTO;
-import ro.ubb.mp.dao.model.Announcement;
 import ro.ubb.mp.dao.model.Assignment;
-import ro.ubb.mp.dao.model.InterestArea;
 import ro.ubb.mp.dao.model.User;
 import ro.ubb.mp.dao.repository.AssignmentRepository;
 import ro.ubb.mp.service.user.UserService;
@@ -15,6 +12,7 @@ import ro.ubb.mp.service.user.UserService;
 import javax.persistence.EntityNotFoundException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +38,11 @@ public class AssignmentServiceImpl implements AssignmentService {
         Optional<User> user = userService.getUserById(authorId);
 
         return user.map(assignmentRepository::findByAuthor).orElse(null);
+    }
+
+    @Override
+    public List<Assignment> getByTitle(String title) {
+        return assignmentRepository.findByTitle(title);
     }
 
     @Override
