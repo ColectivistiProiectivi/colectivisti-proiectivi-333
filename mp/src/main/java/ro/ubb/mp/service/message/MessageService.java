@@ -11,6 +11,7 @@ import ro.ubb.mp.dao.model.InterestArea;
 import ro.ubb.mp.dao.model.Message;
 import ro.ubb.mp.dao.model.User;
 import ro.ubb.mp.dao.repository.MessageRepository;
+import ro.ubb.mp.service.user.UserService;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
@@ -23,28 +24,30 @@ import java.util.Optional;
 public class MessageService {
     @Autowired
     MessageRepository messageRepository;
+    final UserService userService;
 
 
-    public Optional<Message> findById(int id) {
+    public Optional<Message> findById(Long id) {
         return messageRepository.findById(id);
     }
 
 
-    public List<Message> getAllMessages() {
-        return (List<Message>) messageRepository.findAll();
-    }
 
-    public void saveMessage(MessageRequestDTO messageDTO) {
+    public Message saveMessage(MessageRequestDTO messageDTO) {
+        final User sender = getUserService().getUserById(messageDTO.getSenderId()).orElseThrow(EntityNotFoundException::new);
+        final User receiver = getUserService().getUserById(messageDTO.getReceiverId()).orElseThrow(EntityNotFoundException::new);
+
         final Message messageToBeSaved = Message.builder()
                 .content(messageDTO.getContent())
-                .reciever(messageDTO.getReciever())
-                .sender(messageDTO.getSender())
+                .receiver(receiver)
+                .sender(sender)
                 .time(messageDTO.getTime())
                 .build();
-        messageRepository.save(messageToBeSaved);
+
+       return messageRepository.save(messageToBeSaved);
     }
 
-    public void deleteMessageById(int id) {
+    public void deleteMessageById(Long id) {
         messageRepository.deleteById(id);
     }
 }
