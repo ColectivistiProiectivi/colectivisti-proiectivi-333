@@ -20,18 +20,18 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+
     @ManyToOne(fetch = FetchType.LAZY)
     private User sender;
 
-    @Column
+
     @ManyToOne(fetch = FetchType.LAZY)
     private User receiver;
 
-    @Column
+
     private String content;
 
-    @Column
+
     private LocalDateTime time;
 
 
