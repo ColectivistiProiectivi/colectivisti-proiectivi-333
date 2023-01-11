@@ -18,6 +18,8 @@ import ro.ubb.mp.service.message.MessageService;
 
 import javax.persistence.EntityNotFoundException;
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -68,5 +70,32 @@ public class MessageController {
                 .body(ResponseWrapperDTO.<MessageResponseDTO>builder().errorMessage("Bad authentication type").build());
     }
 
+    @GetMapping("/{id1}/{id2}")
+    public ResponseEntity<ResponseWrapperDTO<List<MessageResponseDTO>>> getAllMessagesBetweenUsers(@PathVariable Long id1, @PathVariable Long id2){
+        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User user){
+            List<MessageResponseDTO> messageResponseDTOS = getService().getMessagesBetweenUsers(id1, id2)
+                    .stream().map(message -> getResponseMapper().toDTO(message)).collect(Collectors.toList());
+
+            return ResponseEntity.ok()
+                    .body(ResponseWrapperDTO.<List<MessageResponseDTO>>builder().value(messageResponseDTOS).build());
+        }
+
+        return ResponseEntity.badRequest()
+                .body(ResponseWrapperDTO.<List<MessageResponseDTO>>builder().errorMessage("Bad authentication type").build());
+    }
+
+    @GetMapping("user/{id}")
+    public ResponseEntity<ResponseWrapperDTO<List<MessageResponseDTO>>> getAllUserMessages(@PathVariable Long id){
+        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User user){
+            List<MessageResponseDTO> messageResponseDTOS = getService().getAllUserMessages(id)
+                    .stream().map(message -> getResponseMapper().toDTO(message)).collect(Collectors.toList());
+
+            return ResponseEntity.ok()
+                    .body(ResponseWrapperDTO.<List<MessageResponseDTO>>builder().value(messageResponseDTOS).build());
+        }
+
+        return ResponseEntity.badRequest()
+                .body(ResponseWrapperDTO.<List<MessageResponseDTO>>builder().errorMessage("Bad authentication type").build());
+    }
 
 }
