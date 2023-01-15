@@ -177,6 +177,7 @@ const ProfilePage: React.FC = () => {
                   helperText={errors.ongoingStudy?.message}
                   error={!!errors.ongoingStudy}
                   label="Ongoing Study"
+                  InputLabelProps={{ shrink: true }}
                   inputProps={{
                     ...params.inputProps,
                     autoComplete: 'new-password', // disable autocomplete and autofill
@@ -202,10 +203,11 @@ const ProfilePage: React.FC = () => {
               filterSelectedOptions
               renderInput={params => (
                 <TextField
+                  {...params}
                   helperText={errors.completedStudies?.message}
                   error={!!errors.completedStudies}
                   color="secondary"
-                  {...params}
+                  InputLabelProps={{ shrink: true }}
                   label="Completed Studies"
                 />
               )}
@@ -228,10 +230,11 @@ const ProfilePage: React.FC = () => {
               filterSelectedOptions
               renderInput={params => (
                 <TextField
+                  {...params}
                   helperText={errors.interestAreas?.message}
                   error={!!errors.interestAreas}
                   color="secondary"
-                  {...params}
+                  InputLabelProps={{ shrink: true }}
                   label="Interest Areas"
                 />
               )}

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import {
   styled,
   Button,
@@ -6,18 +6,18 @@ import {
   FormLabel,
   TextField,
   FormControlLabel,
-  Checkbox,
   RadioGroup,
   Radio,
   css,
 } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { SubmitHandler, useController, useForm } from 'react-hook-form'
 
 import { BaseUser, RegisterUserDTO, Role } from '../../../types/User'
-import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
+import { useAppDispatch } from '../../../redux/hooks'
 import { addUser } from '../actions'
+import { resetAuthState } from '../../application/slice'
 
 export type RegistrationFormType = BaseUser & {
   confirmPassword: string
@@ -35,10 +35,28 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ loginClick }
     reset,
     formState: { errors },
     getValues,
-  } = useForm<RegistrationFormType>({ defaultValues: { terms: false } })
+    control,
+  } = useForm<RegistrationFormType>()
 
   const dispatch = useAppDispatch()
-  const registerSuccessful = useAppSelector(state => state.appState.registerComplete)
+
+  const { field: roleField } = useController({
+    name: 'role',
+    control,
+    rules: { required: true },
+    defaultValue: Role.STUDENT,
+  })
+
+  const resetForm = () => {
+    reset({
+      email: '',
+      fullName: '',
+      role: Role.STUDENT,
+      password: '',
+      confirmPassword: '',
+      terms: false,
+    })
+  }
 
   // Wire to backend endpoint using RTK (create a slice etc.)
   // Note: handleRegistrationSubmit accepts formData as a parameter
@@ -52,20 +70,24 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ loginClick }
     }
 
     // API call to '/register'
-    dispatch(addUser(userData))
+    dispatch(addUser(userData)).then(response => {
+      if (response.type === 'addUser/fulfilled') {
+        // empty all fields after submitting
+        resetForm()
+
+        // Move back to login after successfully registering
+        loginClick()
+
+        // make sure to reset loading / complete status for registration action
+        dispatch(resetAuthState())
+      }
+    })
   }
 
   const goToLogin = () => {
+    resetForm()
     loginClick()
-    reset()
   }
-
-  // Move back to login after successfully registering
-  useEffect(() => {
-    if (registerSuccessful) {
-      loginClick()
-    }
-  }, [registerSuccessful])
 
   return (
     <Container>
@@ -131,31 +153,27 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ loginClick }
           fullWidth
         />
         <FormLabel>I want to participate as</FormLabel>
-        <RadioGroup defaultValue={Role.STUDENT}>
+        <RadioGroup value={roleField.value}>
           <FormControlLabel
-            {...register('role')}
+            onChange={() => {
+              roleField.onChange(Role.STUDENT)
+              roleField.onBlur()
+            }}
             value={Role.STUDENT}
             control={<Radio size="small" color="secondary" />}
             label="Student"
           />
           <FormControlLabel
-            {...register('role')}
+            onChange={() => {
+              roleField.onChange(Role.MENTOR)
+              roleField.onBlur()
+            }}
             value={Role.MENTOR}
             control={<Radio size="small" color="secondary" />}
             label="Mentor"
           />
         </RadioGroup>
 
-        <FormControlLabel
-          control={
-            <StyledCheckbox {...register('terms', { required: true })} color={!errors.terms ? 'success' : 'error'} />
-          }
-          label={
-            <Typography color={errors.terms ? 'error' : 'text.secondary'}>
-              I agree with the Terms & Conditions
-            </Typography>
-          }
-        />
         <RegisterButton variant="contained" color="success" type="submit">
           Create Account
         </RegisterButton>
@@ -217,13 +235,15 @@ const StyledTextField = styled(TextField)`
     `}
 `
 
-const StyledCheckbox = styled(Checkbox)`
-  ${props =>
-    props.color === 'error' &&
-    css`
-      color: ${props.theme.palette.error.main};
-    `}
-`
+// Note: Keeping this here in case we need it somewhere else
+//
+// const StyledCheckbox = styled(Checkbox)`
+//   ${props =>
+//     props.color === 'error' &&
+//     css`
+//       color: ${props.theme.palette.error.main};
+//     `}
+// `
 
 const RegisterButton = styled(Button)`
   margin-top: 10px;
