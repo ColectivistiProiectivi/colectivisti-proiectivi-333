@@ -8,6 +8,7 @@ import ro.ubb.mp.controller.dto.response.user.UserFullNameDTO;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @Builder
@@ -17,6 +18,6 @@ public class MessageResponseDTO {
     private UserFullNameDTO receiver;
     private String content;
     @NotNull
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:[.ss][.SSS][.SS][.S]")
-    private LocalDateTime time;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss[.SSS][.SS][.S]")
+    private Date time;
 }
