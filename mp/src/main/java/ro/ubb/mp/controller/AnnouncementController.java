@@ -39,6 +39,19 @@ public class AnnouncementController {
         return ResponseEntity.ok().body(announcementResponseDTOS);
 
     }
+    @GetMapping("/filter")
+    public ResponseEntity<List<AnnouncementResponseDTO>> getAnnouncementsFilteredByInterestArea(
+            @RequestParam(defaultValue = "") String q
+    ) {
+        List<Announcement> filteredAnnouncements = announcementService.getAnnouncementFilteredByTitleOrDescription(q);
+
+        return ResponseEntity.ok().body(
+                filteredAnnouncements
+                        .stream()
+                        .map(filteredAnnouncement -> getAnnouncementMapper().toDTO(filteredAnnouncement))
+                        .toList()
+        );
+    }
 
     @PostMapping()
     public ResponseEntity<Announcement> addAnnouncement(@RequestBody AnnouncementRequestDTO announcement) {
