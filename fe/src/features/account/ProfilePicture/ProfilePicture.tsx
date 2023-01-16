@@ -13,7 +13,7 @@ export const ProfilePicture: React.FC = () => {
   const handlePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const imageFile: File = e.target.files[0]
-      setValue('profilePicture', imageFile)
+      setValue('profilePicture', imageFile, { shouldDirty: true })
     }
   }
 

@@ -8,13 +8,23 @@ export type FormInputProps = TextFieldProps & { fieldName: string; options?: Reg
 export const FormInput: React.FC<FormInputProps> = ({ fieldName, options, ...props }) => {
   const { register } = useFormContext()
 
-  return <TextField {...register(fieldName, options)} {...props} size="small" color="secondary" fullWidth />
+  return (
+    <TextField
+      {...register(fieldName, options)}
+      {...props}
+      InputLabelProps={{ shrink: true }}
+      size="small"
+      color="secondary"
+      fullWidth
+    />
+  )
 }
 
 export const ReadOnlyFormInput: React.FC<TextFieldProps> = props => (
   <TextField
     {...props}
     InputProps={{ readOnly: true }}
+    InputLabelProps={{ shrink: true }}
     helperText="Cannot be modified"
     color="secondary"
     size="small"

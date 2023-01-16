@@ -16,6 +16,8 @@ const Container = styled('div')<{ fullscreen: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
+  background: white;
+  z-index: 2;
 
   ${props =>
     props.fullscreen &&
