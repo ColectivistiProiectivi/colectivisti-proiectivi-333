@@ -6,20 +6,17 @@ import { paths } from '../../../api'
 
 export const SearchBar: React.FC = () => {
   const navigate = useNavigate()
-  const onInputChange = () => {
-    navigate(paths.ANNOUNCEMENTS)
+  const onInputChange = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      navigate(paths.ANNOUNCEMENTS)
+    }
     //Sends the data to the endpoint and displays the results based on user's needs
   }
 
   return (
     <Container>
       <SearchIcon />
-      <SearchInput
-        placeholder="Search Announcements..."
-        onClick={() => navigate(paths.ANNOUNCEMENTS)}
-        onChange={onInputChange}
-        disableUnderline={true}
-      />
+      <SearchInput placeholder="Search Announcements..." onKeyDown={onInputChange} disableUnderline={true} />
     </Container>
   )
 }
