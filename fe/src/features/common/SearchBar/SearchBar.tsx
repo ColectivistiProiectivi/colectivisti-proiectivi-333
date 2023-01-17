@@ -1,16 +1,25 @@
 import React from 'react'
 import SearchSharpIcon from '@mui/icons-material/SearchSharp'
 import { styled, Input } from '@mui/material'
+import { useNavigate } from 'react-router'
+import { paths } from '../../../api'
 
 export const SearchBar: React.FC = () => {
-  const submitButton = () => {
+  const navigate = useNavigate()
+  const onInputChange = () => {
+    navigate(paths.ANNOUNCEMENTS)
     //Sends the data to the endpoint and displays the results based on user's needs
   }
 
   return (
     <Container>
       <SearchIcon />
-      <SearchInput placeholder="Search Announcements..." onChange={submitButton} disableUnderline={true} />
+      <SearchInput
+        placeholder="Search Announcements..."
+        onClick={() => navigate(paths.ANNOUNCEMENTS)}
+        onChange={onInputChange}
+        disableUnderline={true}
+      />
     </Container>
   )
 }

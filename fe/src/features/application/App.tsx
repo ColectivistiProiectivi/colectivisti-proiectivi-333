@@ -13,6 +13,7 @@ import { paths } from '../../api'
 const WelcomePage = React.lazy(() => import('../welcome/WelcomePage'))
 const ProfilePage = React.lazy(() => import('../account/ProfilePage'))
 const AssignmentsPage = React.lazy(() => import('../assignments/AssignmentsPage'))
+const AnnouncementsPage = React.lazy(() => import('../announcements/AnnouncementsPage'))
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: paths.ASSIGNMENTS,
         element: <AssignmentsPage />,
+      },
+      {
+        path: paths.ANNOUNCEMENTS,
+        element: <AnnouncementsPage />,
       },
       {
         path: paths.LOGOUT,
