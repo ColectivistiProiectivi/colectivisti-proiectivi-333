@@ -20,7 +20,7 @@ interface AssignmentCardProps {
   category: AssignmentCategory
 }
 
-export const AssignmentCard: React.FC<AssignmentCardProps> = ({
+export const MentorAssignmentCard: React.FC<AssignmentCardProps> = ({
   title,
   description,
   maxGrade,

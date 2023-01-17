@@ -12,6 +12,9 @@ export default defineConfig({
         rewrite: path => path.replace(/^\/api/, ''),
       },
     },
+    hmr: {
+      port: 443,
+    },
     port: 3000,
   },
 })

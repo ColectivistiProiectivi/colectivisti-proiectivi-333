@@ -16,7 +16,7 @@ import {
   selectUserData,
   selectUserDataLoading,
 } from './selectors'
-import { FormInput, ReadOnlyFormInput } from './FormInput'
+import { FormInput, ReadOnlyFormInput } from '../common/FormInput'
 import { ProfilePicture } from './ProfilePicture'
 import { Section, useSectionScroll } from './hooks'
 import { fetchCompletedStudiesOptions, fetchInterestAreasOptions, updateUserData } from './actions'
