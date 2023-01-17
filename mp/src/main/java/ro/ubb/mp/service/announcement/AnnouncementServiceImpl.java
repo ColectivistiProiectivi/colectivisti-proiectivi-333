@@ -3,6 +3,7 @@ package ro.ubb.mp.service.announcement;
 import lombok.Data;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import ro.ubb.mp.controller.dto.request.AnnouncementRequestDTO;
 import ro.ubb.mp.dao.model.Announcement;
 import ro.ubb.mp.dao.model.InterestArea;
@@ -73,6 +74,14 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     public void deleteAnnouncementById(Long id) {
         announcementRepository.deleteById(id);
 
+    }
+
+    @Override
+    public List<Announcement> getAnnouncementFilteredByTitleOrDescription(String queryString) {
+        if (!StringUtils.hasText(queryString)) {
+            return announcementRepository.findAll();
+        }
+        return announcementRepository.findAllByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(queryString, queryString);
     }
 
 }
