@@ -13,6 +13,7 @@ import ro.ubb.mp.controller.dto.response.AppointmentResponseDTO;
 import ro.ubb.mp.controller.dto.response.PageResponseWrapperDTO;
 
 import ro.ubb.mp.dao.model.Appointment;
+import ro.ubb.mp.dao.model.Role;
 import ro.ubb.mp.dao.model.User;
 import ro.ubb.mp.dao.repository.AppointmentRepository;
 import ro.ubb.mp.service.user.UserService;
@@ -51,6 +52,15 @@ public class AppointmentServiceImpl implements AppointmentService {
         return repository.save(appointmentToBeSaved);
     }
 
+    @Override
+    public List<Appointment> getAllAppointmentsUser(User user) {
+        if (user.getRole().equals(Role.STUDENT)) {
+            return repository.getAppointmentsByStudent(user);
+        } else {
+            return repository.getAppointmentsByMentor(user);
+        }
+    }
+
 
     @Override
     public void deleteAppointmentById(Long id) {
@@ -58,46 +68,18 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public Appointment updateAppointment(AppointmentRequestDTO appointmentRequestDTO, Long id){
+    public Appointment updateAppointment(AppointmentRequestDTO appointmentRequestDTO, Long id) {
         Appointment appointment = repository.findById(id).orElseThrow(EntityNotFoundException::new);
 
-        if(!(appointmentRequestDTO.getLocationDetails().isEmpty() || appointmentRequestDTO.getLocationDetails().isBlank())){
+        if (!(appointmentRequestDTO.getLocationDetails().isEmpty() || appointmentRequestDTO.getLocationDetails().isBlank())) {
             appointment.setLocationDetails(appointmentRequestDTO.getLocationDetails());
         }
 
-        if(appointmentRequestDTO.getDate() != null){
+        if (appointmentRequestDTO.getDate() != null) {
             appointment.setDate(appointmentRequestDTO.getDate());
         }
 
         return repository.save(appointment);
-    }
-
-
-    @Override
-    public List<Appointment> getAppointmentsStudentPaginated(User student, Integer pageNo, Integer pageSize) {
-        Pageable firstPageWithLimitElement = PageRequest.of(pageNo, pageSize).withSort(Sort.Direction.ASC, "date");
-        Page<Appointment> page = repository.getAppointmentsByStudent(student, firstPageWithLimitElement);
-
-        return page.getContent().stream().toList();
-
-    }
-
-    public Page<Appointment> getPageStudent(User user, Integer pageNo, Integer pageSize){
-        Pageable firstPageWithLimitElement = PageRequest.of(pageNo, pageSize).withSort(Sort.Direction.ASC, "date");
-        return repository.getAppointmentsByStudent(user, firstPageWithLimitElement);
-    }
-
-    public Page<Appointment> getPageMentor(User user, Integer pageNo, Integer pageSize){
-        Pageable firstPageWithLimitElement = PageRequest.of(pageNo, pageSize).withSort(Sort.Direction.ASC, "date");
-        return repository.getAppointmentsByMentor(user, firstPageWithLimitElement);
-    }
-
-    @Override
-    public List<Appointment> getAppointmentsMentorPaginated(User mentor, Integer pageNo, Integer pageSize) {
-        Pageable firstPageWithLimitElement = PageRequest.of(pageNo, pageSize).withSort(Sort.Direction.ASC, "date");
-        Page<Appointment> page = repository.getAppointmentsByMentor(mentor, firstPageWithLimitElement);
-
-        return page.getContent().stream().toList();
     }
 
 

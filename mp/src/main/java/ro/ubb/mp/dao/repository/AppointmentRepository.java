@@ -12,10 +12,6 @@ import java.util.List;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
-    Page<Appointment> getAppointmentsByStudent(User user, Pageable pageable);
-
-    Page<Appointment> getAppointmentsByMentor(User user, Pageable pageable);
-
-
-
+    List<Appointment> getAppointmentsByMentor(User mentor);
+    List<Appointment> getAppointmentsByStudent(User student);
 }
