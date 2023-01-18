@@ -56,8 +56,8 @@ public class MessageServiceImpl implements MessageService {
         User user1 = userService.getUserById(id1).orElseThrow(EntityNotFoundException::new);
         User user2 = userService.getUserById(id2).orElseThrow(EntityNotFoundException::new);
 
-        return Stream.concat(messageRepository.findBySenderOrReceiver(user1, user2).stream(),
-                        messageRepository.findBySenderOrReceiver(user2, user1).stream())
+        return Stream.concat(messageRepository.findBySenderAndReceiver(user1, user2).stream(),
+                        messageRepository.findBySenderAndReceiver(user2, user1).stream())
                 .sorted(Comparator.comparing(Message::getTime)).collect(Collectors.toList());
     }
 
