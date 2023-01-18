@@ -14,6 +14,5 @@ public interface AppointmentService {
     void deleteAppointmentById(Long id);
     Appointment updateAppointment(AppointmentRequestDTO appointmentRequestDTO, Long id);
     Appointment createAppointment(AppointmentRequestDTO appointmentRequestDTO);
-    List<Appointment> getAppointmentsStudentPaginated(User student, Integer pageNo, Integer pageSize);
-    List<Appointment> getAppointmentsMentorPaginated(User mentor, Integer pageNo, Integer pageSize);
+    List<Appointment> getAllAppointmentsUser(User user);
 }

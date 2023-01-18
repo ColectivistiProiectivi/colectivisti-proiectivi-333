@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -34,49 +35,26 @@ public class AppointmentController {
     final AppointmentResponseMapper responseMapper;
 
     @GetMapping()
-    public ResponseEntity<PageResponseWrapperDTO<List<AppointmentResponseDTO>>> getAllAppointments
-            (
-                    @RequestParam(required = false, defaultValue = "") Integer pageNo,
-                    @RequestParam(required = false, defaultValue = "") Integer pageSize
-            ) {
+    public ResponseEntity<ResponseWrapperDTO<List<AppointmentResponseDTO>>> getAllAppointmentsUser()
+    {
         if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User user) {
-            if (user.getRole().equals(Role.MENTOR)) {
-                List<AppointmentResponseDTO> appointmentResponseDTOS = getService().getAppointmentsMentorPaginated(user, pageNo, pageSize)
-                        .stream().map(appointment -> getResponseMapper().toDTO(appointment)).toList();
+            List<AppointmentResponseDTO> appointmentResponseDTOS = getService()
+                    .getAllAppointmentsUser(user)
+                    .stream().map(appointment -> responseMapper.toDTO(appointment))
+                    .collect(Collectors.toList());
 
-                return ResponseEntity.ok()
-                        .body(PageResponseWrapperDTO
-                                .<List<AppointmentResponseDTO>>builder().value(appointmentResponseDTOS)
-                                .pageSize(pageSize)
-                                .pageNr(pageNo)
-                                .totalItems(getService().getPageMentor(user, pageNo, pageSize).getTotalElements())
-                                .totalPages(getService().getPageMentor(user, pageNo, pageSize).getTotalPages())
-                                .build());
-
-            } else if (user.getRole().equals(Role.STUDENT)) {
-                List<AppointmentResponseDTO> appointmentResponseDTOS = getService().getAppointmentsStudentPaginated(user, pageNo, pageSize)
-                        .stream().map(appointment -> getResponseMapper().toDTO(appointment)).toList();
-
-                return ResponseEntity.ok()
-                        .body(PageResponseWrapperDTO
-                                .<List<AppointmentResponseDTO>>builder().value(appointmentResponseDTOS)
-                                .pageSize(pageSize)
-                                .pageNr(pageNo)
-                                .totalItems(getService().getPageStudent(user, pageNo, pageSize).getTotalElements())
-                                .totalPages(getService().getPageStudent(user, pageNo, pageSize).getTotalPages())
-                                .build());
-            }
-
-
+            return ResponseEntity.ok()
+                    .body(ResponseWrapperDTO.<List<AppointmentResponseDTO>>builder().value(appointmentResponseDTOS).build());
         }
 
-        return ResponseEntity.badRequest().body(PageResponseWrapperDTO
+        return ResponseEntity.badRequest().body(ResponseWrapperDTO
                 .<List<AppointmentResponseDTO>>builder()
                 .errorMessage("bad authentication type")
                 .build());
     }
 
     @PostMapping()
+    @PreAuthorize("hasAnyAuthority('MENTOR')")
     public ResponseEntity<ResponseWrapperDTO<AppointmentResponseDTO>> createAppointment(@RequestBody AppointmentRequestDTO appointmentRequestDTO) {
 
         if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User user) {
@@ -99,6 +77,7 @@ public class AppointmentController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MENTOR')")
     public ResponseEntity<Long> deleteAppointment(@PathVariable Long id) {
         final Appointment appointment = getService()
                 .getAppointmentById(id)
@@ -111,6 +90,7 @@ public class AppointmentController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MENTOR')")
     public ResponseEntity<ResponseWrapperDTO<AppointmentResponseDTO>> updateAppointment(@PathVariable Long id,
                                                                                         @RequestBody AppointmentRequestDTO appointmentRequestDTO) {
         if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User user) {
