@@ -13,6 +13,7 @@ public class AssignmentResponseDTO {
     private Long id;
     private List<UserRequestDTO> students;
     private UserRequestDTO author;
+    private List<UserRequestDTO> submissionStudentIds;
     private String title;
     private Date startDate;
     private Date deadline;

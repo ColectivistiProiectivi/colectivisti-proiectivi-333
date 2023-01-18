@@ -5,14 +5,15 @@ import lombok.Getter;
 import org.springframework.stereotype.Service;
 import ro.ubb.mp.controller.dto.request.AssignmentRequestDTO;
 import ro.ubb.mp.dao.model.Assignment;
+import ro.ubb.mp.dao.model.Submission;
 import ro.ubb.mp.dao.model.User;
 import ro.ubb.mp.dao.repository.AssignmentRepository;
+import ro.ubb.mp.dao.repository.SubmissionRepository;
 import ro.ubb.mp.service.user.UserService;
 
 import javax.persistence.EntityNotFoundException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +22,7 @@ import java.util.Optional;
 @Service
 public class AssignmentServiceImpl implements AssignmentService {
     private final AssignmentRepository assignmentRepository;
+    private final SubmissionRepository submissionRepository;
     private final UserService userService;
 
     @Override
@@ -38,6 +40,10 @@ public class AssignmentServiceImpl implements AssignmentService {
         Optional<User> user = userService.getUserById(authorId);
 
         return user.map(assignmentRepository::findByAuthor).orElse(null);
+    }
+
+    public Optional<Submission> getSubmissionById(Long submissionId) {
+        return submissionRepository.findById(submissionId);
     }
 
     @Override
@@ -75,9 +81,15 @@ public class AssignmentServiceImpl implements AssignmentService {
         Assignment assignment = findById(id).orElseThrow(EntityNotFoundException::new);
 
         final List<User> students = new ArrayList<>();
+        final List<Submission> submissions = new ArrayList<>();
 
         for(Long studentId: assignmentRequestDTO.getStudentIds()) {
             students.add(getUserService().getUserById(studentId).
+                    orElseThrow(EntityNotFoundException::new));
+        }
+
+        for(Long submissionId: assignmentRequestDTO.getSubmissionIds()) {
+            submissions.add(getSubmissionById(submissionId).
                     orElseThrow(EntityNotFoundException::new));
         }
 
@@ -88,6 +100,7 @@ public class AssignmentServiceImpl implements AssignmentService {
         assignment.setDeadline(Timestamp.valueOf(assignmentRequestDTO.getDeadline()));
         assignment.setStartDate(Timestamp.valueOf(assignmentRequestDTO.getStartDate()));
         assignment.setStudents(students);
+        assignment.setSubmissions(submissions);
 
         return assignmentRepository.save(assignment);
     }

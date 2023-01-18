@@ -5,12 +5,17 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ro.ubb.mp.controller.dto.mapper.AssignmentMapper;
 import ro.ubb.mp.controller.dto.request.AssignmentRequestDTO;
+import ro.ubb.mp.controller.dto.response.PageResponseWrapperDTO;
 import ro.ubb.mp.controller.dto.response.assignment.AssignmentResponseDTO;
 import ro.ubb.mp.dao.model.Assignment;
+import ro.ubb.mp.dao.model.Role;
+import ro.ubb.mp.dao.model.User;
 import ro.ubb.mp.service.assignment.AssignmentService;
 import ro.ubb.mp.service.user.UserService;
 
@@ -29,21 +34,31 @@ public class AssignmentController {
     private final AssignmentMapper assignmentMapper;
 
     @GetMapping()
-    public ResponseEntity<List<AssignmentResponseDTO>> getAssignments() {
-        List<Assignment> assignments = assignmentService.getAll();
-        List<AssignmentResponseDTO> assignmentResponseDTOS = assignments.stream()
-                .map(assignment -> getAssignmentMapper().toDTO(assignment)).collect(Collectors.toList());
+    public ResponseEntity<PageResponseWrapperDTO<List<AssignmentResponseDTO>>> getAssignmentsForUser() {
+        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User user) {
+            if (user.getRole().equals(Role.MENTOR)) {
+                List<Assignment> assignments = assignmentService.getByAuthor(user.getId());
+                List<AssignmentResponseDTO> assignmentResponseDTOS = assignments
+                        .stream().map(assignment -> getAssignmentMapper().toDTO(assignment)).collect(Collectors.toList());
 
-        return ResponseEntity.ok().body(assignmentResponseDTOS);
-    }
+                return ResponseEntity.ok().body(
+                        PageResponseWrapperDTO.<List<AssignmentResponseDTO>>builder().value(assignmentResponseDTOS)
+                                .build());
+            } else if (user.getRole().equals(Role.STUDENT)) {
+                List<Assignment> assignments = assignmentService.getAll();
+                List<AssignmentResponseDTO> assignmentResponseDTOS = assignments.stream().filter(assignment -> assignment.getStudents().contains(user))
+                        .map(assignment -> getAssignmentMapper().toDTO(assignment)).collect(Collectors.toList());
 
-    @GetMapping("/{authorId}")
-    public ResponseEntity<List<AssignmentResponseDTO>> getAssignments(@PathVariable Long authorId) {
-        List<Assignment> assignments = assignmentService.getByAuthor(authorId);
-        List<AssignmentResponseDTO> assignmentResponseDTOS = assignments.stream()
-                .map(assignment -> getAssignmentMapper().toDTO(assignment)).collect(Collectors.toList());
+                return ResponseEntity.ok().body(
+                        PageResponseWrapperDTO.<List<AssignmentResponseDTO>>builder().value(assignmentResponseDTOS)
+                                .build());
+            }
+        }
 
-        return ResponseEntity.ok().body(assignmentResponseDTOS);
+        return ResponseEntity.badRequest().body(PageResponseWrapperDTO
+                .<List<AssignmentResponseDTO>>builder()
+                .errorMessage("bad authentication type")
+                .build());
     }
 
     @RequestMapping(value = "/title/{title}", method = RequestMethod.GET)
@@ -64,7 +79,7 @@ public class AssignmentController {
 
     @PutMapping("/{id}")
     public ResponseEntity<AssignmentResponseDTO> updateAssignment(@RequestBody AssignmentRequestDTO assignment,
-                                                                      @PathVariable Long id) {
+                                                                  @PathVariable Long id) {
         return ResponseEntity.ok().body(getAssignmentMapper().toDTO(getAssignmentService().
                 updateAssignment(assignment, id)));
     }
