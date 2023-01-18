@@ -24,4 +24,6 @@ public interface UserService extends UserDetailsService {
     void deleteUserById(Long id);
 
     User updateProfile(ProfileRequestDTO profileRequestDTO);
+
+    List<User> findAllAnnouncementsUsersByMentor(User mentor);
 }

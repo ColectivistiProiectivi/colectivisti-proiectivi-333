@@ -12,4 +12,10 @@ import java.util.List;
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
     List<Appointment> getAppointmentsByMentor(User mentor);
     List<Appointment> getAppointmentsByStudent(User student);
+
+    @Query(nativeQuery = true,
+            value = "SELECT DISTINCT a.student_id " +
+                    "FROM appointments a " +
+                    "WHERE a.mentor_id=?1 ")
+    List<Long> findAllStudentsByMentorId(Long mentorId);
 }
