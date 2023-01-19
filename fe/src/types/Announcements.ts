@@ -24,7 +24,7 @@ export interface Announcement {
 export interface AnnouncementDto {
   id: number
   title: string
-  postingDate: string
+  postingDate: Dayjs
   user: AnnouncementUserResponseDTO
   interestAreas: InterestAreasResponseDTO
   description: string

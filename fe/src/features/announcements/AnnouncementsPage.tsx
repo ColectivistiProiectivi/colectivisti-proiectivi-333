@@ -6,7 +6,7 @@ import { fetchAnnouncements } from './actions'
 import { styled, Tabs, Tab, Typography, css } from '@mui/material'
 
 import { Loader } from '../common/Loader'
-import { Announcement } from '../../types/Announcements'
+import { AnnouncementDto } from '../../types/Announcements'
 import { AnnouncementCard } from './AnnouncementCard'
 import { selectUserData } from '../account/selectors'
 
@@ -45,7 +45,7 @@ const AnnouncementsPage: React.FC = () => {
     setSelectedCategory(newSelectedCategory)
   }
 
-  const renderAnnouncements = (announcements?: Announcement[], categoryIndex?: number) => {
+  const renderAnnouncements = (announcements?: AnnouncementDto[], categoryIndex?: number) => {
     if (announcements?.length && categoryIndex === selectedCategory) {
       return (
         <Announcements key={categoryIndex} role="tabpanel">

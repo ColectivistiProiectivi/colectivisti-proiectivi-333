@@ -1,13 +1,18 @@
-// import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { createSlice } from '@reduxjs/toolkit'
-import { Announcement } from '../../types/Announcements'
-import { fetchAnnouncements } from './actions'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { AnnouncementDto } from '../../types/Announcements'
+import { fetchAnnouncements, fetchDeleteAnnouncements, fetchFilterAnnouncements } from './actions'
 
 export interface AnnouncementsState {
-  announcementsData?: Announcement[]
+  announcementsData?: AnnouncementDto[]
   announcementsLoading: boolean
   announcementsSuccess: boolean
   announcementsError: boolean
+  announcementsSearchResultsLoading: boolean
+  announcementsSearchResultsError: boolean
+  announcementsSearchResultsSuccess: boolean
+  deleteAnnouncementSuccess: boolean
+  deleteAnnouncementError: boolean
+  deleteAnnouncementLoading: boolean
 }
 
 const initialState: AnnouncementsState = {
@@ -15,6 +20,12 @@ const initialState: AnnouncementsState = {
   announcementsLoading: false,
   announcementsSuccess: false,
   announcementsError: false,
+  announcementsSearchResultsLoading: false,
+  announcementsSearchResultsError: false,
+  announcementsSearchResultsSuccess: false,
+  deleteAnnouncementSuccess: false,
+  deleteAnnouncementError: false,
+  deleteAnnouncementLoading: false,
 }
 
 export const announcementsSlice = createSlice({
@@ -23,22 +34,54 @@ export const announcementsSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      // .addCase(fetchAnnouncements.rejected, state => {
-      //   state.announcementsSuccess = false
-      //   state.announcementsError = true
-      //   state.announcementsLoading = false
-      // })
-      // .addCase(fetchAnnouncements.fulfilled, (state, action: PayloadAction<Announcement[]>) => {
-      //   state.announcementsData = action.payload
-      //   state.announcementsSuccess = true
-      //   state.announcementsError = false
-      //   state.announcementsLoading = false
-      // })
+      .addCase(fetchAnnouncements.rejected, state => {
+        state.announcementsSuccess = false
+        state.announcementsError = true
+        state.announcementsLoading = false
+      })
+      .addCase(fetchAnnouncements.fulfilled, (state, action: PayloadAction<AnnouncementDto[]>) => {
+        state.announcementsData = action.payload
+        state.announcementsSuccess = true
+        state.announcementsError = false
+        state.announcementsLoading = false
+      })
 
       .addCase(fetchAnnouncements.pending, state => {
         state.announcementsSuccess = false
         state.announcementsError = false
         state.announcementsLoading = true
+      })
+      .addCase(fetchFilterAnnouncements.rejected, state => {
+        state.announcementsSearchResultsLoading = true
+        state.announcementsSearchResultsError = true
+        state.announcementsSearchResultsSuccess = false
+      })
+      .addCase(fetchFilterAnnouncements.fulfilled, (state, action: PayloadAction<AnnouncementDto[]>) => {
+        state.announcementsData = action.payload
+        state.announcementsSearchResultsLoading = false
+        state.announcementsSearchResultsError = false
+        state.announcementsSearchResultsSuccess = true
+      })
+
+      .addCase(fetchFilterAnnouncements.pending, state => {
+        state.announcementsSearchResultsLoading = true
+        state.announcementsSearchResultsError = false
+        state.announcementsSearchResultsSuccess = false
+      })
+      .addCase(fetchDeleteAnnouncements.rejected, state => {
+        state.deleteAnnouncementSuccess = false
+        state.deleteAnnouncementError = true
+        state.deleteAnnouncementLoading = false
+      })
+      .addCase(fetchDeleteAnnouncements.fulfilled, state => {
+        state.deleteAnnouncementSuccess = true
+        state.deleteAnnouncementError = false
+        state.deleteAnnouncementLoading = false
+      })
+      .addCase(fetchDeleteAnnouncements.pending, state => {
+        state.deleteAnnouncementSuccess = false
+        state.deleteAnnouncementError = false
+        state.deleteAnnouncementLoading = true
       })
   },
 })

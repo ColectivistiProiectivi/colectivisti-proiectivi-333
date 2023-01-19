@@ -6,8 +6,11 @@ import { alpha, Avatar, Button, IconButton, styled, Typography } from '@mui/mate
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { AnnouncementUserResponseDTO, InterestAreasResponseDTO } from '../../../types/Announcements'
-import { useAppSelector } from '../../../redux/hooks'
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { selectUserData } from '../../account/selectors'
+import { selectAnnouncementsError, selectAnnouncementsLoading } from '../selectors'
+import { Loader } from '../../common/Loader'
+import { displaySnackbar } from '../../application/slice'
 
 dayjs.extend(RelativeTime)
 
@@ -30,8 +33,25 @@ export const AnnouncementCard: React.FC<AnnouncementsCardProps> = ({
   createdAtDate,
   interestAreas,
 }) => {
+  const dispatch = useAppDispatch()
   const userData = useAppSelector(selectUserData)
   const isMentor = userData?.role === 'MENTOR'
+  const announcementsLoading = useAppSelector(selectAnnouncementsLoading)
+  const announcementsError = useAppSelector(selectAnnouncementsError)
+
+  if (announcementsLoading) {
+    return <Loader fullscreen={true} />
+  }
+
+  if (announcementsError) {
+    dispatch(
+      displaySnackbar({
+        open: true,
+        type: 'warning',
+        message: 'Error in deleting the ad',
+      })
+    )
+  }
 
   return (
     <Wrapper key={id}>

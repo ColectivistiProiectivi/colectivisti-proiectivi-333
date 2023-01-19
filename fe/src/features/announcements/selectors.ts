@@ -23,12 +23,27 @@ export const selectAnnouncementsData = createSelector(
   announcementsState => announcementsState.announcementsData
 )
 
-// export const selectAnnouncementsResultsLoading = createSelector(
-//   [getAnnouncementsState],
-//   announcementsState => announcementsState.announcementsSearchResultsLoading
-// )
+export const selectAnnouncementsResultsLoading = createSelector(
+  [getAnnouncementsState],
+  announcementsState => announcementsState.announcementsSearchResultsLoading
+)
 
-// export const selectAnnouncementsResultsError = createSelector(
-//   [getAnnouncementsState],
-//   announcementsState => announcementsState.announcementsSearchResultsError
-// )
+export const selectAnnouncementsResultsError = createSelector(
+  [getAnnouncementsState],
+  announcementsState => announcementsState.announcementsSearchResultsError
+)
+
+export const selectDeleteAnnouncementError = createSelector(
+  [getAnnouncementsState],
+  announcementsState => announcementsState.deleteAnnouncementError
+)
+
+export const selectDeleteAnnouncementLoading = createSelector(
+  [getAnnouncementsState],
+  announcementsState => announcementsState.deleteAnnouncementLoading
+)
+
+export const selectDeleteAnnouncementSuccess = createSelector(
+  [getAnnouncementsState],
+  announcementsState => announcementsState.deleteAnnouncementSuccess
+)
