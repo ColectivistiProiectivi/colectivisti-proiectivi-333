@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 import ro.ubb.mp.controller.dto.request.AssignmentRequestDTO;
+import ro.ubb.mp.controller.dto.request.SubmissionRequestDTO;
 import ro.ubb.mp.dao.model.Assignment;
 import ro.ubb.mp.dao.model.Submission;
 import ro.ubb.mp.dao.model.User;
@@ -57,10 +58,22 @@ public class AssignmentServiceImpl implements AssignmentService {
                 orElseThrow(EntityNotFoundException::new);
 
         final List<User> students = new ArrayList<>();
+        final List<Submission> submissions = new ArrayList<>();
 
         for(Long studentId: assignmentRequestDTO.getStudentIds()) {
             students.add(getUserService().getUserById(studentId).
                     orElseThrow(EntityNotFoundException::new));
+        }
+
+        for(SubmissionRequestDTO submission: assignmentRequestDTO.getSubmissions()){
+            final Submission submissionToBeSaved = Submission.builder()
+                    .studentId(submission.getStudentId())
+                    .homeworkURL(submission.getHomeworkURL())
+                    .grade(submission.getGrade())
+                    .feedback(submission.getFeedback())
+                    .build();
+
+            submissions.add(submissionToBeSaved);
         }
 
         final Assignment assignmentToBeSaved = Assignment.builder()
@@ -71,6 +84,7 @@ public class AssignmentServiceImpl implements AssignmentService {
                 .author(user)
                 .students(students)
                 .maximumGrade(assignmentRequestDTO.getMaximumGrade())
+                .submissions(submissions)
                 .build();
 
         return assignmentRepository.save(assignmentToBeSaved);
@@ -88,9 +102,15 @@ public class AssignmentServiceImpl implements AssignmentService {
                     orElseThrow(EntityNotFoundException::new));
         }
 
-        for(Long submissionId: assignmentRequestDTO.getSubmissionIds()) {
-            submissions.add(getSubmissionById(submissionId).
-                    orElseThrow(EntityNotFoundException::new));
+        for(SubmissionRequestDTO submission: assignmentRequestDTO.getSubmissions()){
+            final Submission submissionToBeSaved = Submission.builder()
+                    .studentId(submission.getStudentId())
+                    .homeworkURL(submission.getHomeworkURL())
+                    .grade(submission.getGrade())
+                    .feedback(submission.getFeedback())
+                    .build();
+
+            submissions.add(submissionToBeSaved);
         }
 
         assignment.setDescription(assignmentRequestDTO.getDescription());
