@@ -10,7 +10,7 @@ import java.util.Date;
 @Data
 @Builder
 public class AnnouncementResponseDTO {
-
+    private Long id;
     private InterestAreaResponseDTO interestAreas;
     private AnnouncementUserResponseDTO user;
     private String title;
