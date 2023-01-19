@@ -16,6 +16,7 @@ import java.util.List;
 public class AssignmentRequestDTO {
     private List<Long> studentIds;
     private Long authorId;
+    private List<SubmissionRequestDTO> submissions;
     private String title;
 
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
