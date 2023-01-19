@@ -14,9 +14,9 @@ export interface InterestArea {
 }
 
 export interface BaseUser {
+  id: number
   fullName: string
   email: string
-  password: string
   role: Role
 }
 

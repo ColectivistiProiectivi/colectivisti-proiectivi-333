@@ -14,11 +14,17 @@ export const fetchUserData = createAsyncThunk('fetchUserData', async () => {
   return response.data.value
 })
 
-export const updateUserData = createAsyncThunk('updateUserData', async (usersFormData: ProfileSubmitType) => {
-  const response = await updateUserCall(usersFormData)
+export const updateUserData = createAsyncThunk(
+  'updateUserData',
+  async (usersFormData: ProfileSubmitType, { dispatch }) => {
+    const response = await updateUserCall(usersFormData)
 
-  return response.data.value
-})
+    // re-fetch data after updating so it will persist locally
+    dispatch(fetchUserAvatar())
+
+    return response.data.value
+  }
+)
 
 export const fetchUserAvatar = createAsyncThunk('fetchUserAvatar', async () => {
   const response = await fetchUserAvatarCall()
