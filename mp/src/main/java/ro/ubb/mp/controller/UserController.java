@@ -8,10 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ro.ubb.mp.controller.dto.mapper.UserProfileResponseMapper;
 import ro.ubb.mp.controller.dto.request.ProfileRequestDTO;
 import ro.ubb.mp.controller.dto.response.ResponseWrapperDTO;
@@ -77,14 +74,14 @@ public class UserController {
             path = "/users/profile",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    public ResponseEntity<ResponseWrapperDTO<UserProfileDTO>> updateProfile (final @ModelAttribute ProfileRequestDTO profileRequestDTO,
-                                                                             final Authentication authentication) throws IOException {
+    public ResponseEntity<ResponseWrapperDTO<UserProfileDTO>> updateProfile(final @ModelAttribute ProfileRequestDTO profileRequestDTO,
+                                                                            final Authentication authentication) throws IOException {
 
-        if(authentication.getPrincipal() instanceof User user) {
+        if (authentication.getPrincipal() instanceof User user) {
 
             profileRequestDTO.setId(user.getId());
 
-            if(profileRequestDTO.getProfilePicture() != null) {
+            if (profileRequestDTO.getProfilePicture() != null) {
                 final String fileName = profileRequestDTO.getId() + "_profilePicture.jpg";
                 getFileService().saveImageToDisk(profileRequestDTO.getProfilePicture(), fileName);
             }
@@ -108,9 +105,9 @@ public class UserController {
     }
 
     @GetMapping("/users/profile/picture")
-    public ResponseEntity<?> getProfileImage (final Authentication authentication) throws IOException {
+    public ResponseEntity<?> getProfileImage(final Authentication authentication) throws IOException {
 
-        if(authentication.getPrincipal() instanceof User user) {
+        if (authentication.getPrincipal() instanceof User user) {
 
             final ByteArrayResource profilePicture = fileService.getFileFromDisk(user.getId() + "_profilePicture.jpg");
             return ResponseEntity.ok()
@@ -128,11 +125,33 @@ public class UserController {
                 );
     }
 
+    @GetMapping("/users/{userId}/profile/picture")
+    public ResponseEntity<?> getProfileImageByUser(@PathVariable final Long userId,
+                                                   final Authentication authentication) throws IOException {
+
+        if (authentication.getPrincipal() instanceof User) {
+
+            final ByteArrayResource profilePicture = fileService.getFileFromDisk(userId + "_profilePicture.jpg");
+            return ResponseEntity.ok()
+                    .contentLength(profilePicture.contentLength())
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(profilePicture);
+        }
+
+        return ResponseEntity
+                .badRequest()
+                .body(ResponseWrapperDTO
+                        .<UserProfileDTO>builder()
+                        .errorMessage("Wrong authentication type")
+                        .build()
+                );
+    }
+
     @PreAuthorize("hasAnyAuthority('MENTOR')")
     @GetMapping("/mentors/appointments/students")
-    public ResponseEntity<ResponseWrapperDTO<List<UserProfileDTO>>> getAppointmentsUsersByMentor (final Authentication authentication) throws IOException {
+    public ResponseEntity<ResponseWrapperDTO<List<UserProfileDTO>>> getAppointmentsUsersByMentor(final Authentication authentication) throws IOException {
 
-        if(authentication.getPrincipal() instanceof User mentor) {
+        if (authentication.getPrincipal() instanceof User mentor) {
 
             List<User> appointmentsStudents = getUserService().findAllAnnouncementsUsersByMentor(mentor);
 
