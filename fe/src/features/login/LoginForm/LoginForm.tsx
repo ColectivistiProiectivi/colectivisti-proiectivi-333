@@ -10,7 +10,7 @@ import { authenticateUser } from '../actions'
 import { resetAuthState } from '../../application/slice'
 import { paths } from '../../../api'
 
-export type LoginFormType = Pick<User, 'email' | 'password'>
+export type LoginFormType = Pick<User, 'email'> & { password: string }
 
 interface LoginFormProps {
   registerClick: () => void

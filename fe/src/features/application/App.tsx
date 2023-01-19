@@ -9,6 +9,8 @@ import { LogoutRedirect } from '../login/LogoutRedirect'
 import { NotFound } from '../layout/errorPages'
 import { Layout } from '../layout'
 import { paths } from '../../api'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 const WelcomePage = React.lazy(() => import('../welcome/WelcomePage'))
 const ProfilePage = React.lazy(() => import('../account/ProfilePage'))
@@ -58,9 +60,11 @@ const App = () => {
     <React.Fragment>
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
-          <RouterProvider router={router} />
-          <CssBaseline />
-          <Snackbar />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <RouterProvider router={router} />
+            <CssBaseline />
+            <Snackbar />
+          </LocalizationProvider>
         </ThemeProvider>
       </StyledEngineProvider>
     </React.Fragment>

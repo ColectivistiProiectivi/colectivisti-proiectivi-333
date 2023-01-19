@@ -20,7 +20,7 @@ export const Layout: React.FC = () => {
       dispatch(fetchUserData())
       dispatch(fetchUserAvatar())
     }
-  }, [])
+  }, [userData])
 
   if (!isAuthenticated) {
     dispatch(

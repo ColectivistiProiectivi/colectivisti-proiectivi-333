@@ -16,13 +16,14 @@ import {
   selectUserData,
   selectUserDataLoading,
 } from './selectors'
-import { FormInput, ReadOnlyFormInput } from './FormInput'
+import { FormInput, ReadOnlyFormInput } from '../common/FormInput'
 import { ProfilePicture } from './ProfilePicture'
 import { Section, useSectionScroll } from './hooks'
 import { fetchCompletedStudiesOptions, fetchInterestAreasOptions, updateUserData } from './actions'
 
 export type ProfileFormType = Omit<UserDto, 'email' | 'role' | 'profilePicture'> & {
   profilePicture?: File
+  password: string
 }
 
 export type ProfileSubmitType = Omit<
@@ -33,6 +34,7 @@ export type ProfileSubmitType = Omit<
   completedStudyIds: number[]
   interestAreaIds: number[]
   ongoingStudyId?: number
+  password?: string
 }
 
 const ProfilePage: React.FC = () => {

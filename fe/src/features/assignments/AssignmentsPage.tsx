@@ -1,14 +1,21 @@
-import dayjs from 'dayjs'
-import React, { useEffect, useMemo, useState } from 'react'
-import { styled, Tabs, Tab, Typography, css } from '@mui/material'
+import React, { useEffect, useState } from 'react'
+import { styled, Tabs, Tab, Typography, css, Button } from '@mui/material'
 
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
 import { selectAssignmentsData, selectAssignmentsError, selectAssignmentsLoading } from './selectors'
 import { fetchAssingments } from './actions'
 
 import { Loader } from '../common/Loader'
-import { AssignmentCard } from './AssignmentCard'
+import { MentorAssignmentCard } from './MentorAssignmentCard'
 import { Assignment } from '../../types/Assignment'
+import { useAssignmentsFiltered } from './hooks'
+import { Role } from '../../types/User'
+
+import AddIcon from '@mui/icons-material/Add'
+import { CreateAssignmentModal } from './CreateAssignmentModal'
+import { selectUserData } from '../account/selectors'
+import { ViewAssignmentModal } from './ViewAssignmentModal'
+import { mockStudentsWithUpcomingAppointments } from './mock-objects'
 
 export enum AssignmentCategory {
   NOT_STARTED,
@@ -18,49 +25,53 @@ export enum AssignmentCategory {
 
 const AssignmentsPage: React.FC = () => {
   const dispatch = useAppDispatch()
+  const userData = useAppSelector(selectUserData)
+  const role = userData?.role
+  const userId = userData?.id
 
   const assignmentsLoading = useAppSelector(selectAssignmentsLoading)
   const assignmentsError = useAppSelector(selectAssignmentsError)
   const assignmentsData = useAppSelector(selectAssignmentsData)
 
-  const assignmentFilterPredicate = (category_: AssignmentCategory, assignment_: Assignment) => {
-    const { startDate, deadline } = assignment_
-    const now = dayjs()
+  const { assignmentsNotStarted, assignmentsOngoing, assignmentsFinished } = useAssignmentsFiltered(assignmentsData)
 
-    if (category_ === AssignmentCategory.NOT_STARTED) {
-      return now.isBefore(startDate)
-    }
+  // Students that made at least one appointment with the current mentor (requires BE endpoint)
+  const [students, _setStudents] = useState(() => mockStudentsWithUpcomingAppointments)
 
-    if (category_ === AssignmentCategory.ONGOING) {
-      return (now.isAfter(startDate) || now.isSame(startDate)) && now.isBefore(deadline)
-    }
+  // Create Assignment Section [Mentor]
+  const [createAssignmentOpen, setCreateAssignmentOpen] = useState(false)
+  const shouldOpenCreateAssignmentModal = role === Role.MENTOR && createAssignmentOpen
 
-    return now.isAfter(deadline)
+  // Update Assignment Section [Mentor]
+  const [updatedAssignment, setUpdatedAssignment] = useState<Assignment | undefined>(undefined)
+
+  const handleOpenAssignmentWhenUpdate = (assignment: Assignment) => {
+    setUpdatedAssignment(assignment)
+    setCreateAssignmentOpen(true)
   }
 
-  const assignmentsNotStarted = useMemo(
-    () =>
-      assignmentsData && [
-        ...assignmentsData.filter(assignment => assignmentFilterPredicate(AssignmentCategory.NOT_STARTED, assignment)),
-      ],
-    [assignmentsData]
-  )
+  const handleCloseCreateAssignment = () => {
+    setCreateAssignmentOpen(false)
+    setUpdatedAssignment(undefined)
+  }
 
-  const assignmentsOngoing = useMemo(
-    () =>
-      assignmentsData && [
-        ...assignmentsData.filter(assignment => assignmentFilterPredicate(AssignmentCategory.ONGOING, assignment)),
-      ],
-    [assignmentsData]
-  )
+  // View Assignment Section [Mentor]
+  // The boolean determining the user sees the modal or not
+  const [viewAssignmentOpen, setViewAssignmentOpen] = useState(false)
 
-  const assignmentsFinished = useMemo(
-    () =>
-      assignmentsData && [
-        ...assignmentsData.filter(assignment => assignmentFilterPredicate(AssignmentCategory.FINISHED, assignment)),
-      ],
-    [assignmentsData]
-  )
+  // The selected object
+  const [viewedAssignment, setViewedAssignment] = useState<Assignment | undefined>(undefined)
+  const shouldOpenViewAssignmentModal = role === Role.MENTOR && viewAssignmentOpen
+
+  const handleOpenViewAssignmentModal = (assignment: Assignment) => {
+    setViewedAssignment(assignment)
+    setViewAssignmentOpen(true)
+  }
+
+  const handleCloseViewAssignment = () => {
+    setViewAssignmentOpen(false)
+    setViewedAssignment(undefined)
+  }
 
   // Load assignments data on page load
   useEffect(() => {
@@ -77,44 +88,67 @@ const AssignmentsPage: React.FC = () => {
     return <Loader fullscreen={true} />
   }
 
-  if (assignmentsError || !assignmentsData) {
+  if (assignmentsError || !assignmentsData || !role || !userId) {
     return null
   }
 
   const renderAssignments = (assignments?: Assignment[], categoryIndex?: number) => {
-    if (assignments?.length && categoryIndex === selectedCategory) {
+    if (categoryIndex !== selectedCategory) {
+      return null
+    }
+
+    if (assignments?.length) {
       return (
         <Assignments key={categoryIndex} role="tabpanel">
-          {assignments.map(assignment => (
-            <AssignmentCard
-              key={assignment.id}
+          {assignments.map((assignment, idx) => (
+            <MentorAssignmentCard
+              key={idx}
+              id={assignment.id}
               title={assignment.title}
+              authorId={userId}
               description={assignment.description}
-              maxGrade={assignment.maximumGrade}
+              maximumGrade={assignment.maximumGrade}
               startDate={assignment.startDate}
               deadline={assignment.deadline}
-              assignedTo={assignment.assignedTo}
+              studentIds={assignment.studentIds}
+              submissions={assignment.submissions}
               category={selectedCategory}
+              onViewClick={() => handleOpenViewAssignmentModal(assignment)}
+              onUpdateClick={() => handleOpenAssignmentWhenUpdate(assignment)}
+              onDeleteClick={() => null} // TODO: Implement delete
             />
           ))}
         </Assignments>
       )
     }
 
-    if (categoryIndex === selectedCategory) {
-      return (
-        <EmptyAssignmentsText key={categoryIndex} variant="body1">
-          No assignments here yet
-        </EmptyAssignmentsText>
-      )
-    }
-
-    return null
+    return (
+      <EmptyAssignmentsText key={categoryIndex} variant="body1">
+        No assignments here yet
+      </EmptyAssignmentsText>
+    )
   }
 
   return (
     <Container>
       <Title variant="overline">Assignments</Title>
+      {role === Role.MENTOR && (
+        <CreateAssignmentButton variant="outlined" color="secondary" onClick={() => setCreateAssignmentOpen(true)}>
+          <AddIcon /> Create Assignment
+        </CreateAssignmentButton>
+      )}
+      <CreateAssignmentModal
+        isOpened={shouldOpenCreateAssignmentModal}
+        handleClose={handleCloseCreateAssignment}
+        students={students}
+        assignment={updatedAssignment}
+      />
+      <ViewAssignmentModal
+        isOpened={shouldOpenViewAssignmentModal}
+        handleClose={handleCloseViewAssignment}
+        students={students}
+        assignment={viewedAssignment}
+      />
       <Tabs value={selectedCategory} onChange={handleCategorySelection} indicatorColor="secondary">
         <StyledTab label="Not started" aria-selected={AssignmentCategory.NOT_STARTED === selectedCategory} />
         <StyledTab label="Ongoing" aria-selected={AssignmentCategory.ONGOING === selectedCategory} />
@@ -135,14 +169,13 @@ const Container = styled('div')`
 const Title = styled(Typography)`
   font-weight: bold;
   font-size: 24px;
-  margin-bottom: 20px;
 `
 
 const Assignments = styled('div')`
   display: flex;
   flex-direction: column;
   gap: 40px;
-  width: 50%;
+  width: 600px;
   margin-top: 20px;
 `
 
@@ -156,6 +189,15 @@ const StyledTab = styled(Tab)`
     css`
       color: ${props.theme.palette.secondary.main} !important;
     `}
+`
+
+const CreateAssignmentButton = styled(Button)`
+  margin: 45px 0;
+  padding: 30px;
+  width: 500px;
+  display: flex;
+  gap: 5px;
+  font-size: 16px;
 `
 
 export default AssignmentsPage

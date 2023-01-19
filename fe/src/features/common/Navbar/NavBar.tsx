@@ -1,19 +1,22 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
-import { styled, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Badge, styled, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { DrawerComp } from './DrawerComp'
 import { SearchBar } from '../SearchBar/SearchBar'
 import LogoutIcon from '@mui/icons-material/Logout'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import Menu from '@mui/material/Menu'
 import IconButton from '@mui/material/IconButton'
-import HomeIcon from '@mui/icons-material/Home'
 import MailIcon from '@mui/icons-material/Mail'
+import MenuIcon from '@mui/icons-material/Menu'
+import { toggleSidebar } from '../../application/slice'
+import { useAppDispatch } from '../../../redux/hooks'
 
 export const NavBar: React.FC = () => {
   const [showNotificationsMenu, setShowNotificationsMenu] = useState(false)
   const [showMessagesMenu, setShowMessagesMenu] = useState(false)
 
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const theme = useTheme()
   const isMatch = useMediaQuery(theme.breakpoints.down('md'))
@@ -43,29 +46,38 @@ export const NavBar: React.FC = () => {
     <Container>
       {isMatch ? (
         <>
-          <HomeIconNav />
+          <StyledIconButton size="large" onClick={() => dispatch(toggleSidebar())}>
+            <MenuIcon />
+          </StyledIconButton>
           <FancyText variant="h5">Colectivistii</FancyText>
           <DrawerComp />
         </>
       ) : (
         <NavContainer>
           <LeftSection>
-            <HomeIconNav />
             <FancyText variant="h5">Colectivistii</FancyText>
           </LeftSection>
           <SearchBar />
           <RightSection>
-            <BackgroundCircle onClick={openMessagesMenu}>
-              <Notifications>9+</Notifications>
-              <MailIcon />
-            </BackgroundCircle>
-            <BackgroundCircle onClick={openNotificationsMenu}>
-              <Notifications>4</Notifications>
-              <NotificationsIcon />
-            </BackgroundCircle>
-            <BackgroundCircle onClick={() => navigate('/logout')}>
-              <LogoutIcon />
-            </BackgroundCircle>
+            <Tooltip title="Messages">
+              <StyledIconButton size="large" onClick={openMessagesMenu}>
+                <Badge badgeContent={9} color="error">
+                  <MailIcon />
+                </Badge>
+              </StyledIconButton>
+            </Tooltip>
+            <Tooltip title="Notifications">
+              <StyledIconButton size="large" onClick={openNotificationsMenu}>
+                <Badge badgeContent={4} color="error">
+                  <NotificationsIcon />
+                </Badge>
+              </StyledIconButton>
+            </Tooltip>
+            <Tooltip title="Sign out">
+              <StyledIconButton size="large" onClick={() => navigate('/logout')}>
+                <LogoutIcon />
+              </StyledIconButton>
+            </Tooltip>
           </RightSection>
         </NavContainer>
       )}
@@ -89,7 +101,7 @@ export const NavBar: React.FC = () => {
           <p>NU AVETI NICIO NOTIFICARE</p>
         )} */}
         {/* showMessagesMenu &&{messages.length!==0 ? (messages.map((m, index) => (
-            <MenuItem key={index} onClick={handleSelectedMessage}>{m}</MenuItem>))) : 
+            <MenuItem key={index} onClick={handleSelectedMessage}>{m}</MenuItem>))) :
             (<p>NU AVETI NICIUN MESAJ</p>)
           } */}
       </Menu>
@@ -109,6 +121,7 @@ const Container = styled('div')`
   text-align: center;
   position: fixed;
   z-index: 2;
+  padding: 0 5%;
 `
 
 const NavContainer = styled('div')`
@@ -132,7 +145,6 @@ const RightSection = styled('div')`
   justify-content: center;
   align-items: center;
   height: inherit;
-  width: 35%;
   order: 3;
 `
 
@@ -141,43 +153,10 @@ const LeftSection = styled('div')`
   justify-content: center;
   align-items: center;
   height: inherit;
-  width: 35%;
   order: 1;
   gap: 20px;
 `
 
-const BackgroundCircle = styled(IconButton)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: ${props => props.theme.palette.secondary.main};
-  color: ${props => props.theme.palette.common.black};
-  margin: 0 10px;
-
-  :hover {
-    background: #f0bf84;
-    color: ${props => props.theme.palette.common.black};
-  }
-`
-
-const HomeIconNav = styled(HomeIcon)`
-  color: ${props => props.theme.palette.common.black};
-`
-
-const Notifications = styled('div')`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-size: 13px;
-  min-width: 15px;
-  max-width: 18px;
-  height: 15px;
-  background: #da0000;
-  border-radius: 50%;
-  color: ${props => props.theme.palette.common.white};
-  position: absolute;
-  top: 2px;
-  right: 4px;
+const StyledIconButton = styled(IconButton)`
+  color: #000;
 `

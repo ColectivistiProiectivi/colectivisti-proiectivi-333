@@ -20,6 +20,7 @@ import { addUser } from '../actions'
 import { resetAuthState } from '../../application/slice'
 
 export type RegistrationFormType = BaseUser & {
+  password: string
   confirmPassword: string
   terms: boolean
 }
@@ -75,7 +76,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ loginClick }
         // empty all fields after submitting
         resetForm()
 
-        // Move back to login after successfully registering
+        // Move back to log in after successfully registering
         loginClick()
 
         // make sure to reset loading / complete status for registration action
