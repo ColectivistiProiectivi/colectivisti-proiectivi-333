@@ -37,4 +37,14 @@ public class Assignment {
     private Timestamp deadline;
     private String description;
     private Double maximumGrade;
+
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "submission_student_xref",
+            joinColumns = @JoinColumn(name = "assignment_id"),
+            inverseJoinColumns = @JoinColumn(name = "submission_id")
+    )
+    private List<Submission> submissions;
 }
