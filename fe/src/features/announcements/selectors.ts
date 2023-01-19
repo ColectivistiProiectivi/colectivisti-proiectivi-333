@@ -22,3 +22,13 @@ export const selectAnnouncementsData = createSelector(
   [getAnnouncementsState],
   announcementsState => announcementsState.announcementsData
 )
+
+// export const selectAnnouncementsResultsLoading = createSelector(
+//   [getAnnouncementsState],
+//   announcementsState => announcementsState.announcementsSearchResultsLoading
+// )
+
+// export const selectAnnouncementsResultsError = createSelector(
+//   [getAnnouncementsState],
+//   announcementsState => announcementsState.announcementsSearchResultsError
+// )

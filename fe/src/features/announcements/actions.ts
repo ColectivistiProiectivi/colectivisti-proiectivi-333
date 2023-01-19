@@ -1,9 +1,16 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
+import { AnnouncementDto } from '../../types/Announcements'
 import { fetchAnnouncementsCall } from './services'
-import { convertFromAnnouncementsDto } from './utils'
 
 export const fetchAnnouncements = createAsyncThunk('fetchAnnouncements', async () => {
   const response = await fetchAnnouncementsCall()
 
-  return convertFromAnnouncementsDto(response.data.value)
+  return response.data
 })
+
+export const fetchAnnouncementsSearchResults = createAsyncThunk(
+  'fetchAnnouncementsSearchResults',
+  async (searchResults: AnnouncementDto) => {
+    return searchResults
+  }
+)

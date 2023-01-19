@@ -12,6 +12,7 @@ import { selectUserData } from '../../account/selectors'
 dayjs.extend(RelativeTime)
 
 interface AnnouncementsCardProps {
+  id: number
   title: string
   description: string
   price: number
@@ -21,6 +22,7 @@ interface AnnouncementsCardProps {
 }
 
 export const AnnouncementCard: React.FC<AnnouncementsCardProps> = ({
+  id,
   title,
   description,
   price,
@@ -32,7 +34,7 @@ export const AnnouncementCard: React.FC<AnnouncementsCardProps> = ({
   const isMentor = userData?.role === 'MENTOR'
 
   return (
-    <Wrapper>
+    <Wrapper key={id}>
       <Section>
         <Profile>
           <AnnouncementUserAvatar variant="square" key={createdBy.id} src={createdBy?.profilePicture} />

@@ -14,7 +14,7 @@ export interface InterestAreasResponseDTO {
 export interface Announcement {
   id: number
   title: string
-  createdAtDate: Dayjs
+  postingDate: Dayjs
   user: AnnouncementUserResponseDTO
   interestAreas: InterestAreasResponseDTO
   description: string
@@ -24,7 +24,7 @@ export interface Announcement {
 export interface AnnouncementDto {
   id: number
   title: string
-  createdAtDate: string
+  postingDate: string
   user: AnnouncementUserResponseDTO
   interestAreas: InterestAreasResponseDTO
   description: string

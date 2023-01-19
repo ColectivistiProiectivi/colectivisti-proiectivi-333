@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+// import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 import { Announcement } from '../../types/Announcements'
 import { fetchAnnouncements } from './actions'
 
@@ -22,17 +23,17 @@ export const announcementsSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(fetchAnnouncements.rejected, state => {
-        state.announcementsSuccess = false
-        state.announcementsError = true
-        state.announcementsLoading = false
-      })
-      .addCase(fetchAnnouncements.fulfilled, (state, action: PayloadAction<Announcement[]>) => {
-        state.announcementsData = action.payload
-        state.announcementsSuccess = true
-        state.announcementsError = false
-        state.announcementsLoading = false
-      })
+      // .addCase(fetchAnnouncements.rejected, state => {
+      //   state.announcementsSuccess = false
+      //   state.announcementsError = true
+      //   state.announcementsLoading = false
+      // })
+      // .addCase(fetchAnnouncements.fulfilled, (state, action: PayloadAction<Announcement[]>) => {
+      //   state.announcementsData = action.payload
+      //   state.announcementsSuccess = true
+      //   state.announcementsError = false
+      //   state.announcementsLoading = false
+      // })
 
       .addCase(fetchAnnouncements.pending, state => {
         state.announcementsSuccess = false
