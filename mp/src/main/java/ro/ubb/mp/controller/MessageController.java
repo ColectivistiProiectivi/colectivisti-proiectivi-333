@@ -69,10 +69,10 @@ public class MessageController {
                 .body(ResponseWrapperDTO.<MessageResponseDTO>builder().errorMessage("Bad authentication type").build());
     }
 
-    @GetMapping("/users/{id1}/{id2}")
-    public ResponseEntity<ResponseWrapperDTO<List<MessageResponseDTO>>> getAllMessagesBetweenUsers(@PathVariable Long id1, @PathVariable Long id2){
+    @GetMapping("/users/{id}")
+    public ResponseEntity<ResponseWrapperDTO<List<MessageResponseDTO>>> getAllMessagesBetweenUsers(@PathVariable Long id){
         if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User user){
-            List<MessageResponseDTO> messageResponseDTOS = getMessageService().getMessagesBetweenUsers(id1, id2)
+            List<MessageResponseDTO> messageResponseDTOS = getMessageService().getMessagesBetweenUsers(user.getId(), id)
                     .stream().map(message -> getResponseMapper().toDTO(message)).collect(Collectors.toList());
 
             return ResponseEntity.ok()
