@@ -23,6 +23,7 @@ import { fetchCompletedStudiesOptions, fetchInterestAreasOptions, updateUserData
 
 export type ProfileFormType = Omit<UserDto, 'email' | 'role' | 'profilePicture'> & {
   profilePicture?: File
+  password: string
 }
 
 export type ProfileSubmitType = Omit<
@@ -33,6 +34,7 @@ export type ProfileSubmitType = Omit<
   completedStudyIds: number[]
   interestAreaIds: number[]
   ongoingStudyId?: number
+  password?: string
 }
 
 const ProfilePage: React.FC = () => {

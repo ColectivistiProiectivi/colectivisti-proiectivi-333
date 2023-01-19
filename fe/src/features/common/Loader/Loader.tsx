@@ -27,6 +27,6 @@ const Container = styled('div')<{ fullscreen: boolean }>`
       left: 0;
       width: 100%;
       height: 100%;
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(12px);
     `}
 `

@@ -9,22 +9,19 @@ import {
   styled,
   TextField,
 } from '@mui/material'
-import React, { useState } from 'react'
-import { mockStudentsWithUpcomingAppointments } from '../mock-objects'
+import React, { useEffect } from 'react'
 import { SubmitHandler, FormProvider, useController, useForm } from 'react-hook-form'
-import { useAccountRole } from '../../common/hooks/useAccountRole'
 import { BaseUser, Role } from '../../../types/User'
 import { FormInput } from '../../common/FormInput'
 import { DesktopDatePicker } from '@mui/x-date-pickers'
 import { Dayjs } from 'dayjs'
-
-interface CreateAssignmentModalProps {
-  isOpened: boolean
-  editMode: boolean
-  handleClose: () => void
-}
+import clipSrc from './icons/clip.svg'
+import { Assignment } from '../../../types/Assignment'
+import { useAppSelector } from '../../../redux/hooks'
+import { selectUserData } from '../../account/selectors'
 
 export type CreateAssignmentType = {
+  id: number
   title: string
   author: BaseUser
   startDate: Dayjs
@@ -34,16 +31,27 @@ export type CreateAssignmentType = {
   maximumGrade: number
 }
 
-export const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({ isOpened, editMode, handleClose }) => {
-  const role = useAccountRole()
+interface CreateAssignmentModalProps {
+  isOpened: boolean
+  handleClose: () => void
+  students: BaseUser[]
+  assignment?: Assignment
+}
 
-  // Students that made at least one appointment with the current mentor (requires BE endpoint)
-  const [students, _setStudents] = useState(() => mockStudentsWithUpcomingAppointments)
+export const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({
+  isOpened,
+  handleClose,
+  students,
+  assignment,
+}) => {
+  const userData = useAppSelector(selectUserData)
+  const role = userData?.role
 
   const formMethods = useForm<CreateAssignmentType>()
   const {
     control,
     handleSubmit,
+    setValue,
     setError,
     clearErrors,
     reset,
@@ -64,6 +72,26 @@ export const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({ is
       validate: deadlineValue => deadlineValue.isAfter(startDateField.value) || 'Deadline should be after Start Date',
     },
   })
+
+  const editMode = !!assignment
+
+  useEffect(() => {
+    // Fill with pre-existing data when updating
+    if (assignment) {
+      // Set user from the fetched users list Assignment !== CreateAssignmentFormType
+      setValue('title', assignment.title)
+
+      // filter all students that are not already selected from all the possible students
+      setValue(
+        'students',
+        students.filter(student => assignment.studentIds.includes(student.id))
+      )
+
+      setValue('startDate', assignment.startDate)
+      setValue('deadline', assignment.deadline)
+      setValue('description', assignment.description)
+    }
+  }, [assignment])
 
   const handleAssignmentSubmit: SubmitHandler<CreateAssignmentType> = async _formData => {
     // TODO: Map students to studentIds AND author to authorId before sending data / Convert dates to string
@@ -88,12 +116,13 @@ export const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({ is
   if (role !== Role.MENTOR) return null
 
   return (
-    <Dialog open={isOpened} onClose={handleCloseModal}>
-      <DialogTitle>{editMode ? 'Update' : 'Create'} Assignment</DialogTitle>
+    <Dialog open={isOpened} onClose={handleCloseModal} disableScrollLock={true}>
+      <StyledDialogTitle>{editMode ? 'Update' : 'Create'} Assignment</StyledDialogTitle>
+      <Clip src={clipSrc} alt="clip-icon" />
       <FormProvider {...formMethods}>
         <FormWrapper onSubmit={handleSubmit(handleAssignmentSubmit)}>
           <StyledDialogContent>
-            <DialogInstructions>Fill in the details the new assignment</DialogInstructions>
+            <DialogInstructions>Fill in the details for {editMode ? 'this' : 'the new'} assignment</DialogInstructions>
             <FormInput
               label="Title"
               fieldName="title"
@@ -185,8 +214,8 @@ export const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({ is
             <Button onClick={handleCloseModal} color="error">
               Cancel
             </Button>
-            <Button color="info" type="submit">
-              Create
+            <Button color="info" type="submit" variant="outlined">
+              {editMode ? 'Update' : 'Create'}
             </Button>
           </DialogActions>
         </FormWrapper>
@@ -200,6 +229,10 @@ const FormWrapper = styled('form')`
   width: 500px;
 `
 
+const StyledDialogTitle = styled(DialogTitle)`
+  background: #ddd;
+`
+
 const StyledDialogContent = styled(DialogContent)`
   display: flex;
   flex-direction: column;
@@ -208,4 +241,14 @@ const StyledDialogContent = styled(DialogContent)`
 
 const DialogInstructions = styled(DialogContentText)`
   margin-bottom: 15px;
+`
+
+const Clip = styled('img')`
+  user-select: none;
+  -webkit-user-drag: none;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 0;
+  opacity: 0.8;
 `

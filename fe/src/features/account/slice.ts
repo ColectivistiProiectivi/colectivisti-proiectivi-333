@@ -76,7 +76,8 @@ export const userSlice = createSlice({
       .addCase(updateUserData.pending, state => {
         state.updateUserLoading = true
       })
-      .addCase(updateUserData.fulfilled, state => {
+      .addCase(updateUserData.fulfilled, (state, action: PayloadAction<UserDto>) => {
+        state.userData = action.payload
         state.updateUserLoading = false
       })
       .addCase(updateUserData.rejected, state => {
