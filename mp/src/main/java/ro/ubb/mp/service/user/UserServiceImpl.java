@@ -15,9 +15,7 @@ import ro.ubb.mp.dao.model.InterestArea;
 import ro.ubb.mp.dao.model.Role;
 import ro.ubb.mp.dao.model.Study;
 import ro.ubb.mp.dao.model.User;
-import ro.ubb.mp.dao.repository.InterestAreaRepository;
-import ro.ubb.mp.dao.repository.StudyRepository;
-import ro.ubb.mp.dao.repository.UserRepository;
+import ro.ubb.mp.dao.repository.*;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
@@ -32,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final StudyRepository studyRepository;
     private final InterestAreaRepository interestAreaRepository;
+    private final AppointmentRepository appointmentRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserProfileRequestMapper userProfileUpdateMapper;
 
@@ -144,5 +143,12 @@ public class UserServiceImpl implements UserService {
 
     public List<User> getAllMentors() {
         return userRepository.findAllByRole(Role.MENTOR);
+    }
+
+    @Override
+    public List<User> findAllAnnouncementsUsersByMentor(User mentor) {
+
+        List<Long> studentsId = getAppointmentRepository().findAllStudentsByMentorId(mentor.getId());
+        return getUserRepository().findAllById(studentsId);
     }
 }

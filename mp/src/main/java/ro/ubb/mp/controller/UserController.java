@@ -127,4 +127,29 @@ public class UserController {
                         .build()
                 );
     }
+
+    @PreAuthorize("hasAnyAuthority('MENTOR')")
+    @GetMapping("/mentors/appointments/students")
+    public ResponseEntity<ResponseWrapperDTO<List<UserProfileDTO>>> getAppointmentsUsersByMentor (final Authentication authentication) throws IOException {
+
+        if(authentication.getPrincipal() instanceof User mentor) {
+
+            List<User> appointmentsStudents = getUserService().findAllAnnouncementsUsersByMentor(mentor);
+
+            return ResponseEntity
+                    .ok(ResponseWrapperDTO
+                            .<List<UserProfileDTO>>builder()
+                            .value(appointmentsStudents.stream().map(student -> getUserMapper().toProfileDTO(student)).toList())
+                            .build());
+
+        }
+
+        return ResponseEntity
+                .badRequest()
+                .body(ResponseWrapperDTO
+                        .<List<UserProfileDTO>>builder()
+                        .errorMessage("Wrong authentication type")
+                        .build()
+                );
+    }
 }
