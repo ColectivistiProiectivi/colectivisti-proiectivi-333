@@ -46,7 +46,7 @@ public class AssignmentController {
                                 .build());
             } else if (user.getRole().equals(Role.STUDENT)) {
                 List<Assignment> assignments = assignmentService.getAll();
-                List<AssignmentResponseDTO> assignmentResponseDTOS = assignments.stream().filter(assignment -> assignment.getStudents().contains(user))
+                List<AssignmentResponseDTO> assignmentResponseDTOS = assignments.stream().filter(assignment -> assignment.getStudents().stream().map(User::getId).toList().contains(user.getId()))
                         .map(assignment -> getAssignmentMapper().toDTO(assignment)).collect(Collectors.toList());
 
                 return ResponseEntity.ok().body(
