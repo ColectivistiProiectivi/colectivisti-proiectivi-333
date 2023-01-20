@@ -16,6 +16,7 @@ import ro.ubb.mp.dao.model.Notification;
 import ro.ubb.mp.dao.model.User;
 import ro.ubb.mp.dao.repository.NotificationRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,7 +48,7 @@ public class NotificationService {
 
     /**
      * @param id Long id
-     * TODO - un user sa isi stearga o anumita notificare
+     *           TODO - un user sa isi stearga o anumita notificare
      */
     public void delete(Long id) {
         notificationRepository.deleteById(id);
@@ -86,5 +87,28 @@ public class NotificationService {
     @Transactional
     public void markAsRead(User user, Long notificationId) {
         notificationRepository.findByUserAndId(user, notificationId).setRead(true);
+    }
+
+    public Integer countUnreadNotifications(User user) {
+        List<Notification> notifications = notificationRepository.findByUser(user);
+        int count = 0;
+        for (Notification n : notifications) {
+            if (!n.isRead()) {
+                count = count + 1;
+            }
+        }
+        return count;
+    }
+
+    public List<Notification> findAll(User user) {
+        List<Notification> notifications = notificationRepository.findByUser(user);
+        List<Notification> allNotifications = new ArrayList<>();
+        for (Notification n : notifications) {
+            if (!n.isRead()) {
+                allNotifications.add(n);
+            }
+        }
+
+        return allNotifications;
     }
 }
