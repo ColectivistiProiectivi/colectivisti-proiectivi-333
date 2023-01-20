@@ -31,6 +31,11 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     }
 
     @Override
+    public List<Announcement> getAnnouncementsOrderedByDate() {
+        return announcementRepository.findAllByOrderByPostingDateDesc();
+    }
+
+    @Override
     public List<Announcement> getAll() {
         return announcementRepository.findAll();
     }

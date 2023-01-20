@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface AnnouncementService {
     Optional<Announcement> findById(Long id);
-
+     List<Announcement> getAnnouncementsOrderedByDate();
     List<Announcement> getAll();
     List<Announcement> getAnnouncementFilteredByTitleOrDescription(String queryString);
 

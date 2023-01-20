@@ -32,7 +32,7 @@ public class AnnouncementController {
 
     @GetMapping()
     public ResponseEntity<List<AnnouncementResponseDTO>> getAnnouncements() {
-        List<Announcement> announcements = announcementService.getAll();
+        List<Announcement> announcements = announcementService.getAnnouncementsOrderedByDate();
         List<AnnouncementResponseDTO> announcementResponseDTOS = announcements.stream()
                 .map(announcement -> getAnnouncementMapper().toDTO(announcement)).collect(Collectors.toList());
 

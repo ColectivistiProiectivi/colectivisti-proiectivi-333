@@ -7,11 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import ro.ubb.mp.controller.dto.request.AppointmentRequestDTO;
-import ro.ubb.mp.controller.dto.response.AppointmentResponseDTO;
-import ro.ubb.mp.controller.dto.response.PageResponseWrapperDTO;
-
 import ro.ubb.mp.dao.model.Appointment;
 import ro.ubb.mp.dao.model.User;
 import ro.ubb.mp.dao.repository.AppointmentRepository;
@@ -20,7 +16,6 @@ import ro.ubb.mp.service.user.UserService;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service("appointmentService")
 @Data
@@ -58,14 +53,14 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public Appointment updateAppointment(AppointmentRequestDTO appointmentRequestDTO, Long id){
+    public Appointment updateAppointment(AppointmentRequestDTO appointmentRequestDTO, Long id) {
         Appointment appointment = repository.findById(id).orElseThrow(EntityNotFoundException::new);
 
-        if(!(appointmentRequestDTO.getLocationDetails().isEmpty() || appointmentRequestDTO.getLocationDetails().isBlank())){
+        if (!(appointmentRequestDTO.getLocationDetails().isEmpty() || appointmentRequestDTO.getLocationDetails().isBlank())) {
             appointment.setLocationDetails(appointmentRequestDTO.getLocationDetails());
         }
 
-        if(appointmentRequestDTO.getDate() != null){
+        if (appointmentRequestDTO.getDate() != null) {
             appointment.setDate(appointmentRequestDTO.getDate());
         }
 
@@ -82,12 +77,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     }
 
-    public Page<Appointment> getPageStudent(User user, Integer pageNo, Integer pageSize){
+    public Page<Appointment> getPageStudent(User user, Integer pageNo, Integer pageSize) {
         Pageable firstPageWithLimitElement = PageRequest.of(pageNo, pageSize).withSort(Sort.Direction.ASC, "date");
         return repository.getAppointmentsByStudent(user, firstPageWithLimitElement);
     }
 
-    public Page<Appointment> getPageMentor(User user, Integer pageNo, Integer pageSize){
+    public Page<Appointment> getPageMentor(User user, Integer pageNo, Integer pageSize) {
         Pageable firstPageWithLimitElement = PageRequest.of(pageNo, pageSize).withSort(Sort.Direction.ASC, "date");
         return repository.getAppointmentsByMentor(user, firstPageWithLimitElement);
     }
