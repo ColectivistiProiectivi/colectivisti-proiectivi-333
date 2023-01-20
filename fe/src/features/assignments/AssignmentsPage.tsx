@@ -2,20 +2,28 @@ import React, { useEffect, useState } from 'react'
 import { styled, Tabs, Tab, Typography, css, Button } from '@mui/material'
 
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
-import { selectAssignmentsData, selectAssignmentsError, selectAssignmentsLoading } from './selectors'
-import { fetchAssingments } from './actions'
+import {
+  selectAssignmentsData,
+  selectAssignmentsError,
+  selectAssignmentsLoading,
+  selectMentorStudents,
+  selectMentorStudentsLoading,
+} from './selectors'
+import { deleteAssignment, fetchAssignments, fetchMentorStudents } from './actions'
 
 import { Loader } from '../common/Loader'
 import { MentorAssignmentCard } from './MentorAssignmentCard'
 import { Assignment } from '../../types/Assignment'
-import { useAssignmentsFiltered } from './hooks'
 import { Role } from '../../types/User'
 
 import AddIcon from '@mui/icons-material/Add'
 import { CreateAssignmentModal } from './CreateAssignmentModal'
 import { selectUserData } from '../account/selectors'
 import { ViewAssignmentModal } from './ViewAssignmentModal'
-import { mockStudentsWithUpcomingAppointments } from './mock-objects'
+import { StudentAssignmentCard } from './StudentAssignmentCard'
+import { getAssignmentsFiltered } from './utils'
+import { ConfirmationDialog } from '../common/ConfirmationDialog'
+import { CreateSubmissionModal } from './CreateSubmissionModal'
 
 export enum AssignmentCategory {
   NOT_STARTED,
@@ -33,10 +41,22 @@ const AssignmentsPage: React.FC = () => {
   const assignmentsError = useAppSelector(selectAssignmentsError)
   const assignmentsData = useAppSelector(selectAssignmentsData)
 
-  const { assignmentsNotStarted, assignmentsOngoing, assignmentsFinished } = useAssignmentsFiltered(assignmentsData)
+  const [notStartedAssignments, setNotStartedAssignments] = useState<Assignment[] | undefined>([])
+  const [ongoingAssignments, setOngoingAssignments] = useState<Assignment[] | undefined>([])
+  const [finishedAssignments, setFinishedAssignments] = useState<Assignment[] | undefined>([])
+
+  useEffect(() => {
+    const { assignmentsNotStarted, assignmentsOngoing, assignmentsFinished } = getAssignmentsFiltered(assignmentsData)
+    setNotStartedAssignments(assignmentsNotStarted)
+    setOngoingAssignments(assignmentsOngoing)
+    setFinishedAssignments(assignmentsFinished)
+  }, [assignmentsData])
 
   // Students that made at least one appointment with the current mentor (requires BE endpoint)
-  const [students, _setStudents] = useState(() => mockStudentsWithUpcomingAppointments)
+  // const [students, _setStudents] = useState(() => mockStudentsWithUpcomingAppointments)
+  const students = useAppSelector(selectMentorStudents)
+  const studentsLoading = useAppSelector(selectMentorStudentsLoading)
+  // const studentsError = useAppSelector(selectMentorStudentsError)
 
   // Create Assignment Section [Mentor]
   const [createAssignmentOpen, setCreateAssignmentOpen] = useState(false)
@@ -73,9 +93,45 @@ const AssignmentsPage: React.FC = () => {
     setViewedAssignment(undefined)
   }
 
+  // Delete Confirmation Modal [Mentor]
+  const [deletedAssignmentId, setDeletedAssignmentId] = useState<number | undefined>()
+  const [deleteConfirmationDialogOpen, setDeleteConfirmationDialogOpen] = useState(false)
+
+  const handleDeleteDialogOpen = (assignmentId: number) => {
+    setDeletedAssignmentId(assignmentId)
+    setDeleteConfirmationDialogOpen(true)
+  }
+
+  const handleDeleteDialogClose = () => {
+    setDeletedAssignmentId(undefined)
+    setDeleteConfirmationDialogOpen(false)
+  }
+
+  // Create Submission Modal [Student]
+  const [updatedAssignmentWithNewSubmissions, setUpdatedAssignmentWithNewSubmissions] = useState<
+    Assignment | undefined
+  >(undefined)
+  const [createSubmissionModalOpen, setCreateSubmissionModalOpen] = useState(false)
+
+  const handleCreateSubmissionModalOpen = (assignment: Assignment) => {
+    setUpdatedAssignmentWithNewSubmissions(assignment)
+    setCreateSubmissionModalOpen(true)
+  }
+
+  const handleCreateSubmissionModalClose = () => {
+    setCreateSubmissionModalOpen(false)
+    setUpdatedAssignmentWithNewSubmissions(undefined)
+  }
+
   // Load assignments data on page load
   useEffect(() => {
-    dispatch(fetchAssingments())
+    dispatch(fetchAssignments())
+
+    if (role === Role.MENTOR) {
+      // dispatch fetch mentor's students
+      dispatch(fetchMentorStudents())
+      // dispatch(fetchMentorStudentsAvatars())
+    }
   }, [])
 
   const [selectedCategory, setSelectedCategory] = useState(AssignmentCategory.NOT_STARTED)
@@ -84,7 +140,7 @@ const AssignmentsPage: React.FC = () => {
     setSelectedCategory(newSelectedCategory)
   }
 
-  if (assignmentsLoading) {
+  if (assignmentsLoading || studentsLoading) {
     return <Loader fullscreen={true} />
   }
 
@@ -100,24 +156,35 @@ const AssignmentsPage: React.FC = () => {
     if (assignments?.length) {
       return (
         <Assignments key={categoryIndex} role="tabpanel">
-          {assignments.map((assignment, idx) => (
-            <MentorAssignmentCard
-              key={idx}
-              id={assignment.id}
-              title={assignment.title}
-              authorId={userId}
-              description={assignment.description}
-              maximumGrade={assignment.maximumGrade}
-              startDate={assignment.startDate}
-              deadline={assignment.deadline}
-              studentIds={assignment.studentIds}
-              submissions={assignment.submissions}
-              category={selectedCategory}
-              onViewClick={() => handleOpenViewAssignmentModal(assignment)}
-              onUpdateClick={() => handleOpenAssignmentWhenUpdate(assignment)}
-              onDeleteClick={() => null} // TODO: Implement delete
-            />
-          ))}
+          {role === Role.MENTOR &&
+            assignments.map((assignment, idx) => (
+              <MentorAssignmentCard
+                key={idx}
+                id={assignment.id}
+                title={assignment.title}
+                author={assignment.author}
+                description={assignment.description}
+                maximumGrade={assignment.maximumGrade}
+                startDate={assignment.startDate}
+                deadline={assignment.deadline}
+                studentIds={assignment.studentIds}
+                submissions={assignment.submissions}
+                category={selectedCategory}
+                students={students}
+                onViewClick={() => handleOpenViewAssignmentModal(assignment)}
+                onUpdateClick={() => handleOpenAssignmentWhenUpdate(assignment)}
+                onDeleteClick={() => handleDeleteDialogOpen(assignment.id)}
+              />
+            ))}
+          {role === Role.STUDENT &&
+            assignments.map((assignment, idx) => (
+              <StudentAssignmentCard
+                key={idx}
+                assignment={assignment}
+                category={selectedCategory}
+                onViewClick={() => handleCreateSubmissionModalOpen(assignment)}
+              />
+            ))}
         </Assignments>
       )
     }
@@ -149,12 +216,22 @@ const AssignmentsPage: React.FC = () => {
         students={students}
         assignment={viewedAssignment}
       />
+      <CreateSubmissionModal
+        isOpened={createSubmissionModalOpen}
+        handleClose={handleCreateSubmissionModalClose}
+        assignment={updatedAssignmentWithNewSubmissions}
+      />
+      <ConfirmationDialog
+        isOpened={deleteConfirmationDialogOpen}
+        handleClose={handleDeleteDialogClose}
+        handleConfirmAction={() => deletedAssignmentId && dispatch(deleteAssignment(deletedAssignmentId))}
+      />
       <Tabs value={selectedCategory} onChange={handleCategorySelection} indicatorColor="secondary">
         <StyledTab label="Not started" aria-selected={AssignmentCategory.NOT_STARTED === selectedCategory} />
         <StyledTab label="Ongoing" aria-selected={AssignmentCategory.ONGOING === selectedCategory} />
         <StyledTab label="Finished" aria-selected={AssignmentCategory.FINISHED === selectedCategory} />
       </Tabs>
-      {[assignmentsNotStarted, assignmentsOngoing, assignmentsFinished].map(renderAssignments)}
+      {[notStartedAssignments, ongoingAssignments, finishedAssignments].map(renderAssignments)}
     </Container>
   )
 }
@@ -164,6 +241,7 @@ const Container = styled('div')`
   flex-direction: column;
   align-items: center;
   width: 100%;
+  padding-bottom: 200px;
 `
 
 const Title = styled(Typography)`

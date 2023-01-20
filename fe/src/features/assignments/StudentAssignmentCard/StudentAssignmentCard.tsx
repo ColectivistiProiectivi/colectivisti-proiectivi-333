@@ -1,86 +1,59 @@
 import React from 'react'
-import dayjs from 'dayjs'
-import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import { alpha, Divider, IconButton, styled, Tooltip, Typography } from '@mui/material'
 import { AssignmentCategory } from '../AssignmentsPage'
+import { Assignment } from '../../../types/Assignment'
+
+import { useAppSelector } from '../../../redux/hooks'
+import { selectUserData } from '../../account/selectors'
+import { lightBlue, orange } from '@mui/material/colors'
 
 import VisibilityIcon from '@mui/icons-material/Visibility'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
-// import { initialPictureURL } from '../../account/utils'
-import { Assignment } from '../../../types/Assignment'
-import { BaseUser } from '../../../types/User'
+import DoneIcon from '@mui/icons-material/Done'
+import PendingActionsIcon from '@mui/icons-material/PendingActions'
 
-dayjs.extend(LocalizedFormat)
-
-interface MentorAssignmentCardProps extends Assignment {
+interface StudentAssignmentCardProps {
+  assignment: Assignment
   category: AssignmentCategory
-  students: BaseUser[]
   onViewClick: () => void
-  onUpdateClick: () => void
-  onDeleteClick: () => void
 }
 
-export const MentorAssignmentCard: React.FC<MentorAssignmentCardProps> = ({
-  title,
-  startDate,
-  deadline,
-  studentIds,
-  students,
-  category,
-  onViewClick,
-  onUpdateClick,
-  onDeleteClick,
-}) => {
-  // TODO: same with create assignment, retrieve students the mentor has appointments with
-  // const _users: User[] = []
+export const StudentAssignmentCard: React.FC<StudentAssignmentCardProps> = ({ assignment, category, onViewClick }) => {
+  const userData = useAppSelector(selectUserData)
 
   const date = {
     [AssignmentCategory.NOT_STARTED]: (
       <>
         <StyledLabel variant="overline">Starting on</StyledLabel>
-        <Typography variant="body2">{startDate.format('LLLL')}</Typography>
+        <Typography variant="body2">{assignment.startDate.format('LLLL')}</Typography>
       </>
     ),
     [AssignmentCategory.ONGOING]: (
       <>
         <StyledLabel variant="overline">Due</StyledLabel>
-        <Typography variant="body2">{deadline.format('LLLL')}</Typography>
+        <Typography variant="body2">{assignment.deadline.format('LLLL')}</Typography>
       </>
     ),
     [AssignmentCategory.FINISHED]: (
       <>
         <StyledLabel variant="overline">Finished on</StyledLabel>
-        <Typography variant="body2">{deadline.format('LLLL')}</Typography>
+        <Typography variant="body2">{assignment.deadline.format('LLLL')}</Typography>
       </>
     ),
   }[category]
+
+  const hasSubmissions = assignment.submissions.find(submission => submission.studentId === userData?.id)
 
   return (
     <Wrapper>
       <Left>
         <CardItem>
           <StyledLabel variant="overline">Title</StyledLabel>
-          <Title variant="h6">{title}</Title>
+          <Title variant="h6">{assignment.title}</Title>
         </CardItem>
         <CardItem>{date}</CardItem>
         <CardItem>
-          <StyledLabel variant="overline">Assigned Students</StyledLabel>
-          <AssignedUsers>
-            {studentIds.map((assignedUserId, idx) => (
-              // TODO: If I'll have time, I'll do this
-              // <Tooltip key={assignedUserId} title="user name">
-              //   <AssignedUsersAvatar
-              //     // src={users?.find(user_ => user_.id === assignedUser.userId)?.profilePicture}
-              //     src={initialPictureURL}
-              //   />
-              // </Tooltip>
-              <Typography variant="body2" key={assignedUserId}>
-                {students.find(student => student.id === assignedUserId)?.fullName}
-                {idx !== studentIds.length - 1 && ','}
-              </Typography>
-            ))}
-          </AssignedUsers>
+          <StyledLabel variant="overline">Mentor&#39;s Name</StyledLabel>
+          {assignment.author.fullName}
         </CardItem>
 
         {/* TODO: Move description / grade to modal update modal */}
@@ -92,25 +65,28 @@ export const MentorAssignmentCard: React.FC<MentorAssignmentCardProps> = ({
       <Divider orientation="vertical" />
       <Right>
         <StyledLabel variant="overline">Actions</StyledLabel>
+
         <ActionButtons>
           <Tooltip title="View / Grade students' work">
             <IconButton size="large" onClick={onViewClick}>
               <VisibilityIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Update assignment">
-            <IconButton size="large" onClick={onUpdateClick}>
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-          {category === AssignmentCategory.NOT_STARTED && (
-            <Tooltip title="Cancel assignment">
-              <IconButton size="large" color="error" onClick={onDeleteClick}>
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
-          )}
         </ActionButtons>
+        <StatusCardItem>
+          <StyledLabel variant="overline">Status</StyledLabel>
+          <Status variant="body2" sx={{ color: hasSubmissions ? lightBlue[500] : orange[400] }}>
+            {hasSubmissions ? (
+              <Tooltip title="Turned In">
+                <DoneIcon />
+              </Tooltip>
+            ) : (
+              <Tooltip title="Not Turned In">
+                <PendingActionsIcon />
+              </Tooltip>
+            )}
+          </Status>
+        </StatusCardItem>
       </Right>
     </Wrapper>
   )
@@ -153,11 +129,6 @@ const ActionButtons = styled('div')`
   align-items: center;
 `
 
-const AssignedUsers = styled('div')`
-  display: flex;
-  gap: 4px;
-`
-
 const StyledLabel = styled(Typography)`
   color: #777;
 `
@@ -165,4 +136,14 @@ const StyledLabel = styled(Typography)`
 const CardItem = styled('div')`
   display: flex;
   flex-direction: column;
+`
+
+const StatusCardItem = styled(CardItem)`
+  align-items: center;
+`
+
+const Status = styled(Typography)`
+  display: flex;
+  align-items: center;
+  gap: 5px;
 `
