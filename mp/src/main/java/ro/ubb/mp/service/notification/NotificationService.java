@@ -88,7 +88,7 @@ public class NotificationService {
         notificationRepository.findByUserAndId(user, notificationId).setRead(true);
     }
 
-    public Integer findAllUnread(User user) {
+    public Integer countUnreadNotifications(User user) {
         List<Notification> notifications = notificationRepository.findByUser(user);
         int count = 0;
         for (Notification n : notifications) {
