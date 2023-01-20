@@ -1,9 +1,10 @@
 import { Dayjs } from 'dayjs'
+import { BaseUser } from './User'
 
 export interface Assignment {
   id: number
   title: string
-  authorId: number
+  author: BaseUser
   startDate: Dayjs
   deadline: Dayjs
   submissions: Submission[]
@@ -12,8 +13,19 @@ export interface Assignment {
   maximumGrade: number
 }
 
-export interface AssignmentDto {
+export interface AssignmentResponseDto {
   id: number
+  title: string
+  author: BaseUser
+  startDate: string
+  deadline: string
+  students: BaseUser[]
+  submissions: Submission[]
+  description: string
+  maximumGrade: number
+}
+
+export interface AssignmentRequestDto {
   title: string
   authorId: number
   startDate: string

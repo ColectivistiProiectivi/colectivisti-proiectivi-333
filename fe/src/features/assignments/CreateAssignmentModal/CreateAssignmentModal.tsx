@@ -10,18 +10,21 @@ import {
   TextField,
 } from '@mui/material'
 import React, { useEffect } from 'react'
-import { SubmitHandler, FormProvider, useController, useForm } from 'react-hook-form'
+import { FormProvider, SubmitHandler, useController, useForm } from 'react-hook-form'
 import { BaseUser, Role } from '../../../types/User'
 import { FormInput } from '../../common/FormInput'
 import { DesktopDatePicker } from '@mui/x-date-pickers'
-import { Dayjs } from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import clipSrc from './icons/clip.svg'
-import { Assignment } from '../../../types/Assignment'
-import { useAppSelector } from '../../../redux/hooks'
+import { Assignment, AssignmentRequestDto } from '../../../types/Assignment'
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { selectUserData } from '../../account/selectors'
+import { createAssignment, updateAssignment } from '../actions'
+
+dayjs.extend(isSameOrAfter)
 
 export type CreateAssignmentType = {
-  id: number
   title: string
   author: BaseUser
   startDate: Dayjs
@@ -44,8 +47,10 @@ export const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({
   students,
   assignment,
 }) => {
+  const dispatch = useAppDispatch()
   const userData = useAppSelector(selectUserData)
   const role = userData?.role
+  // const now = dayjs()
 
   const formMethods = useForm<CreateAssignmentType>()
   const {
@@ -58,11 +63,16 @@ export const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({
     formState: { errors },
   } = formMethods
 
+  const editMode = !!assignment
+
   const { field: studentsField } = useController({ name: 'students', control })
   const { field: startDateField } = useController({
     name: 'startDate',
     control,
-    rules: { required: true },
+    rules: {
+      required: true,
+      // validate: startDateValue => !editMode && startDateValue.isSameOrAfter(now.subtract(1, 'hour')),
+    },
   })
   const { field: deadlineField } = useController({
     name: 'deadline',
@@ -72,8 +82,6 @@ export const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({
       validate: deadlineValue => deadlineValue.isAfter(startDateField.value) || 'Deadline should be after Start Date',
     },
   })
-
-  const editMode = !!assignment
 
   useEffect(() => {
     // Fill with pre-existing data when updating
@@ -90,19 +98,63 @@ export const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({
       setValue('startDate', assignment.startDate)
       setValue('deadline', assignment.deadline)
       setValue('description', assignment.description)
+      setValue('maximumGrade', assignment.maximumGrade)
+      setValue('author', assignment.author)
+    } else {
+      if (role === Role.MENTOR && userData) {
+        const mentorObj: BaseUser = {
+          id: userData?.id || 0,
+          fullName: userData?.fullName || '',
+          email: userData?.email || '',
+          role: Role.MENTOR,
+        }
+
+        setValue('author', mentorObj)
+      }
     }
   }, [assignment])
 
-  const handleAssignmentSubmit: SubmitHandler<CreateAssignmentType> = async _formData => {
-    // TODO: Map students to studentIds AND author to authorId before sending data / Convert dates to string
+  const handleAssignmentSubmit: SubmitHandler<CreateAssignmentType> = async formData => {
+    // TODO: Map studentIds to students AND authorId to author before sending data / Convert dates to string
     // TODO: Dispatch create assignment action
     // console.log(formData)
+
+    if (editMode && assignment) {
+      const updatedAssignment: AssignmentRequestDto = {
+        title: formData.title,
+        authorId: assignment.author.id || formData.author.id,
+        startDate: formData.startDate.format('DD-MM-YYYY HH:mm'),
+        deadline: formData.deadline.format('DD-MM-YYYY HH:mm'),
+        studentIds: formData.students.map(student => student.id),
+        submissions: assignment.submissions || [],
+        description: formData.description,
+        maximumGrade: formData.maximumGrade,
+      }
+
+      dispatch(updateAssignment({ assignment: updatedAssignment, assignmentId: assignment.id })).then(() => {
+        handleCloseModal()
+      })
+    } else {
+      const newAssignment: AssignmentRequestDto = {
+        title: formData.title,
+        authorId: formData.author.id,
+        startDate: formData.startDate.format('DD-MM-YYYY HH:mm'),
+        deadline: formData.deadline.format('DD-MM-YYYY HH:mm'),
+        studentIds: formData.students.map(student => student.id),
+        submissions: [],
+        description: formData.description,
+        maximumGrade: formData.maximumGrade,
+      }
+
+      dispatch(createAssignment(newAssignment)).then(() => {
+        handleCloseModal()
+      })
+    }
   }
 
   const handleCloseModal = () => {
     reset({
       title: '',
-      author: {},
       startDate: undefined,
       deadline: undefined,
       students: [],
@@ -208,6 +260,13 @@ export const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({
               helperText="Max 200 characters"
               multiline
               rows={3}
+            />
+            <FormInput
+              label="Maximum Grade"
+              fieldName="maximumGrade"
+              options={{ maxLength: 5, required: true }}
+              error={!!errors.maximumGrade}
+              helperText={errors.maximumGrade?.message}
             />
           </StyledDialogContent>
           <DialogActions>
