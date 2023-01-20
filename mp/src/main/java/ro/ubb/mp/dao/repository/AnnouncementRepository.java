@@ -9,4 +9,6 @@ public interface AnnouncementRepository extends JpaRepository<Announcement, Long
 
     List<Announcement> findAllByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String title, String description);
 
+    List<Announcement> findAllByOrderByPostingDateDesc();
+
 }

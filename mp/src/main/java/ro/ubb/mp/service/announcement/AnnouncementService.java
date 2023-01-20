@@ -10,9 +10,13 @@ public interface AnnouncementService {
     Optional<Announcement> findById(Long id);
 
     List<Announcement> getAll();
+
+    List<Announcement> getAnnouncementsOrderedByDate();
+
     List<Announcement> getAnnouncementFilteredByTitleOrDescription(String queryString);
 
     Announcement saveAnnouncement(AnnouncementRequestDTO announcementRequestDTO);
+
     Announcement updateAnnouncement(AnnouncementRequestDTO announcementRequestDTO, Long id);
 
     void deleteAnnouncementById(Long id);
