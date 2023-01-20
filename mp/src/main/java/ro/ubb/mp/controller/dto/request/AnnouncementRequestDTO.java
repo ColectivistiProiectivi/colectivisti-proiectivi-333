@@ -14,8 +14,6 @@ public class AnnouncementRequestDTO {
     private Long userId;
     private String title;
     private BigDecimal price;
-    private Date postingDate;
     private String description;
-
 }
 
