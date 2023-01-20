@@ -47,7 +47,7 @@ public class NotificationService {
 
     /**
      * @param id Long id
-     * TODO - un user sa isi stearga o anumita notificare
+     *           TODO - un user sa isi stearga o anumita notificare
      */
     public void delete(Long id) {
         notificationRepository.deleteById(id);
@@ -86,5 +86,16 @@ public class NotificationService {
     @Transactional
     public void markAsRead(User user, Long notificationId) {
         notificationRepository.findByUserAndId(user, notificationId).setRead(true);
+    }
+
+    public Integer findAllUnread(User user) {
+        List<Notification> notifications = notificationRepository.findByUser(user);
+        int count = 0;
+        for (Notification n : notifications) {
+            if (!n.isRead()) {
+                count = count + 1;
+            }
+        }
+        return count;
     }
 }

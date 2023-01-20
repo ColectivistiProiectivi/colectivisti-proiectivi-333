@@ -1,9 +1,11 @@
 package ro.ubb.mp.controller;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ro.ubb.mp.controller.dto.response.NotificationResponseDTO;
@@ -12,8 +14,11 @@ import ro.ubb.mp.controller.dto.response.ResponseWrapperDTO;
 import ro.ubb.mp.dao.model.User;
 import ro.ubb.mp.service.notification.NotificationService;
 
+import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Getter
 @RestController
 @RequestMapping
 public class NotificationController {
@@ -76,5 +81,15 @@ public class NotificationController {
                         .<String>builder()
                         .errorMessage("bad authentication type")
                         .build());
+    }
+
+    @GetMapping("/notifications/unread")
+    public ResponseEntity<Integer> unreadNotifications(final Authentication authentication) throws Exception{
+        if (authentication.getPrincipal() instanceof User user) {
+
+            return ResponseEntity.ok(
+                    getNotificationService().findAllUnread(user));
+        }
+        throw new UserPrincipalNotFoundException("Bad user type");
     }
 }
