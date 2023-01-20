@@ -32,13 +32,14 @@ public class AnnouncementController {
 
     @GetMapping()
     public ResponseEntity<List<AnnouncementResponseDTO>> getAnnouncements() {
-        List<Announcement> announcements = announcementService.getAll();
+        List<Announcement> announcements = announcementService.getAnnouncementsOrderedByDate();
         List<AnnouncementResponseDTO> announcementResponseDTOS = announcements.stream()
                 .map(announcement -> getAnnouncementMapper().toDTO(announcement)).collect(Collectors.toList());
 
         return ResponseEntity.ok().body(announcementResponseDTOS);
 
     }
+
     @GetMapping("/filter")
     public ResponseEntity<List<AnnouncementResponseDTO>> getAnnouncementsFilteredByInterestArea(
             @RequestParam(defaultValue = "") String q
@@ -74,9 +75,9 @@ public class AnnouncementController {
 
     @PutMapping("/{id}")
     public ResponseEntity<AnnouncementResponseDTO> updateAnnouncement(@RequestBody AnnouncementRequestDTO announcementRequestDTO,
-                                                           @PathVariable Long id) {
+                                                                      @PathVariable Long id) {
         return ResponseEntity.ok().body(getAnnouncementMapper().toDTO(getAnnouncementService().
-                updateAnnouncement(announcementRequestDTO,id)));
+                updateAnnouncement(announcementRequestDTO, id)));
 
     }
 }

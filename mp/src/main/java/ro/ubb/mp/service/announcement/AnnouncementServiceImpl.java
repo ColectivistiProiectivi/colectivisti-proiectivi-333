@@ -13,6 +13,8 @@ import ro.ubb.mp.service.interestArea.InterestAreaService;
 import ro.ubb.mp.service.user.UserService;
 
 import javax.persistence.EntityNotFoundException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +38,11 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     }
 
     @Override
+    public List<Announcement> getAnnouncementsOrderedByDate() {
+        return announcementRepository.findAllByOrderByPostingDateDesc();
+    }
+
+    @Override
     public Announcement saveAnnouncement(AnnouncementRequestDTO announcementDTO) {
         final User user = getUserService().getUserById(announcementDTO.getUserId()).
                 orElseThrow(EntityNotFoundException::new);
@@ -46,7 +53,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
                 .description(announcementDTO.getDescription())
                 .price(announcementDTO.getPrice())
                 .title(announcementDTO.getTitle())
-                .postingDate(announcementDTO.getPostingDate())
+                .postingDate(Timestamp.from(Instant.now()))
                 .user(user)
                 .interestAreas(interestArea)
                 .build();
