@@ -3,12 +3,15 @@ import React, { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
 import { selectAnnouncementsData, selectAnnouncementsError, selectAnnouncementsLoading } from './selectors'
 import { fetchAnnouncements } from './actions'
-import { styled, Tabs, Tab, Typography, css } from '@mui/material'
+import { styled, Tabs, Tab, Typography, css, Button } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
 
 import { Loader } from '../common/Loader'
 import { AnnouncementDto } from '../../types/Announcements'
 import { AnnouncementCard } from './AnnouncementCard'
 import { selectUserData } from '../account/selectors'
+import { Role } from '../../types/User'
+import { CreateAnnouncementModal } from './CreateAnnouncementModal/CreateAnnouncementModal'
 
 export enum AnnouncementCategory {
   FEED,
@@ -23,11 +26,27 @@ const AnnouncementsPage: React.FC = () => {
   const announcementsError = useAppSelector(selectAnnouncementsError)
   const announcementsData = useAppSelector(selectAnnouncementsData)
   const userData = useAppSelector(selectUserData)
+  const role = userData?.role
+  // const userId = userData?.id
+
+  const [createAnnouncementOpen, setCreateAnnouncementOpen] = useState(false)
+  const shouldOpenCreateAnnouncementModal = role === Role.MENTOR && createAnnouncementOpen
+  const [updatedAnnouncement, setUpdatedAnnouncement] = useState<AnnouncementDto | undefined>(undefined)
+
+  const handleOpenAnnouncementWhenUpdate = (announcement: AnnouncementDto) => {
+    setUpdatedAnnouncement(announcement)
+    setCreateAnnouncementOpen(true)
+  }
+
+  const handleCloseCreateAnnouncement = () => {
+    setCreateAnnouncementOpen(false)
+    setUpdatedAnnouncement(undefined)
+  }
 
   // Load announcements data on page load
   useEffect(() => {
     dispatch(fetchAnnouncements())
-  }, [dispatch])
+  }, [])
 
   if (announcementsLoading) {
     return <Loader fullscreen={true} />
@@ -56,9 +75,11 @@ const AnnouncementsPage: React.FC = () => {
               title={announcement.title}
               description={announcement.description}
               price={announcement.price}
-              createdAtDate={announcement.postingDate}
               createdBy={announcement.user}
               interestAreas={announcement.interestAreas}
+              createdAtDate={announcement.postingDate}
+              category={selectedCategory}
+              onUpdateClick={() => handleOpenAnnouncementWhenUpdate(announcement)}
             />
           ))}
         </Announcements>
@@ -79,9 +100,21 @@ const AnnouncementsPage: React.FC = () => {
   return (
     <Container>
       <Title variant="overline">Announcements</Title>
+      {role === Role.MENTOR && (
+        <CreateAnnouncementButton variant="outlined" color="secondary" onClick={() => setCreateAnnouncementOpen(true)}>
+          <AddIcon /> Create Announcement
+        </CreateAnnouncementButton>
+      )}
+      <CreateAnnouncementModal
+        isOpened={shouldOpenCreateAnnouncementModal}
+        handleClose={handleCloseCreateAnnouncement}
+        announcement={updatedAnnouncement}
+      />
       <Tabs value={selectedCategory} onChange={handleCategorySelection} indicatorColor="secondary">
         <StyledTab label="Feed" aria-selected={AnnouncementCategory.FEED === selectedCategory} />
-        <StyledTab label="Your's" aria-selected={AnnouncementCategory.FOLLOWED === selectedCategory} />
+        {role === Role.MENTOR && (
+          <StyledTab label="Your's" aria-selected={AnnouncementCategory.FOLLOWED === selectedCategory} />
+        )}
       </Tabs>
       {[announcementsData, myAnnouncements].map(renderAnnouncements)}
     </Container>
@@ -107,7 +140,7 @@ const Announcements = styled('div')`
   display: flex;
   flex-direction: column;
   gap: 40px;
-  width: 50%;
+  width: 600px;
   margin-top: 20px;
 `
 
@@ -121,4 +154,12 @@ const StyledTab = styled(Tab)`
     css`
       color: ${props.theme.palette.secondary.main} !important;
     `}
+`
+
+const CreateAnnouncementButton = styled(Button)`
+  padding: 30px;
+  width: 500px;
+  display: flex;
+  gap: 5px;
+  font-size: 16px;
 `

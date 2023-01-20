@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AnnouncementDto } from '../../types/Announcements'
-import { fetchAnnouncements, fetchDeleteAnnouncements, fetchFilterAnnouncements } from './actions'
+import { fetchAddAnnouncement, fetchAnnouncements, fetchDeleteAnnouncements, fetchFilterAnnouncements } from './actions'
 
 export interface AnnouncementsState {
   announcementsData?: AnnouncementDto[]
@@ -13,6 +13,7 @@ export interface AnnouncementsState {
   deleteAnnouncementSuccess: boolean
   deleteAnnouncementError: boolean
   deleteAnnouncementLoading: boolean
+  addAnnouncementSuccess: boolean
 }
 
 const initialState: AnnouncementsState = {
@@ -26,6 +27,7 @@ const initialState: AnnouncementsState = {
   deleteAnnouncementSuccess: false,
   deleteAnnouncementError: false,
   deleteAnnouncementLoading: false,
+  addAnnouncementSuccess: false,
 }
 
 export const announcementsSlice = createSlice({
@@ -82,6 +84,9 @@ export const announcementsSlice = createSlice({
         state.deleteAnnouncementSuccess = false
         state.deleteAnnouncementError = false
         state.deleteAnnouncementLoading = true
+      })
+      .addCase(fetchAddAnnouncement.fulfilled, state => {
+        state.addAnnouncementSuccess = true
       })
   },
 })

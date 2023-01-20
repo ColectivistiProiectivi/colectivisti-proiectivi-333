@@ -24,9 +24,26 @@ export interface Announcement {
 export interface AnnouncementDto {
   id: number
   title: string
-  postingDate: Dayjs
+  postingDate: Date
   user: AnnouncementUserResponseDTO
   interestAreas: InterestAreasResponseDTO
+  description: string
+  price: number
+}
+
+export interface Submission {
+  userId: number | undefined
+  title: string
+  interestAreasId: number | null
+  description: string
+  price: number
+}
+
+export interface UpdateSubmission {
+  id: number
+  userId: number | undefined
+  title: string
+  interestAreasId: number | null
   description: string
   price: number
 }

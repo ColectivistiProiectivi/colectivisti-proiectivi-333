@@ -47,3 +47,8 @@ export const selectDeleteAnnouncementSuccess = createSelector(
   [getAnnouncementsState],
   announcementsState => announcementsState.deleteAnnouncementSuccess
 )
+
+export const selectAddAnnouncementSuccess = createSelector(
+  [getAnnouncementsState],
+  announcementsState => announcementsState.addAnnouncementSuccess
+)

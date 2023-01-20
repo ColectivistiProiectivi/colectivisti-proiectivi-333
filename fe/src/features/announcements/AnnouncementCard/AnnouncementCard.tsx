@@ -1,16 +1,16 @@
 import React from 'react'
-import dayjs, { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 import RelativeTime from 'dayjs/plugin/relativeTime'
 
-import { alpha, Avatar, Button, IconButton, styled, Typography } from '@mui/material'
+import { alpha, Avatar, Button, IconButton, styled, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { AnnouncementUserResponseDTO, InterestAreasResponseDTO } from '../../../types/Announcements'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { selectUserData } from '../../account/selectors'
-import { selectAnnouncementsError, selectAnnouncementsLoading } from '../selectors'
-import { Loader } from '../../common/Loader'
 import { displaySnackbar } from '../../application/slice'
+import { AnnouncementCategory } from '../AnnouncementsPage'
+import { fetchAnnouncements, fetchDeleteAnnouncements } from '../actions'
 
 dayjs.extend(RelativeTime)
 
@@ -20,37 +20,29 @@ interface AnnouncementsCardProps {
   description: string
   price: number
   createdBy: AnnouncementUserResponseDTO
-  createdAtDate: Dayjs
   interestAreas: InterestAreasResponseDTO
+  category: AnnouncementCategory
+  createdAtDate: Date
+  onUpdateClick: () => void
 }
 
-export const AnnouncementCard: React.FC<AnnouncementsCardProps> = ({
-  id,
-  title,
-  description,
-  price,
-  createdBy,
-  createdAtDate,
-  interestAreas,
-}) => {
+export const AnnouncementCard: React.FC<AnnouncementsCardProps> = props => {
   const dispatch = useAppDispatch()
   const userData = useAppSelector(selectUserData)
   const isMentor = userData?.role === 'MENTOR'
-  const announcementsLoading = useAppSelector(selectAnnouncementsLoading)
-  const announcementsError = useAppSelector(selectAnnouncementsError)
+  const { id, title, description, price, createdBy, createdAtDate, interestAreas, category, onUpdateClick } = props
 
-  if (announcementsLoading) {
-    return <Loader fullscreen={true} />
-  }
-
-  if (announcementsError) {
-    dispatch(
-      displaySnackbar({
-        open: true,
-        type: 'warning',
-        message: 'Error in deleting the ad',
-      })
-    )
+  const handleDelete = () => {
+    dispatch(fetchDeleteAnnouncements(id)).then(() => {
+      dispatch(
+        displaySnackbar({
+          open: true,
+          type: 'success',
+          message: 'Ad deleted',
+        })
+      )
+    })
+    dispatch(fetchAnnouncements())
   }
 
   return (
@@ -75,18 +67,23 @@ export const AnnouncementCard: React.FC<AnnouncementsCardProps> = ({
         <Typography variant="body2" color="gray">
           Price: {price} RON/hour
         </Typography>
-        {isMentor ? (
-          <ActionButtons>
-            <IconButton>
-              <EditIcon />
-            </IconButton>
-            <IconButton>
-              <DeleteIcon />
-            </IconButton>
-          </ActionButtons>
-        ) : (
-          <ViewProfileButton>View profile</ViewProfileButton>
+        {isMentor && category === AnnouncementCategory.FOLLOWED && (
+          <>
+            <ActionButtons>
+              <Tooltip title="Edit">
+                <IconButton onClick={onUpdateClick}>
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Delete">
+                <IconButton onClick={handleDelete}>
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+            </ActionButtons>
+          </>
         )}
+        {!isMentor && <ViewProfileButton>Contact</ViewProfileButton>}
       </Footer>
     </Wrapper>
   )
@@ -166,9 +163,9 @@ const NameSection = styled('div')`
 
 const ViewProfileButton = styled(Button)`
   background: #eea247;
-  color: ${props => props.theme.palette.common.black};
+  color: ${props => props.theme.palette.common.white};
   :hover {
     background: #f0bf84;
-    color: ${props => props.theme.palette.common.black};
+    color: ${props => props.theme.palette.common.white};
   }
 `
