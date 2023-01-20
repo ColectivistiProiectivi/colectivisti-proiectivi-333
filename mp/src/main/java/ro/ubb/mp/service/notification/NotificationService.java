@@ -16,6 +16,7 @@ import ro.ubb.mp.dao.model.Notification;
 import ro.ubb.mp.dao.model.User;
 import ro.ubb.mp.dao.repository.NotificationRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -97,5 +98,17 @@ public class NotificationService {
             }
         }
         return count;
+    }
+
+    public List<Notification> findAll(User user) {
+        List<Notification> notifications = notificationRepository.findByUser(user);
+        List<Notification> allNotifications = new ArrayList<>();
+        for (Notification n : notifications) {
+            if (!n.isRead()) {
+                allNotifications.add(n);
+            }
+        }
+
+        return allNotifications;
     }
 }

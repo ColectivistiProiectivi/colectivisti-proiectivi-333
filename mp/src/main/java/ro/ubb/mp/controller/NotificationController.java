@@ -1,6 +1,7 @@
 package ro.ubb.mp.controller;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import ro.ubb.mp.controller.dto.mapper.NotificationResponseMapper;
+import ro.ubb.mp.controller.dto.response.MessageResponseDTO;
 import ro.ubb.mp.controller.dto.response.NotificationResponseDTO;
 import ro.ubb.mp.controller.dto.response.PageResponseWrapperDTO;
 import ro.ubb.mp.controller.dto.response.ResponseWrapperDTO;
@@ -21,10 +24,13 @@ import java.util.stream.Collectors;
 @Getter
 @RestController
 @RequestMapping
+@RequiredArgsConstructor
 public class NotificationController {
 
     @Autowired
     private NotificationService notificationService;
+    private final NotificationResponseMapper responseMapper;
+
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationController.class);
 
@@ -91,5 +97,19 @@ public class NotificationController {
                     getNotificationService().findAllUnread(user));
         }
         throw new UserPrincipalNotFoundException("Bad user type");
+    }
+
+    @GetMapping("/notifications")
+    public ResponseEntity<ResponseWrapperDTO<List<NotificationResponseDTO>>> getUserAllNotifications() {
+        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User user) {
+
+            List<NotificationResponseDTO> notificationResponseDTOS = notificationService.findAll(user)
+                    .stream().map(notification -> getResponseMapper().toDTO(notification)).sorted((notification1, notification2) -> notification2.getCreatedAt().compareTo(notification1.getCreatedAt())).collect(Collectors.toList());
+
+            return ResponseEntity.ok()
+                    .body(ResponseWrapperDTO.<List<NotificationResponseDTO>>builder().value(notificationResponseDTOS).build());
+        }
+        return ResponseEntity.badRequest()
+                .body(ResponseWrapperDTO.<List<NotificationResponseDTO>>builder().errorMessage("Bad authentication type").build());
     }
 }
