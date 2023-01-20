@@ -90,11 +90,11 @@ public class NotificationController {
     }
 
     @GetMapping("/notifications/unread")
-    public ResponseEntity<Integer> unreadNotifications(final Authentication authentication) throws Exception{
+    public ResponseEntity<Integer> countUnreadNotifications(final Authentication authentication) throws Exception{
         if (authentication.getPrincipal() instanceof User user) {
 
             return ResponseEntity.ok(
-                    getNotificationService().findAllUnread(user));
+                    getNotificationService().countUnreadNotifications(user));
         }
         throw new UserPrincipalNotFoundException("Bad user type");
     }
