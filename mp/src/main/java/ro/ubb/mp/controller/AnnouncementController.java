@@ -37,7 +37,6 @@ public class AnnouncementController {
                 .map(announcement -> getAnnouncementMapper().toDTO(announcement)).collect(Collectors.toList());
 
         return ResponseEntity.ok().body(announcementResponseDTOS);
-
     }
 
     @GetMapping("/filter")
