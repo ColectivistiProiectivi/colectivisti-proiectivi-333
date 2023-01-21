@@ -3,11 +3,13 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import appReducer from '../features/application/slice'
 import userReducer from '../features/account/slice'
 import assignmentsReducer from '../features/assignments/slice'
+import announcementsReducer from '../features/announcements/slice'
 
 export const reducer = combineReducers({
   appState: appReducer,
   userState: userReducer,
   assignmentsState: assignmentsReducer,
+  announcementsState: announcementsReducer,
 })
 
 export const store = configureStore({
