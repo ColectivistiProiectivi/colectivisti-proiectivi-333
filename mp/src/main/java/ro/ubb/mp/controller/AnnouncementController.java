@@ -37,7 +37,6 @@ public class AnnouncementController {
                 .map(announcement -> getAnnouncementMapper().toDTO(announcement)).collect(Collectors.toList());
 
         return ResponseEntity.ok().body(announcementResponseDTOS);
-
     }
 
     @GetMapping("/filter")
@@ -55,10 +54,10 @@ public class AnnouncementController {
     }
 
     @PostMapping()
-    public ResponseEntity<Announcement> addAnnouncement(@RequestBody AnnouncementRequestDTO announcement) {
+    public ResponseEntity<AnnouncementResponseDTO> addAnnouncement(@RequestBody AnnouncementRequestDTO announcement) {
         URI uri = URI.create((ServletUriComponentsBuilder.fromCurrentContextPath().path("/addAnnouncement").toUriString()));
 
-        return ResponseEntity.created(uri).body(getAnnouncementService().saveAnnouncement(announcement));
+        return ResponseEntity.created(uri).body(getAnnouncementMapper().toDTO(getAnnouncementService().saveAnnouncement(announcement)));
     }
 
     @DeleteMapping("/{id}")
