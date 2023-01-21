@@ -12,7 +12,6 @@ import java.util.Date;
 @Data
 @Builder
 public class AppointmentRequestDTO {
-    private Long id;
     private Long studentId;
     private Long mentorId;
     @NotNull
