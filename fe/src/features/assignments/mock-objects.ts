@@ -1,5 +1,5 @@
 import { BaseUser, Role } from '../../types/User'
-import { AssignmentDto, Submission } from '../../types/Assignment'
+import { AssignmentResponseDto, Submission } from '../../types/Assignment'
 
 export const mockStudentsWithUpcomingAppointments: BaseUser[] = [
   {
@@ -43,12 +43,31 @@ export const mockSubmissions: Submission[] = [
   },
 ]
 
-export const mockAssignments: AssignmentDto[] = [
+export const mockStudent1: BaseUser = {
+  id: 2,
+  fullName: 'Tudor',
+  role: Role.STUDENT,
+  email: 'tudor@email.com',
+}
+
+export const mockStudent2: BaseUser = {
+  id: 2,
+  fullName: 'Andrei',
+  role: Role.STUDENT,
+  email: 'Andrei@email.com',
+}
+
+export const mockAssignments: AssignmentResponseDto[] = [
   {
     id: 1,
-    authorId: 1,
+    author: {
+      id: 1,
+      fullName: 'Minuta',
+      role: Role.MENTOR,
+      email: 'minuta@email.com',
+    },
     title: 'Do the math',
-    studentIds: [1, 2],
+    students: [mockStudent1, mockStudent2],
     submissions: mockSubmissions,
     startDate: '01/12/2022',
     deadline: '25/12/2023',
@@ -57,9 +76,14 @@ export const mockAssignments: AssignmentDto[] = [
   },
   {
     id: 2,
-    authorId: 1,
+    author: {
+      id: 1,
+      fullName: 'Minuta',
+      role: Role.MENTOR,
+      email: 'minuta@email.com',
+    },
     title: 'Big brain, much wow',
-    studentIds: [2, 3, 4],
+    students: [mockStudent1, mockStudent2],
     submissions: mockSubmissions,
     startDate: '10/12/2022',
     deadline: '12/12/2023',
@@ -68,9 +92,14 @@ export const mockAssignments: AssignmentDto[] = [
   },
   {
     id: 3,
-    authorId: 1,
+    author: {
+      id: 1,
+      fullName: 'Minuta',
+      role: Role.MENTOR,
+      email: 'minuta@email.com',
+    },
     title: 'Do the equation',
-    studentIds: [3, 2, 1, 5],
+    students: [mockStudent1, mockStudent2],
     submissions: mockSubmissions,
     startDate: '22/12/2023',
     deadline: '30/12/2023',
@@ -79,9 +108,14 @@ export const mockAssignments: AssignmentDto[] = [
   },
   {
     id: 4,
-    authorId: 1,
+    author: {
+      id: 1,
+      fullName: 'Minuta',
+      role: Role.MENTOR,
+      email: 'minuta@email.com',
+    },
     title: 'Mandatory lab',
-    studentIds: [4, 3, 1],
+    students: [mockStudent1, mockStudent2],
     submissions: mockSubmissions,
     startDate: '22/12/2022',
     deadline: '30/12/2022',
@@ -90,9 +124,14 @@ export const mockAssignments: AssignmentDto[] = [
   },
   {
     id: 5,
-    authorId: 1,
+    author: {
+      id: 1,
+      fullName: 'Minuta',
+      role: Role.MENTOR,
+      email: 'minuta@email.com',
+    },
     title: 'Mandatory lab',
-    studentIds: [4, 2],
+    students: [mockStudent1, mockStudent2],
     submissions: mockSubmissions,
     startDate: '01/12/2022',
     deadline: '05/12/2022',

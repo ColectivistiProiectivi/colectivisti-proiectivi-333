@@ -180,6 +180,7 @@ const ProfilePage: React.FC = () => {
                   error={!!errors.ongoingStudy}
                   label="Ongoing Study"
                   InputLabelProps={{ shrink: true }}
+                  color="secondary"
                   inputProps={{
                     ...params.inputProps,
                     autoComplete: 'new-password', // disable autocomplete and autofill

@@ -22,3 +22,18 @@ export const selectAssignmentsData = createSelector(
   [getAssignmentsState],
   assignmentsState => assignmentsState.assignmentsData
 )
+
+export const selectMentorStudents = createSelector(
+  [getAssignmentsState],
+  assignmentsState => assignmentsState.mentorStudents
+)
+
+export const selectMentorStudentsLoading = createSelector(
+  [getAssignmentsState],
+  assignmentsState => assignmentsState.mentorStudentsLoading
+)
+
+export const selectMentorStudentsError = createSelector(
+  [getAssignmentsState],
+  assignmentsState => assignmentsState.mentorStudentsError
+)
