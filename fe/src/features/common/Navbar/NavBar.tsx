@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
-import { Badge, styled, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { styled, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { DrawerComp } from './DrawerComp'
 import { SearchBar } from '../SearchBar/SearchBar'
 import LogoutIcon from '@mui/icons-material/Logout'
@@ -59,18 +59,14 @@ export const NavBar: React.FC = () => {
           </LeftSection>
           <SearchBar />
           <RightSection>
-            <Tooltip title="Messages">
-              <StyledIconButton size="large" onClick={openMessagesMenu}>
-                <Badge badgeContent={9} color="error">
-                  <MailIcon />
-                </Badge>
+            <Tooltip title="Notifications">
+              <StyledIconButton size="large" onClick={openNotificationsMenu} disabled>
+                <NotificationsIcon />
               </StyledIconButton>
             </Tooltip>
-            <Tooltip title="Notifications">
-              <StyledIconButton size="large" onClick={openNotificationsMenu}>
-                <Badge badgeContent={4} color="error">
-                  <NotificationsIcon />
-                </Badge>
+            <Tooltip title="Messages">
+              <StyledIconButton size="large" onClick={openMessagesMenu}>
+                <MailIcon />
               </StyledIconButton>
             </Tooltip>
             <Tooltip title="Sign out">

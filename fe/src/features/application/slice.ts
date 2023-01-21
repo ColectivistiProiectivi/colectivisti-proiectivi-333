@@ -5,6 +5,7 @@ import { authenticateUser } from '../login/actions'
 import { AuthProps } from '../../types/User'
 import { updateUserData } from '../account/actions'
 import { createAssignment, deleteAssignment, updateAssignment } from '../assignments/actions'
+import { addAnnouncement, deleteAnnouncement, updateAnnouncement } from '../announcements/actions'
 
 export interface AppState {
   snackbarOpen: boolean
@@ -145,6 +146,42 @@ export const appSlice = createSlice({
         state.snackbarOpen = true
         state.snackbarType = 'error'
         state.snackbarMessage = 'Something went wrong when deleting your assignment.'
+      })
+
+      // Add announcement
+      .addCase(addAnnouncement.fulfilled, state => {
+        state.snackbarOpen = true
+        state.snackbarType = 'success'
+        state.snackbarMessage = 'Announcement created!'
+      })
+      .addCase(addAnnouncement.rejected, state => {
+        state.snackbarOpen = true
+        state.snackbarType = 'error'
+        state.snackbarMessage = 'Something went wrong when creating your announcement.'
+      })
+
+      // Update announcement
+      .addCase(updateAnnouncement.fulfilled, state => {
+        state.snackbarOpen = true
+        state.snackbarType = 'success'
+        state.snackbarMessage = 'Announcement updated!'
+      })
+      .addCase(updateAnnouncement.rejected, state => {
+        state.snackbarOpen = true
+        state.snackbarType = 'error'
+        state.snackbarMessage = 'Something went wrong when updating your announcement.'
+      })
+
+      // Delete announcement
+      .addCase(deleteAnnouncement.fulfilled, state => {
+        state.snackbarOpen = true
+        state.snackbarType = 'success'
+        state.snackbarMessage = 'Announcement updated!'
+      })
+      .addCase(deleteAnnouncement.rejected, state => {
+        state.snackbarOpen = true
+        state.snackbarType = 'error'
+        state.snackbarMessage = 'Something went wrong when updating your announcement.'
       })
   },
 })

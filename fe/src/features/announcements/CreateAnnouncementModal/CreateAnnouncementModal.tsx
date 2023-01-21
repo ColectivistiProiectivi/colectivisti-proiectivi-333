@@ -18,7 +18,7 @@ import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { selectInterestAreasOptions, selectInterestAreasOptionsLoading, selectUserData } from '../../account/selectors'
 import { fetchInterestAreasOptions } from '../../account/actions'
 import { LoadingOverlay } from '../../common/LoadingOverlay'
-import { fetchAddAnnouncement, fetchAnnouncements, fetchUpdateAnnouncement } from '../actions'
+import { addAnnouncement, updateAnnouncement } from '../actions'
 
 export type CreateAnnouncementType = {
   id: number
@@ -97,33 +97,31 @@ export const CreateAnnouncementModal: React.FC<CreateAnnouncementModalProps> = (
     setInterestAreas()
   }, [dispatch, interestAreasOptions])
 
-  const handleAssignmentSubmit: SubmitHandler<CreateAnnouncementType> = async _formData => {
-    getInterestAreaId(_formData.interestArea)
+  const handleAssignmentSubmit: SubmitHandler<CreateAnnouncementType> = async formData => {
+    getInterestAreaId(formData.interestArea)
     if (areasId && userData && !editMode) {
       dispatch(
-        fetchAddAnnouncement({
+        addAnnouncement({
           interestAreasId: areasId,
           userId: userData?.id,
-          title: _formData.title,
-          price: _formData.price,
-          description: _formData.description,
+          title: formData.title,
+          price: formData.price,
+          description: formData.description,
         })
       )
-      dispatch(fetchAnnouncements())
     }
 
     if (areasId && userData && editMode) {
       dispatch(
-        fetchUpdateAnnouncement({
+        updateAnnouncement({
           id: announcement.id,
           interestAreasId: areasId,
           userId: userData?.id,
-          title: _formData.title,
-          price: _formData.price,
-          description: _formData.description,
+          title: formData.title,
+          price: formData.price,
+          description: formData.description,
         })
       )
-      dispatch(fetchAnnouncements())
     }
     handleClose()
   }

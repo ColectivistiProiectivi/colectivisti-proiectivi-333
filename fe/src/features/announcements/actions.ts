@@ -1,11 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { Submission, UpdateSubmission } from '../../types/Announcements'
 import {
-  fetchAddAnnouncementCall,
+  addAnnouncementCall,
   fetchAnnouncementsCall,
-  fetchDeleteAnnouncementsCall,
+  deleteAnnouncementsCall,
   fetchFilterAnnouncementsCall,
-  fetchUpdateAnnouncementCall,
+  updateAnnouncementCall,
 } from './services'
 
 export const fetchAnnouncements = createAsyncThunk('fetchAnnouncements', async () => {
@@ -20,20 +20,20 @@ export const fetchFilterAnnouncements = createAsyncThunk('fetchFilterAnnouncemen
   return response.data
 })
 
-export const fetchDeleteAnnouncements = createAsyncThunk('fetchDeleteAnnouncements', async (id: number) => {
-  const response = await fetchDeleteAnnouncementsCall(id)
+export const deleteAnnouncement = createAsyncThunk('deleteAnnouncement', async (id: number) => {
+  const response = await deleteAnnouncementsCall(id)
 
   return response.data
 })
 
-export const fetchAddAnnouncement = createAsyncThunk('fetchAddAnnouncement', async (ann: Submission) => {
-  const response = await fetchAddAnnouncementCall(ann)
+export const addAnnouncement = createAsyncThunk('addAnnouncement', async (ann: Submission) => {
+  const response = await addAnnouncementCall(ann)
 
   return response.data
 })
 
-export const fetchUpdateAnnouncement = createAsyncThunk('fetchUpdateAnnouncement', async (ann: UpdateSubmission) => {
-  const response = await fetchUpdateAnnouncementCall(ann)
+export const updateAnnouncement = createAsyncThunk('updateAnnouncement', async (ann: UpdateSubmission) => {
+  const response = await updateAnnouncementCall(ann)
 
   return response.data
 })

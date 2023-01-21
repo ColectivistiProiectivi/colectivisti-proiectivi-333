@@ -8,9 +8,10 @@ export const fetchAnnouncementsCall = async (): Promise<AxiosResponse<Announceme
 export const fetchFilterAnnouncementsCall = async (text: string): Promise<AxiosResponse<AnnouncementDto[]>> =>
   axiosInstance.get(`/announcements/filter?q=${text}`)
 
-export const fetchDeleteAnnouncementsCall = async (id: number) => axiosInstance.delete(`/announcements/${id}`)
+export const deleteAnnouncementsCall = async (id: number) => axiosInstance.delete(`/announcements/${id}`)
 
-export const fetchAddAnnouncementCall = async (ann: Submission) => axiosInstance.post('/announcements/', ann)
+export const addAnnouncementCall = async (ann: Submission): Promise<AxiosResponse<AnnouncementDto>> =>
+  axiosInstance.post('/announcements/', ann)
 
-export const fetchUpdateAnnouncementCall = async (ann: UpdateSubmission) =>
+export const updateAnnouncementCall = async (ann: UpdateSubmission): Promise<AxiosResponse<AnnouncementDto>> =>
   axiosInstance.put(`/announcements/${ann.id}`, ann)

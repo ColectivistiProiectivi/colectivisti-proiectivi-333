@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react'
 
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
-import { selectAnnouncementsData, selectAnnouncementsError, selectAnnouncementsLoading } from './selectors'
+import {
+  selectAnnouncementsData,
+  selectAnnouncementsError,
+  selectAnnouncementsLoading,
+  selectAnnouncementsResultsSuccess,
+} from './selectors'
 import { fetchAnnouncements } from './actions'
 import { styled, Tabs, Tab, Typography, css, Button } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
@@ -25,6 +30,7 @@ const AnnouncementsPage: React.FC = () => {
   const announcementsLoading = useAppSelector(selectAnnouncementsLoading)
   const announcementsError = useAppSelector(selectAnnouncementsError)
   const announcementsData = useAppSelector(selectAnnouncementsData)
+  const searchDone = useAppSelector(selectAnnouncementsResultsSuccess)
   const userData = useAppSelector(selectUserData)
   const role = userData?.role
   // const userId = userData?.id
@@ -99,6 +105,11 @@ const AnnouncementsPage: React.FC = () => {
 
   return (
     <Container>
+      {searchDone && (
+        <Button onClick={() => dispatch(fetchAnnouncements())} color="secondary">
+          Back to all announcements
+        </Button>
+      )}
       <Title variant="overline">Announcements</Title>
       {role === Role.MENTOR && (
         <CreateAnnouncementButton variant="outlined" color="secondary" onClick={() => setCreateAnnouncementOpen(true)}>

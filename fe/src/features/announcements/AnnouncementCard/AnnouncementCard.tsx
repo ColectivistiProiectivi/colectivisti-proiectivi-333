@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { selectUserData } from '../../account/selectors'
 import { displaySnackbar } from '../../application/slice'
 import { AnnouncementCategory } from '../AnnouncementsPage'
-import { fetchAnnouncements, fetchDeleteAnnouncements } from '../actions'
+import { fetchAnnouncements, deleteAnnouncement } from '../actions'
 
 dayjs.extend(RelativeTime)
 
@@ -33,7 +33,7 @@ export const AnnouncementCard: React.FC<AnnouncementsCardProps> = props => {
   const { id, title, description, price, createdBy, createdAtDate, interestAreas, category, onUpdateClick } = props
 
   const handleDelete = () => {
-    dispatch(fetchDeleteAnnouncements(id)).then(() => {
+    dispatch(deleteAnnouncement(id)).then(() => {
       dispatch(
         displaySnackbar({
           open: true,

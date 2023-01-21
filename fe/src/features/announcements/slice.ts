@@ -1,9 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AnnouncementDto } from '../../types/Announcements'
-import { fetchAddAnnouncement, fetchAnnouncements, fetchDeleteAnnouncements, fetchFilterAnnouncements } from './actions'
+import {
+  addAnnouncement,
+  fetchAnnouncements,
+  deleteAnnouncement,
+  fetchFilterAnnouncements,
+  updateAnnouncement,
+} from './actions'
 
 export interface AnnouncementsState {
-  announcementsData?: AnnouncementDto[]
+  announcementsData: AnnouncementDto[]
   announcementsLoading: boolean
   announcementsSuccess: boolean
   announcementsError: boolean
@@ -17,7 +23,7 @@ export interface AnnouncementsState {
 }
 
 const initialState: AnnouncementsState = {
-  announcementsData: undefined,
+  announcementsData: [],
   announcementsLoading: false,
   announcementsSuccess: false,
   announcementsError: false,
@@ -46,6 +52,7 @@ export const announcementsSlice = createSlice({
         state.announcementsSuccess = true
         state.announcementsError = false
         state.announcementsLoading = false
+        state.announcementsSearchResultsSuccess = false
       })
 
       .addCase(fetchAnnouncements.pending, state => {
@@ -70,22 +77,31 @@ export const announcementsSlice = createSlice({
         state.announcementsSearchResultsError = false
         state.announcementsSearchResultsSuccess = false
       })
-      .addCase(fetchDeleteAnnouncements.rejected, state => {
+      .addCase(deleteAnnouncement.rejected, state => {
         state.deleteAnnouncementSuccess = false
         state.deleteAnnouncementError = true
         state.deleteAnnouncementLoading = false
       })
-      .addCase(fetchDeleteAnnouncements.fulfilled, state => {
+      .addCase(deleteAnnouncement.fulfilled, state => {
         state.deleteAnnouncementSuccess = true
         state.deleteAnnouncementError = false
         state.deleteAnnouncementLoading = false
       })
-      .addCase(fetchDeleteAnnouncements.pending, state => {
+      .addCase(deleteAnnouncement.pending, state => {
         state.deleteAnnouncementSuccess = false
         state.deleteAnnouncementError = false
         state.deleteAnnouncementLoading = true
       })
-      .addCase(fetchAddAnnouncement.fulfilled, state => {
+
+      .addCase(addAnnouncement.fulfilled, (state, action: PayloadAction<AnnouncementDto>) => {
+        state.announcementsData = [...state.announcementsData, action.payload]
+        state.addAnnouncementSuccess = true
+      })
+      .addCase(updateAnnouncement.fulfilled, (state, action: PayloadAction<AnnouncementDto>) => {
+        state.announcementsData = state.announcementsData.map(announcement =>
+          announcement.id === action.payload.id ? action.payload : announcement
+        )
+        // TODO: Should refactor with updateAnnouncementSuccess
         state.addAnnouncementSuccess = true
       })
   },

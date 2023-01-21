@@ -33,6 +33,11 @@ export const selectAnnouncementsResultsError = createSelector(
   announcementsState => announcementsState.announcementsSearchResultsError
 )
 
+export const selectAnnouncementsResultsSuccess = createSelector(
+  [getAnnouncementsState],
+  announcementsState => announcementsState.announcementsSearchResultsSuccess
+)
+
 export const selectDeleteAnnouncementError = createSelector(
   [getAnnouncementsState],
   announcementsState => announcementsState.deleteAnnouncementError
