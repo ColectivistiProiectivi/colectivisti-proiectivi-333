@@ -59,11 +59,9 @@ export const NavBar: React.FC = () => {
           </LeftSection>
           <SearchBar />
           <RightSection>
-            <Tooltip title="Notifications">
-              <StyledIconButton size="large" onClick={openNotificationsMenu} disabled>
-                <NotificationsIcon />
-              </StyledIconButton>
-            </Tooltip>
+            <StyledIconButton size="large" onClick={openNotificationsMenu} disabled>
+              <NotificationsIcon />
+            </StyledIconButton>
             <Tooltip title="Messages">
               <StyledIconButton size="large" onClick={openMessagesMenu}>
                 <MailIcon />
