@@ -33,7 +33,7 @@ export const Sidebar: React.FC = () => {
             <MenuIcon />
           </ListItemIcon>
         </CustomListItem>
-        <CustomListItem>
+        <CustomListItem selected={activeItem(paths.ANNOUNCEMENTS)} onClick={() => navigate(paths.ANNOUNCEMENTS)}>
           <ListItemIcon>
             <NewspaperIcon />
           </ListItemIcon>
@@ -45,7 +45,7 @@ export const Sidebar: React.FC = () => {
           </ListItemIcon>
           <ListItemText primary="Profile" />
         </CustomListItem>
-        <CustomListItem>
+        <CustomListItem selected={activeItem(paths.APPOINTMENTS)} onClick={() => navigate(paths.APPOINTMENTS)}>
           <ListItemIcon>
             <ScheduleIcon />
           </ListItemIcon>
