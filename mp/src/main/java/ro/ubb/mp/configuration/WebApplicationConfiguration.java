@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class WebApplicationConfiguration {
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+        public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }
