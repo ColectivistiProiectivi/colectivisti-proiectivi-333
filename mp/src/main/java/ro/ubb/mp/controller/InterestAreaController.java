@@ -43,4 +43,9 @@ public class InterestAreaController {
         );
 
     }
+
+    @GetMapping("/welcome")
+    public String welcome() {
+        return "Welcome to the Spring Boot application!";
+    }
 }
