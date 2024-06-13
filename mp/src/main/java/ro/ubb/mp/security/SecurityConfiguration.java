@@ -1,9 +1,8 @@
 package ro.ubb.mp.security;
 
-import ro.ubb.mp.security.jwt.AuthEntryPointJwt;
-import ro.ubb.mp.security.jwt.AuthTokenFilter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,9 +15,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import ro.ubb.mp.security.jwt.AuthEntryPointJwt;
+import ro.ubb.mp.security.jwt.AuthTokenFilter;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
@@ -73,14 +75,14 @@ public class SecurityConfiguration {
                 .authorizeRequests()
                 .antMatchers("/", "/register").permitAll()
                 .antMatchers("/login")
-                    .anonymous()
+                .anonymous()
                 .anyRequest()
-                    .authenticated()
+                .authenticated()
                 .and()
-                    .httpBasic()
+                .httpBasic()
                 .and()
-                    .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authenticationProvider(authenticationProvider(passwordEncoder));
 
